@@ -1,0 +1,2281 @@
+{
+  "version": "1.0.0",
+  "status": "PUBLISHED",
+  "concepts": [
+    {
+      "stableId": "domain.calculation",
+      "displayName": "Calculation",
+      "shortDescription": "Generating and evaluating concrete move sequences.",
+      "kind": "DOMAIN",
+      "difficulty": "FOUNDATIONAL",
+      "status": "ACTIVE",
+      "aliases": [],
+      "replacementConceptIds": []
+    },
+    {
+      "stableId": "domain.tactics",
+      "displayName": "Tactics",
+      "shortDescription": "Short forcing patterns that create immediate concrete consequences.",
+      "kind": "DOMAIN",
+      "difficulty": "FOUNDATIONAL",
+      "status": "ACTIVE",
+      "aliases": [],
+      "replacementConceptIds": []
+    },
+    {
+      "stableId": "domain.strategy",
+      "displayName": "Strategy",
+      "shortDescription": "Longer-term coordination, plans, and positional decisions.",
+      "kind": "DOMAIN",
+      "difficulty": "FOUNDATIONAL",
+      "status": "ACTIVE",
+      "aliases": [],
+      "replacementConceptIds": []
+    },
+    {
+      "stableId": "domain.pawn_structure",
+      "displayName": "Pawn Structures",
+      "shortDescription": "Recurring pawn configurations and their strategic consequences.",
+      "kind": "DOMAIN",
+      "difficulty": "FOUNDATIONAL",
+      "status": "ACTIVE",
+      "aliases": [],
+      "replacementConceptIds": []
+    },
+    {
+      "stableId": "domain.opening",
+      "displayName": "Opening Principles",
+      "shortDescription": "General principles for coordinating the initial phase of a game.",
+      "kind": "DOMAIN",
+      "difficulty": "FOUNDATIONAL",
+      "status": "ACTIVE",
+      "aliases": [],
+      "replacementConceptIds": []
+    },
+    {
+      "stableId": "domain.endgame",
+      "displayName": "Endgame",
+      "shortDescription": "Techniques and decisions in materially reduced positions.",
+      "kind": "DOMAIN",
+      "difficulty": "FOUNDATIONAL",
+      "status": "ACTIVE",
+      "aliases": [],
+      "replacementConceptIds": []
+    },
+    {
+      "stableId": "domain.decision",
+      "displayName": "Decision Process",
+      "shortDescription": "A repeatable process for understanding a position and choosing a move.",
+      "kind": "DOMAIN",
+      "difficulty": "FOUNDATIONAL",
+      "status": "ACTIVE",
+      "aliases": [],
+      "replacementConceptIds": []
+    },
+    {
+      "stableId": "calculation.candidate_moves",
+      "displayName": "Candidate Moves",
+      "shortDescription": "Generating a manageable set of plausible moves before calculating variations.",
+      "kind": "SKILL",
+      "difficulty": "FOUNDATIONAL",
+      "status": "ACTIVE",
+      "aliases": ["Candidate Generation"],
+      "replacementConceptIds": []
+    },
+    {
+      "stableId": "calculation.forcing_moves",
+      "displayName": "Forcing Moves",
+      "shortDescription": "Identifying checks, captures, and direct threats that constrain the opponent's replies.",
+      "kind": "SKILL",
+      "difficulty": "BASIC",
+      "status": "ACTIVE",
+      "aliases": [],
+      "replacementConceptIds": []
+    },
+    {
+      "stableId": "calculation.visualization",
+      "displayName": "Visualization",
+      "shortDescription": "Maintaining an accurate mental representation of positions reached during calculation.",
+      "kind": "SKILL",
+      "difficulty": "BASIC",
+      "status": "ACTIVE",
+      "aliases": [],
+      "replacementConceptIds": []
+    },
+    {
+      "stableId": "calculation.calculation_depth",
+      "displayName": "Calculation Depth",
+      "shortDescription": "Following relevant variations far enough to evaluate their resulting positions.",
+      "kind": "SKILL",
+      "difficulty": "INTERMEDIATE",
+      "status": "ACTIVE",
+      "aliases": [],
+      "replacementConceptIds": []
+    },
+    {
+      "stableId": "calculation.verification",
+      "displayName": "Calculation Verification",
+      "shortDescription": "Checking a calculated choice for tactical flaws and omitted alternatives before committing.",
+      "kind": "SKILL",
+      "difficulty": "INTERMEDIATE",
+      "status": "ACTIVE",
+      "aliases": ["Final Blunder Check"],
+      "replacementConceptIds": []
+    },
+    {
+      "stableId": "calculation.opponent_resources",
+      "displayName": "Opponent Resources",
+      "shortDescription": "Actively searching for the opponent's strongest defensive and counterattacking possibilities.",
+      "kind": "SKILL",
+      "difficulty": "INTERMEDIATE",
+      "status": "ACTIVE",
+      "aliases": [],
+      "replacementConceptIds": []
+    },
+    {
+      "stableId": "tactics.fork",
+      "displayName": "Fork",
+      "shortDescription": "One piece or pawn attacks two or more targets at the same time.",
+      "kind": "MOTIF",
+      "difficulty": "BASIC",
+      "status": "ACTIVE",
+      "aliases": ["Double Attack"],
+      "replacementConceptIds": []
+    },
+    {
+      "stableId": "tactics.pin",
+      "displayName": "Pin",
+      "shortDescription": "A piece is constrained because moving it would expose a more valuable target or illegal king attack.",
+      "kind": "MOTIF",
+      "difficulty": "BASIC",
+      "status": "ACTIVE",
+      "aliases": [],
+      "replacementConceptIds": []
+    },
+    {
+      "stableId": "tactics.skewer",
+      "displayName": "Skewer",
+      "shortDescription": "An attacked valuable piece moves and exposes a less valuable target behind it.",
+      "kind": "MOTIF",
+      "difficulty": "BASIC",
+      "status": "ACTIVE",
+      "aliases": [],
+      "replacementConceptIds": []
+    },
+    {
+      "stableId": "tactics.discovered_attack",
+      "displayName": "Discovered Attack",
+      "shortDescription": "Moving one piece reveals an attack by another piece, sometimes with check.",
+      "kind": "MOTIF",
+      "difficulty": "INTERMEDIATE",
+      "status": "ACTIVE",
+      "aliases": ["Discovered Check"],
+      "replacementConceptIds": []
+    },
+    {
+      "stableId": "tactics.deflection",
+      "displayName": "Deflection",
+      "shortDescription": "Forcing a defending piece away from a square, line, or duty it must protect.",
+      "kind": "MOTIF",
+      "difficulty": "INTERMEDIATE",
+      "status": "ACTIVE",
+      "aliases": [],
+      "replacementConceptIds": []
+    },
+    {
+      "stableId": "tactics.decoy",
+      "displayName": "Decoy",
+      "shortDescription": "Inducing a piece onto a square where a tactical consequence becomes possible.",
+      "kind": "MOTIF",
+      "difficulty": "INTERMEDIATE",
+      "status": "ACTIVE",
+      "aliases": ["Attraction"],
+      "replacementConceptIds": []
+    },
+    {
+      "stableId": "tactics.clearance",
+      "displayName": "Clearance",
+      "shortDescription": "Vacating a square, rank, file, or diagonal so another piece can use it.",
+      "kind": "MOTIF",
+      "difficulty": "INTERMEDIATE",
+      "status": "ACTIVE",
+      "aliases": [],
+      "replacementConceptIds": []
+    },
+    {
+      "stableId": "tactics.interference",
+      "displayName": "Interference",
+      "shortDescription": "Blocking the connection between a defending piece and what it protects.",
+      "kind": "MOTIF",
+      "difficulty": "ADVANCED",
+      "status": "ACTIVE",
+      "aliases": [],
+      "replacementConceptIds": []
+    },
+    {
+      "stableId": "tactics.overload",
+      "displayName": "Overload",
+      "shortDescription": "Exploiting a piece that cannot fulfill all of its defensive responsibilities.",
+      "kind": "MOTIF",
+      "difficulty": "INTERMEDIATE",
+      "status": "ACTIVE",
+      "aliases": ["Overworked Piece"],
+      "replacementConceptIds": []
+    },
+    {
+      "stableId": "tactics.removal_of_defender",
+      "displayName": "Removal of the Defender",
+      "shortDescription": "Eliminating or displacing a key defending piece before exploiting the target it guarded.",
+      "kind": "MOTIF",
+      "difficulty": "INTERMEDIATE",
+      "status": "ACTIVE",
+      "aliases": ["Remove the Defender"],
+      "replacementConceptIds": []
+    },
+    {
+      "stableId": "tactics.zwischenzug",
+      "displayName": "Zwischenzug",
+      "shortDescription": "Playing an urgent intermediate move before completing an expected sequence.",
+      "kind": "MOTIF",
+      "difficulty": "INTERMEDIATE",
+      "status": "ACTIVE",
+      "aliases": ["Intermediate Move", "In-Between Move"],
+      "replacementConceptIds": []
+    },
+    {
+      "stableId": "tactics.back_rank",
+      "displayName": "Back-Rank Tactic",
+      "shortDescription": "Exploiting a king restricted by its own pieces on the back rank.",
+      "kind": "MOTIF",
+      "difficulty": "BASIC",
+      "status": "ACTIVE",
+      "aliases": ["Back-Rank Mate"],
+      "replacementConceptIds": []
+    },
+    {
+      "stableId": "tactics.mating_net",
+      "displayName": "Mating Net",
+      "shortDescription": "Coordinating threats that progressively restrict the king into an unavoidable mating attack.",
+      "kind": "MOTIF",
+      "difficulty": "ADVANCED",
+      "status": "ACTIVE",
+      "aliases": [],
+      "replacementConceptIds": []
+    },
+    {
+      "stableId": "strategy.piece_activity",
+      "displayName": "Piece Activity",
+      "shortDescription": "Improving the scope, mobility, and useful influence of one's pieces.",
+      "kind": "PRINCIPLE",
+      "difficulty": "BASIC",
+      "status": "ACTIVE",
+      "aliases": ["Active Piece Placement"],
+      "replacementConceptIds": []
+    },
+    {
+      "stableId": "strategy.weak_squares",
+      "displayName": "Weak Squares",
+      "shortDescription": "Recognizing squares that cannot be adequately defended by pawns and may become stable targets.",
+      "kind": "PRINCIPLE",
+      "difficulty": "BASIC",
+      "status": "ACTIVE",
+      "aliases": [],
+      "replacementConceptIds": []
+    },
+    {
+      "stableId": "strategy.outpost",
+      "displayName": "Outpost",
+      "shortDescription": "Using a protected advanced square where a piece cannot easily be challenged by enemy pawns.",
+      "kind": "PRINCIPLE",
+      "difficulty": "INTERMEDIATE",
+      "status": "ACTIVE",
+      "aliases": [],
+      "replacementConceptIds": []
+    },
+    {
+      "stableId": "strategy.open_file",
+      "displayName": "Open and Semi-Open Files",
+      "shortDescription": "Using files with few or no friendly pawns as routes for rook and queen activity.",
+      "kind": "PRINCIPLE",
+      "difficulty": "BASIC",
+      "status": "ACTIVE",
+      "aliases": ["Open File", "Semi-Open File"],
+      "replacementConceptIds": []
+    },
+    {
+      "stableId": "strategy.space",
+      "displayName": "Space",
+      "shortDescription": "Using controlled territory to increase mobility and restrict opposing pieces.",
+      "kind": "PRINCIPLE",
+      "difficulty": "INTERMEDIATE",
+      "status": "ACTIVE",
+      "aliases": ["Space Advantage"],
+      "replacementConceptIds": []
+    },
+    {
+      "stableId": "strategy.initiative",
+      "displayName": "Initiative",
+      "shortDescription": "Maintaining threats that require the opponent to respond and limit their freedom of action.",
+      "kind": "PRINCIPLE",
+      "difficulty": "INTERMEDIATE",
+      "status": "ACTIVE",
+      "aliases": [],
+      "replacementConceptIds": []
+    },
+    {
+      "stableId": "strategy.prophylaxis",
+      "displayName": "Prophylaxis",
+      "shortDescription": "Anticipating and restricting the opponent's intended plan before pursuing one's own.",
+      "kind": "PRINCIPLE",
+      "difficulty": "ADVANCED",
+      "status": "ACTIVE",
+      "aliases": ["Prophylactic Thinking"],
+      "replacementConceptIds": []
+    },
+    {
+      "stableId": "strategy.exchange_decision",
+      "displayName": "Exchange Decision",
+      "shortDescription": "Evaluating whether a piece exchange improves the resulting activity, structure, or endgame.",
+      "kind": "PRINCIPLE",
+      "difficulty": "INTERMEDIATE",
+      "status": "ACTIVE",
+      "aliases": ["Piece Trade Decision"],
+      "replacementConceptIds": []
+    },
+    {
+      "stableId": "strategy.pawn_break",
+      "displayName": "Pawn Break",
+      "shortDescription": "Using a pawn advance or capture to alter lines, space, or structural tension.",
+      "kind": "PRINCIPLE",
+      "difficulty": "ADVANCED",
+      "status": "ACTIVE",
+      "aliases": [],
+      "replacementConceptIds": []
+    },
+    {
+      "stableId": "strategy.king_safety",
+      "displayName": "King Safety",
+      "shortDescription": "Evaluating and improving the king's shelter, escape squares, and exposure to attack.",
+      "kind": "PRINCIPLE",
+      "difficulty": "BASIC",
+      "status": "ACTIVE",
+      "aliases": [],
+      "replacementConceptIds": []
+    },
+    {
+      "stableId": "pawn_structure.isolated_queen_pawn",
+      "displayName": "Isolated Queen's Pawn",
+      "shortDescription": "A central queen pawn without friendly pawns on adjacent files, creating both activity and weakness considerations.",
+      "kind": "STRUCTURE",
+      "difficulty": "BASIC",
+      "status": "ACTIVE",
+      "aliases": ["IQP", "Isolated Queen Pawn"],
+      "replacementConceptIds": []
+    },
+    {
+      "stableId": "pawn_structure.hanging_pawns",
+      "displayName": "Hanging Pawns",
+      "shortDescription": "Adjacent pawns on open files without neighboring pawn support, often trading mobility for targets.",
+      "kind": "STRUCTURE",
+      "difficulty": "INTERMEDIATE",
+      "status": "ACTIVE",
+      "aliases": [],
+      "replacementConceptIds": []
+    },
+    {
+      "stableId": "pawn_structure.backward_pawn",
+      "displayName": "Backward Pawn",
+      "shortDescription": "A pawn that cannot safely advance and is difficult to support with neighboring pawns.",
+      "kind": "STRUCTURE",
+      "difficulty": "BASIC",
+      "status": "ACTIVE",
+      "aliases": [],
+      "replacementConceptIds": []
+    },
+    {
+      "stableId": "pawn_structure.doubled_pawns",
+      "displayName": "Doubled Pawns",
+      "shortDescription": "Two friendly pawns on the same file, changing mobility, control, and target structure.",
+      "kind": "STRUCTURE",
+      "difficulty": "BASIC",
+      "status": "ACTIVE",
+      "aliases": [],
+      "replacementConceptIds": []
+    },
+    {
+      "stableId": "pawn_structure.passed_pawn",
+      "displayName": "Passed Pawn",
+      "shortDescription": "A pawn with no opposing pawn able to stop it on its own file or adjacent files.",
+      "kind": "STRUCTURE",
+      "difficulty": "BASIC",
+      "status": "ACTIVE",
+      "aliases": ["Protected Passed Pawn", "Connected Passed Pawns"],
+      "replacementConceptIds": []
+    },
+    {
+      "stableId": "pawn_structure.pawn_majority",
+      "displayName": "Pawn Majority",
+      "shortDescription": "A numerical pawn advantage on one wing that may create a passed pawn or space gain.",
+      "kind": "STRUCTURE",
+      "difficulty": "INTERMEDIATE",
+      "status": "ACTIVE",
+      "aliases": [],
+      "replacementConceptIds": []
+    },
+    {
+      "stableId": "pawn_structure.minority_attack",
+      "displayName": "Minority Attack",
+      "shortDescription": "Advancing fewer pawns against a larger pawn group to create structural targets.",
+      "kind": "STRUCTURE",
+      "difficulty": "ADVANCED",
+      "status": "ACTIVE",
+      "aliases": [],
+      "replacementConceptIds": []
+    },
+    {
+      "stableId": "opening.development",
+      "displayName": "Development",
+      "shortDescription": "Bringing pieces from their starting squares into useful play efficiently.",
+      "kind": "PRINCIPLE",
+      "difficulty": "FOUNDATIONAL",
+      "status": "ACTIVE",
+      "aliases": [],
+      "replacementConceptIds": []
+    },
+    {
+      "stableId": "opening.center_control",
+      "displayName": "Center Control",
+      "shortDescription": "Influencing central squares to support mobility and restrict the opponent.",
+      "kind": "PRINCIPLE",
+      "difficulty": "FOUNDATIONAL",
+      "status": "ACTIVE",
+      "aliases": [],
+      "replacementConceptIds": []
+    },
+    {
+      "stableId": "opening.king_safety",
+      "displayName": "Opening King Safety",
+      "shortDescription": "Securing the king while accounting for open lines and development.",
+      "kind": "PRINCIPLE",
+      "difficulty": "FOUNDATIONAL",
+      "status": "ACTIVE",
+      "aliases": ["Castling Readiness"],
+      "replacementConceptIds": []
+    },
+    {
+      "stableId": "opening.tempo",
+      "displayName": "Opening Tempo",
+      "shortDescription": "Valuing each move as an opportunity to develop, control space, or address a concrete need.",
+      "kind": "PRINCIPLE",
+      "difficulty": "BASIC",
+      "status": "ACTIVE",
+      "aliases": [],
+      "replacementConceptIds": []
+    },
+    {
+      "stableId": "opening.piece_coordination",
+      "displayName": "Opening Piece Coordination",
+      "shortDescription": "Developing pieces so they support one another and contribute to a coherent position.",
+      "kind": "PRINCIPLE",
+      "difficulty": "BASIC",
+      "status": "ACTIVE",
+      "aliases": [],
+      "replacementConceptIds": []
+    },
+    {
+      "stableId": "opening.move_order",
+      "displayName": "Opening Move Order",
+      "shortDescription": "Sequencing principled moves to preserve options and limit undesirable replies.",
+      "kind": "PRINCIPLE",
+      "difficulty": "INTERMEDIATE",
+      "status": "ACTIVE",
+      "aliases": [],
+      "replacementConceptIds": []
+    },
+    {
+      "stableId": "opening.premature_queen_activity",
+      "displayName": "Premature Queen Activity",
+      "shortDescription": "Recognizing when early queen movement loses time or exposes the queen to development with tempo.",
+      "kind": "PRINCIPLE",
+      "difficulty": "BASIC",
+      "status": "ACTIVE",
+      "aliases": ["Early Queen Development"],
+      "replacementConceptIds": []
+    },
+    {
+      "stableId": "endgame.king_activity",
+      "displayName": "King Activity",
+      "shortDescription": "Using the king as an active attacking and defensive piece in reduced material.",
+      "kind": "PRINCIPLE",
+      "difficulty": "FOUNDATIONAL",
+      "status": "ACTIVE",
+      "aliases": ["Active King"],
+      "replacementConceptIds": []
+    },
+    {
+      "stableId": "endgame.opposition",
+      "displayName": "Opposition",
+      "shortDescription": "Using direct king alignment to control entry squares in pawn endings.",
+      "kind": "TECHNIQUE",
+      "difficulty": "BASIC",
+      "status": "ACTIVE",
+      "aliases": [],
+      "replacementConceptIds": []
+    },
+    {
+      "stableId": "endgame.key_squares",
+      "displayName": "Key Squares",
+      "shortDescription": "Identifying king-access squares that determine whether a pawn can promote.",
+      "kind": "TECHNIQUE",
+      "difficulty": "BASIC",
+      "status": "ACTIVE",
+      "aliases": ["Critical Squares"],
+      "replacementConceptIds": []
+    },
+    {
+      "stableId": "endgame.triangulation",
+      "displayName": "Triangulation",
+      "shortDescription": "Using a three-move king maneuver to lose a tempo and transfer the move to the opponent.",
+      "kind": "TECHNIQUE",
+      "difficulty": "INTERMEDIATE",
+      "status": "ACTIVE",
+      "aliases": [],
+      "replacementConceptIds": []
+    },
+    {
+      "stableId": "endgame.passed_pawn",
+      "displayName": "Passed-Pawn Technique",
+      "shortDescription": "Advancing, supporting, and restraining passed pawns in reduced material.",
+      "kind": "TECHNIQUE",
+      "difficulty": "BASIC",
+      "status": "ACTIVE",
+      "aliases": [],
+      "replacementConceptIds": []
+    },
+    {
+      "stableId": "endgame.rook_activity",
+      "displayName": "Rook Activity",
+      "shortDescription": "Prioritizing active rook placement, open lines, checks, and access to both wings.",
+      "kind": "PRINCIPLE",
+      "difficulty": "BASIC",
+      "status": "ACTIVE",
+      "aliases": [],
+      "replacementConceptIds": []
+    },
+    {
+      "stableId": "endgame.rook_behind_passed_pawn",
+      "displayName": "Rook Behind the Passed Pawn",
+      "shortDescription": "Placing a rook behind a passed pawn to support its advance or restrain it from behind.",
+      "kind": "TECHNIQUE",
+      "difficulty": "INTERMEDIATE",
+      "status": "ACTIVE",
+      "aliases": ["Rooks Belong Behind Passed Pawns"],
+      "replacementConceptIds": []
+    },
+    {
+      "stableId": "endgame.lucena",
+      "displayName": "Lucena Position",
+      "shortDescription": "Building a bridge to convert the standard winning rook-and-pawn ending.",
+      "kind": "TECHNIQUE",
+      "difficulty": "ADVANCED",
+      "status": "ACTIVE",
+      "aliases": ["Lucena Method"],
+      "replacementConceptIds": []
+    },
+    {
+      "stableId": "endgame.philidor",
+      "displayName": "Philidor Position",
+      "shortDescription": "Defending the standard rook-and-pawn ending with third-rank activity and checking distance.",
+      "kind": "TECHNIQUE",
+      "difficulty": "ADVANCED",
+      "status": "ACTIVE",
+      "aliases": ["Philidor Defense"],
+      "replacementConceptIds": []
+    },
+    {
+      "stableId": "decision.threat_identification",
+      "displayName": "Threat Identification",
+      "shortDescription": "Determining what the opponent currently threatens before selecting a plan or move.",
+      "kind": "SKILL",
+      "difficulty": "FOUNDATIONAL",
+      "status": "ACTIVE",
+      "aliases": ["Opponent Threats"],
+      "replacementConceptIds": []
+    },
+    {
+      "stableId": "decision.position_evaluation",
+      "displayName": "Position Evaluation",
+      "shortDescription": "Comparing material, king safety, activity, structure, space, and concrete factors in the current position.",
+      "kind": "SKILL",
+      "difficulty": "BASIC",
+      "status": "ACTIVE",
+      "aliases": [],
+      "replacementConceptIds": []
+    },
+    {
+      "stableId": "decision.plan_selection",
+      "displayName": "Plan Selection",
+      "shortDescription": "Choosing a coherent objective that follows from the evaluated needs of the position.",
+      "kind": "SKILL",
+      "difficulty": "INTERMEDIATE",
+      "status": "ACTIVE",
+      "aliases": [],
+      "replacementConceptIds": []
+    },
+    {
+      "stableId": "decision.reassessment",
+      "displayName": "Reassessment",
+      "shortDescription": "Updating the evaluation and plan after each move changes the position.",
+      "kind": "SKILL",
+      "difficulty": "INTERMEDIATE",
+      "status": "ACTIVE",
+      "aliases": ["Re-evaluation"],
+      "replacementConceptIds": []
+    },
+    {
+      "stableId": "decision.time_management",
+      "displayName": "Time Management",
+      "shortDescription": "Allocating thinking time according to decision difficulty, clock state, and remaining game demands.",
+      "kind": "SKILL",
+      "difficulty": "BASIC",
+      "status": "ACTIVE",
+      "aliases": ["Clock Management"],
+      "replacementConceptIds": []
+    }
+  ],
+  "relationships": [
+    {
+      "type": "PARENT_OF",
+      "fromConceptId": "domain.calculation",
+      "toConceptId": "calculation.candidate_moves"
+    },
+    {
+      "type": "PARENT_OF",
+      "fromConceptId": "domain.calculation",
+      "toConceptId": "calculation.forcing_moves"
+    },
+    {
+      "type": "PARENT_OF",
+      "fromConceptId": "domain.calculation",
+      "toConceptId": "calculation.visualization"
+    },
+    {
+      "type": "PARENT_OF",
+      "fromConceptId": "domain.calculation",
+      "toConceptId": "calculation.calculation_depth"
+    },
+    {
+      "type": "PARENT_OF",
+      "fromConceptId": "domain.calculation",
+      "toConceptId": "calculation.verification"
+    },
+    {
+      "type": "PARENT_OF",
+      "fromConceptId": "domain.calculation",
+      "toConceptId": "calculation.opponent_resources"
+    },
+    {
+      "type": "PARENT_OF",
+      "fromConceptId": "domain.tactics",
+      "toConceptId": "tactics.fork"
+    },
+    {
+      "type": "PARENT_OF",
+      "fromConceptId": "domain.tactics",
+      "toConceptId": "tactics.pin"
+    },
+    {
+      "type": "PARENT_OF",
+      "fromConceptId": "domain.tactics",
+      "toConceptId": "tactics.skewer"
+    },
+    {
+      "type": "PARENT_OF",
+      "fromConceptId": "domain.tactics",
+      "toConceptId": "tactics.discovered_attack"
+    },
+    {
+      "type": "PARENT_OF",
+      "fromConceptId": "domain.tactics",
+      "toConceptId": "tactics.deflection"
+    },
+    {
+      "type": "PARENT_OF",
+      "fromConceptId": "domain.tactics",
+      "toConceptId": "tactics.decoy"
+    },
+    {
+      "type": "PARENT_OF",
+      "fromConceptId": "domain.tactics",
+      "toConceptId": "tactics.clearance"
+    },
+    {
+      "type": "PARENT_OF",
+      "fromConceptId": "domain.tactics",
+      "toConceptId": "tactics.interference"
+    },
+    {
+      "type": "PARENT_OF",
+      "fromConceptId": "domain.tactics",
+      "toConceptId": "tactics.overload"
+    },
+    {
+      "type": "PARENT_OF",
+      "fromConceptId": "domain.tactics",
+      "toConceptId": "tactics.removal_of_defender"
+    },
+    {
+      "type": "PARENT_OF",
+      "fromConceptId": "domain.tactics",
+      "toConceptId": "tactics.zwischenzug"
+    },
+    {
+      "type": "PARENT_OF",
+      "fromConceptId": "domain.tactics",
+      "toConceptId": "tactics.back_rank"
+    },
+    {
+      "type": "PARENT_OF",
+      "fromConceptId": "domain.tactics",
+      "toConceptId": "tactics.mating_net"
+    },
+    {
+      "type": "PARENT_OF",
+      "fromConceptId": "domain.strategy",
+      "toConceptId": "strategy.piece_activity"
+    },
+    {
+      "type": "PARENT_OF",
+      "fromConceptId": "domain.strategy",
+      "toConceptId": "strategy.weak_squares"
+    },
+    {
+      "type": "PARENT_OF",
+      "fromConceptId": "domain.strategy",
+      "toConceptId": "strategy.outpost"
+    },
+    {
+      "type": "PARENT_OF",
+      "fromConceptId": "domain.strategy",
+      "toConceptId": "strategy.open_file"
+    },
+    {
+      "type": "PARENT_OF",
+      "fromConceptId": "domain.strategy",
+      "toConceptId": "strategy.space"
+    },
+    {
+      "type": "PARENT_OF",
+      "fromConceptId": "domain.strategy",
+      "toConceptId": "strategy.initiative"
+    },
+    {
+      "type": "PARENT_OF",
+      "fromConceptId": "domain.strategy",
+      "toConceptId": "strategy.prophylaxis"
+    },
+    {
+      "type": "PARENT_OF",
+      "fromConceptId": "domain.strategy",
+      "toConceptId": "strategy.exchange_decision"
+    },
+    {
+      "type": "PARENT_OF",
+      "fromConceptId": "domain.strategy",
+      "toConceptId": "strategy.pawn_break"
+    },
+    {
+      "type": "PARENT_OF",
+      "fromConceptId": "domain.strategy",
+      "toConceptId": "strategy.king_safety"
+    },
+    {
+      "type": "PARENT_OF",
+      "fromConceptId": "domain.pawn_structure",
+      "toConceptId": "pawn_structure.isolated_queen_pawn"
+    },
+    {
+      "type": "PARENT_OF",
+      "fromConceptId": "domain.pawn_structure",
+      "toConceptId": "pawn_structure.hanging_pawns"
+    },
+    {
+      "type": "PARENT_OF",
+      "fromConceptId": "domain.pawn_structure",
+      "toConceptId": "pawn_structure.backward_pawn"
+    },
+    {
+      "type": "PARENT_OF",
+      "fromConceptId": "domain.pawn_structure",
+      "toConceptId": "pawn_structure.doubled_pawns"
+    },
+    {
+      "type": "PARENT_OF",
+      "fromConceptId": "domain.pawn_structure",
+      "toConceptId": "pawn_structure.passed_pawn"
+    },
+    {
+      "type": "PARENT_OF",
+      "fromConceptId": "domain.pawn_structure",
+      "toConceptId": "pawn_structure.pawn_majority"
+    },
+    {
+      "type": "PARENT_OF",
+      "fromConceptId": "domain.pawn_structure",
+      "toConceptId": "pawn_structure.minority_attack"
+    },
+    {
+      "type": "PARENT_OF",
+      "fromConceptId": "domain.opening",
+      "toConceptId": "opening.development"
+    },
+    {
+      "type": "PARENT_OF",
+      "fromConceptId": "domain.opening",
+      "toConceptId": "opening.center_control"
+    },
+    {
+      "type": "PARENT_OF",
+      "fromConceptId": "domain.opening",
+      "toConceptId": "opening.king_safety"
+    },
+    {
+      "type": "PARENT_OF",
+      "fromConceptId": "domain.opening",
+      "toConceptId": "opening.tempo"
+    },
+    {
+      "type": "PARENT_OF",
+      "fromConceptId": "domain.opening",
+      "toConceptId": "opening.piece_coordination"
+    },
+    {
+      "type": "PARENT_OF",
+      "fromConceptId": "domain.opening",
+      "toConceptId": "opening.move_order"
+    },
+    {
+      "type": "PARENT_OF",
+      "fromConceptId": "domain.opening",
+      "toConceptId": "opening.premature_queen_activity"
+    },
+    {
+      "type": "PARENT_OF",
+      "fromConceptId": "domain.endgame",
+      "toConceptId": "endgame.king_activity"
+    },
+    {
+      "type": "PARENT_OF",
+      "fromConceptId": "domain.endgame",
+      "toConceptId": "endgame.opposition"
+    },
+    {
+      "type": "PARENT_OF",
+      "fromConceptId": "domain.endgame",
+      "toConceptId": "endgame.key_squares"
+    },
+    {
+      "type": "PARENT_OF",
+      "fromConceptId": "domain.endgame",
+      "toConceptId": "endgame.triangulation"
+    },
+    {
+      "type": "PARENT_OF",
+      "fromConceptId": "domain.endgame",
+      "toConceptId": "endgame.passed_pawn"
+    },
+    {
+      "type": "PARENT_OF",
+      "fromConceptId": "domain.endgame",
+      "toConceptId": "endgame.rook_activity"
+    },
+    {
+      "type": "PARENT_OF",
+      "fromConceptId": "domain.endgame",
+      "toConceptId": "endgame.rook_behind_passed_pawn"
+    },
+    {
+      "type": "PARENT_OF",
+      "fromConceptId": "domain.endgame",
+      "toConceptId": "endgame.lucena"
+    },
+    {
+      "type": "PARENT_OF",
+      "fromConceptId": "domain.endgame",
+      "toConceptId": "endgame.philidor"
+    },
+    {
+      "type": "PARENT_OF",
+      "fromConceptId": "domain.decision",
+      "toConceptId": "decision.threat_identification"
+    },
+    {
+      "type": "PARENT_OF",
+      "fromConceptId": "domain.decision",
+      "toConceptId": "decision.position_evaluation"
+    },
+    {
+      "type": "PARENT_OF",
+      "fromConceptId": "domain.decision",
+      "toConceptId": "decision.plan_selection"
+    },
+    {
+      "type": "PARENT_OF",
+      "fromConceptId": "domain.decision",
+      "toConceptId": "decision.reassessment"
+    },
+    {
+      "type": "PARENT_OF",
+      "fromConceptId": "domain.decision",
+      "toConceptId": "decision.time_management"
+    },
+    {
+      "type": "PREREQUISITE_OF",
+      "fromConceptId": "calculation.candidate_moves",
+      "toConceptId": "calculation.forcing_moves"
+    },
+    {
+      "type": "PREREQUISITE_OF",
+      "fromConceptId": "calculation.candidate_moves",
+      "toConceptId": "calculation.calculation_depth"
+    },
+    {
+      "type": "PREREQUISITE_OF",
+      "fromConceptId": "calculation.visualization",
+      "toConceptId": "calculation.calculation_depth"
+    },
+    {
+      "type": "PREREQUISITE_OF",
+      "fromConceptId": "calculation.opponent_resources",
+      "toConceptId": "calculation.verification"
+    },
+    {
+      "type": "PREREQUISITE_OF",
+      "fromConceptId": "calculation.calculation_depth",
+      "toConceptId": "calculation.verification"
+    },
+    {
+      "type": "PREREQUISITE_OF",
+      "fromConceptId": "strategy.piece_activity",
+      "toConceptId": "strategy.outpost"
+    },
+    {
+      "type": "PREREQUISITE_OF",
+      "fromConceptId": "strategy.weak_squares",
+      "toConceptId": "strategy.outpost"
+    },
+    {
+      "type": "PREREQUISITE_OF",
+      "fromConceptId": "strategy.piece_activity",
+      "toConceptId": "strategy.open_file"
+    },
+    {
+      "type": "PREREQUISITE_OF",
+      "fromConceptId": "strategy.piece_activity",
+      "toConceptId": "strategy.initiative"
+    },
+    {
+      "type": "PREREQUISITE_OF",
+      "fromConceptId": "strategy.weak_squares",
+      "toConceptId": "strategy.prophylaxis"
+    },
+    {
+      "type": "PREREQUISITE_OF",
+      "fromConceptId": "pawn_structure.pawn_majority",
+      "toConceptId": "pawn_structure.minority_attack"
+    },
+    {
+      "type": "PREREQUISITE_OF",
+      "fromConceptId": "opening.development",
+      "toConceptId": "opening.piece_coordination"
+    },
+    {
+      "type": "PREREQUISITE_OF",
+      "fromConceptId": "opening.tempo",
+      "toConceptId": "opening.move_order"
+    },
+    {
+      "type": "PREREQUISITE_OF",
+      "fromConceptId": "endgame.king_activity",
+      "toConceptId": "endgame.opposition"
+    },
+    {
+      "type": "PREREQUISITE_OF",
+      "fromConceptId": "endgame.opposition",
+      "toConceptId": "endgame.key_squares"
+    },
+    {
+      "type": "PREREQUISITE_OF",
+      "fromConceptId": "endgame.opposition",
+      "toConceptId": "endgame.triangulation"
+    },
+    {
+      "type": "PREREQUISITE_OF",
+      "fromConceptId": "pawn_structure.passed_pawn",
+      "toConceptId": "endgame.passed_pawn"
+    },
+    {
+      "type": "PREREQUISITE_OF",
+      "fromConceptId": "endgame.passed_pawn",
+      "toConceptId": "endgame.rook_behind_passed_pawn"
+    },
+    {
+      "type": "PREREQUISITE_OF",
+      "fromConceptId": "endgame.rook_activity",
+      "toConceptId": "endgame.rook_behind_passed_pawn"
+    },
+    {
+      "type": "PREREQUISITE_OF",
+      "fromConceptId": "endgame.rook_behind_passed_pawn",
+      "toConceptId": "endgame.lucena"
+    },
+    {
+      "type": "PREREQUISITE_OF",
+      "fromConceptId": "endgame.rook_activity",
+      "toConceptId": "endgame.philidor"
+    },
+    {
+      "type": "PREREQUISITE_OF",
+      "fromConceptId": "decision.threat_identification",
+      "toConceptId": "decision.position_evaluation"
+    },
+    {
+      "type": "PREREQUISITE_OF",
+      "fromConceptId": "decision.position_evaluation",
+      "toConceptId": "decision.plan_selection"
+    },
+    {
+      "type": "PREREQUISITE_OF",
+      "fromConceptId": "decision.plan_selection",
+      "toConceptId": "decision.reassessment"
+    }
+  ],
+  "evidenceTypes": [
+    {
+      "stableId": "engine.eval_loss",
+      "displayName": "Engine Evaluation Loss",
+      "description": "A mover-relative centipawn loss detected by a versioned engine analysis.",
+      "sourceClass": "ENGINE",
+      "allowedPolarities": ["NEGATIVE"]
+    },
+    {
+      "stableId": "engine.severe_eval_loss",
+      "displayName": "Engine Severe Evaluation Loss",
+      "description": "A severe mover-relative centipawn loss detected by a versioned engine analysis.",
+      "sourceClass": "ENGINE",
+      "allowedPolarities": ["NEGATIVE"]
+    },
+    {
+      "stableId": "engine.advantage_dropped",
+      "displayName": "Engine Advantage Dropped",
+      "description": "A meaningful engine-evaluated advantage was not retained by the played move.",
+      "sourceClass": "ENGINE",
+      "allowedPolarities": ["NEGATIVE"]
+    },
+    {
+      "stableId": "engine.mate_missed",
+      "displayName": "Engine Mate Missed",
+      "description": "A forced mate available before a decision was not preserved.",
+      "sourceClass": "ENGINE",
+      "allowedPolarities": ["NEGATIVE"]
+    },
+    {
+      "stableId": "engine.mate_allowed",
+      "displayName": "Engine Mate Allowed",
+      "description": "A decision changed the engine state to a forced mate for the opponent.",
+      "sourceClass": "ENGINE",
+      "allowedPolarities": ["NEGATIVE"]
+    },
+    {
+      "stableId": "engine.decision_sensitivity",
+      "displayName": "Engine Decision Sensitivity",
+      "description": "Engine MultiPV alternatives differ substantially, marking a consequential decision context.",
+      "sourceClass": "ENGINE",
+      "allowedPolarities": ["NEUTRAL"]
+    },
+    {
+      "stableId": "position.tactical_motif",
+      "displayName": "Position Tactical Motif",
+      "description": "A deterministic position rule or future classifier identifies a concrete tactical motif.",
+      "sourceClass": "POSITION_RULE",
+      "allowedPolarities": ["POSITIVE", "NEGATIVE", "NEUTRAL"]
+    },
+    {
+      "stableId": "position.structural_feature",
+      "displayName": "Position Structural Feature",
+      "description": "A deterministic position rule identifies a relevant structural feature.",
+      "sourceClass": "POSITION_RULE",
+      "allowedPolarities": ["POSITIVE", "NEGATIVE", "NEUTRAL"]
+    },
+    {
+      "stableId": "decision.classification",
+      "displayName": "Decision Classification",
+      "description": "A versioned decision classifier links a concrete decision to a concept and polarity.",
+      "sourceClass": "DECISION_CLASSIFIER",
+      "allowedPolarities": ["POSITIVE", "NEGATIVE", "NEUTRAL"]
+    },
+    {
+      "stableId": "training.attempt",
+      "displayName": "Training Attempt",
+      "description": "A recorded attempt on an exercise explicitly targeting a concept.",
+      "sourceClass": "TRAINING",
+      "allowedPolarities": ["POSITIVE", "NEGATIVE"]
+    },
+    {
+      "stableId": "coach.annotation",
+      "displayName": "Coach Annotation",
+      "description": "A coach explicitly annotates evidence concerning a concept.",
+      "sourceClass": "COACH",
+      "allowedPolarities": ["POSITIVE", "NEGATIVE", "NEUTRAL"]
+    },
+    {
+      "stableId": "lesson.assessment",
+      "displayName": "Lesson Assessment",
+      "description": "A structured assessment tied to a lesson or concept objective.",
+      "sourceClass": "ASSESSMENT",
+      "allowedPolarities": ["POSITIVE", "NEGATIVE"]
+    }
+  ],
+  "evidencePolicies": [
+    {
+      "conceptStableId": "calculation.candidate_moves",
+      "evidenceTypeStableId": "decision.classification",
+      "role": "DIRECT",
+      "rationale": "A decision classifier can identify whether this calculation process was demonstrated or omitted."
+    },
+    {
+      "conceptStableId": "calculation.candidate_moves",
+      "evidenceTypeStableId": "training.attempt",
+      "role": "DIRECT",
+      "rationale": "An exercise can explicitly require this calculation process."
+    },
+    {
+      "conceptStableId": "calculation.candidate_moves",
+      "evidenceTypeStableId": "engine.decision_sensitivity",
+      "role": "CONTEXTUAL",
+      "rationale": "Engine sensitivity marks a consequential choice but does not identify the calculation process by itself."
+    },
+    {
+      "conceptStableId": "calculation.forcing_moves",
+      "evidenceTypeStableId": "decision.classification",
+      "role": "DIRECT",
+      "rationale": "A decision classifier can identify whether this calculation process was demonstrated or omitted."
+    },
+    {
+      "conceptStableId": "calculation.forcing_moves",
+      "evidenceTypeStableId": "training.attempt",
+      "role": "DIRECT",
+      "rationale": "An exercise can explicitly require this calculation process."
+    },
+    {
+      "conceptStableId": "calculation.forcing_moves",
+      "evidenceTypeStableId": "engine.decision_sensitivity",
+      "role": "CONTEXTUAL",
+      "rationale": "Engine sensitivity marks a consequential choice but does not identify the calculation process by itself."
+    },
+    {
+      "conceptStableId": "calculation.visualization",
+      "evidenceTypeStableId": "decision.classification",
+      "role": "DIRECT",
+      "rationale": "A decision classifier can identify whether this calculation process was demonstrated or omitted."
+    },
+    {
+      "conceptStableId": "calculation.visualization",
+      "evidenceTypeStableId": "training.attempt",
+      "role": "DIRECT",
+      "rationale": "An exercise can explicitly require this calculation process."
+    },
+    {
+      "conceptStableId": "calculation.visualization",
+      "evidenceTypeStableId": "engine.decision_sensitivity",
+      "role": "CONTEXTUAL",
+      "rationale": "Engine sensitivity marks a consequential choice but does not identify the calculation process by itself."
+    },
+    {
+      "conceptStableId": "calculation.calculation_depth",
+      "evidenceTypeStableId": "decision.classification",
+      "role": "DIRECT",
+      "rationale": "A decision classifier can identify whether this calculation process was demonstrated or omitted."
+    },
+    {
+      "conceptStableId": "calculation.calculation_depth",
+      "evidenceTypeStableId": "training.attempt",
+      "role": "DIRECT",
+      "rationale": "An exercise can explicitly require this calculation process."
+    },
+    {
+      "conceptStableId": "calculation.calculation_depth",
+      "evidenceTypeStableId": "engine.decision_sensitivity",
+      "role": "CONTEXTUAL",
+      "rationale": "Engine sensitivity marks a consequential choice but does not identify the calculation process by itself."
+    },
+    {
+      "conceptStableId": "calculation.verification",
+      "evidenceTypeStableId": "decision.classification",
+      "role": "DIRECT",
+      "rationale": "A decision classifier can identify whether this calculation process was demonstrated or omitted."
+    },
+    {
+      "conceptStableId": "calculation.verification",
+      "evidenceTypeStableId": "training.attempt",
+      "role": "DIRECT",
+      "rationale": "An exercise can explicitly require this calculation process."
+    },
+    {
+      "conceptStableId": "calculation.verification",
+      "evidenceTypeStableId": "engine.decision_sensitivity",
+      "role": "CONTEXTUAL",
+      "rationale": "Engine sensitivity marks a consequential choice but does not identify the calculation process by itself."
+    },
+    {
+      "conceptStableId": "calculation.opponent_resources",
+      "evidenceTypeStableId": "decision.classification",
+      "role": "DIRECT",
+      "rationale": "A decision classifier can identify whether this calculation process was demonstrated or omitted."
+    },
+    {
+      "conceptStableId": "calculation.opponent_resources",
+      "evidenceTypeStableId": "training.attempt",
+      "role": "DIRECT",
+      "rationale": "An exercise can explicitly require this calculation process."
+    },
+    {
+      "conceptStableId": "calculation.opponent_resources",
+      "evidenceTypeStableId": "engine.decision_sensitivity",
+      "role": "CONTEXTUAL",
+      "rationale": "Engine sensitivity marks a consequential choice but does not identify the calculation process by itself."
+    },
+    {
+      "conceptStableId": "tactics.fork",
+      "evidenceTypeStableId": "position.tactical_motif",
+      "role": "DIRECT",
+      "rationale": "A deterministic motif detector can identify this concrete tactical pattern."
+    },
+    {
+      "conceptStableId": "tactics.fork",
+      "evidenceTypeStableId": "decision.classification",
+      "role": "DIRECT",
+      "rationale": "A decision classifier can link a played or missed decision to this motif."
+    },
+    {
+      "conceptStableId": "tactics.fork",
+      "evidenceTypeStableId": "training.attempt",
+      "role": "DIRECT",
+      "rationale": "A targeted exercise can directly assess recognition and execution of this motif."
+    },
+    {
+      "conceptStableId": "tactics.fork",
+      "evidenceTypeStableId": "coach.annotation",
+      "role": "SUPPORTING",
+      "rationale": "A coach can support the classification with explicit game or position context."
+    },
+    {
+      "conceptStableId": "tactics.fork",
+      "evidenceTypeStableId": "engine.eval_loss",
+      "role": "CONTEXTUAL",
+      "rationale": "Evaluation loss shows consequence, not which tactical motif caused it."
+    },
+    {
+      "conceptStableId": "tactics.pin",
+      "evidenceTypeStableId": "position.tactical_motif",
+      "role": "DIRECT",
+      "rationale": "A deterministic motif detector can identify this concrete tactical pattern."
+    },
+    {
+      "conceptStableId": "tactics.pin",
+      "evidenceTypeStableId": "decision.classification",
+      "role": "DIRECT",
+      "rationale": "A decision classifier can link a played or missed decision to this motif."
+    },
+    {
+      "conceptStableId": "tactics.pin",
+      "evidenceTypeStableId": "training.attempt",
+      "role": "DIRECT",
+      "rationale": "A targeted exercise can directly assess recognition and execution of this motif."
+    },
+    {
+      "conceptStableId": "tactics.pin",
+      "evidenceTypeStableId": "coach.annotation",
+      "role": "SUPPORTING",
+      "rationale": "A coach can support the classification with explicit game or position context."
+    },
+    {
+      "conceptStableId": "tactics.pin",
+      "evidenceTypeStableId": "engine.eval_loss",
+      "role": "CONTEXTUAL",
+      "rationale": "Evaluation loss shows consequence, not which tactical motif caused it."
+    },
+    {
+      "conceptStableId": "tactics.skewer",
+      "evidenceTypeStableId": "position.tactical_motif",
+      "role": "DIRECT",
+      "rationale": "A deterministic motif detector can identify this concrete tactical pattern."
+    },
+    {
+      "conceptStableId": "tactics.skewer",
+      "evidenceTypeStableId": "decision.classification",
+      "role": "DIRECT",
+      "rationale": "A decision classifier can link a played or missed decision to this motif."
+    },
+    {
+      "conceptStableId": "tactics.skewer",
+      "evidenceTypeStableId": "training.attempt",
+      "role": "DIRECT",
+      "rationale": "A targeted exercise can directly assess recognition and execution of this motif."
+    },
+    {
+      "conceptStableId": "tactics.skewer",
+      "evidenceTypeStableId": "coach.annotation",
+      "role": "SUPPORTING",
+      "rationale": "A coach can support the classification with explicit game or position context."
+    },
+    {
+      "conceptStableId": "tactics.skewer",
+      "evidenceTypeStableId": "engine.eval_loss",
+      "role": "CONTEXTUAL",
+      "rationale": "Evaluation loss shows consequence, not which tactical motif caused it."
+    },
+    {
+      "conceptStableId": "tactics.discovered_attack",
+      "evidenceTypeStableId": "position.tactical_motif",
+      "role": "DIRECT",
+      "rationale": "A deterministic motif detector can identify this concrete tactical pattern."
+    },
+    {
+      "conceptStableId": "tactics.discovered_attack",
+      "evidenceTypeStableId": "decision.classification",
+      "role": "DIRECT",
+      "rationale": "A decision classifier can link a played or missed decision to this motif."
+    },
+    {
+      "conceptStableId": "tactics.discovered_attack",
+      "evidenceTypeStableId": "training.attempt",
+      "role": "DIRECT",
+      "rationale": "A targeted exercise can directly assess recognition and execution of this motif."
+    },
+    {
+      "conceptStableId": "tactics.discovered_attack",
+      "evidenceTypeStableId": "coach.annotation",
+      "role": "SUPPORTING",
+      "rationale": "A coach can support the classification with explicit game or position context."
+    },
+    {
+      "conceptStableId": "tactics.discovered_attack",
+      "evidenceTypeStableId": "engine.eval_loss",
+      "role": "CONTEXTUAL",
+      "rationale": "Evaluation loss shows consequence, not which tactical motif caused it."
+    },
+    {
+      "conceptStableId": "tactics.deflection",
+      "evidenceTypeStableId": "position.tactical_motif",
+      "role": "DIRECT",
+      "rationale": "A deterministic motif detector can identify this concrete tactical pattern."
+    },
+    {
+      "conceptStableId": "tactics.deflection",
+      "evidenceTypeStableId": "decision.classification",
+      "role": "DIRECT",
+      "rationale": "A decision classifier can link a played or missed decision to this motif."
+    },
+    {
+      "conceptStableId": "tactics.deflection",
+      "evidenceTypeStableId": "training.attempt",
+      "role": "DIRECT",
+      "rationale": "A targeted exercise can directly assess recognition and execution of this motif."
+    },
+    {
+      "conceptStableId": "tactics.deflection",
+      "evidenceTypeStableId": "coach.annotation",
+      "role": "SUPPORTING",
+      "rationale": "A coach can support the classification with explicit game or position context."
+    },
+    {
+      "conceptStableId": "tactics.deflection",
+      "evidenceTypeStableId": "engine.eval_loss",
+      "role": "CONTEXTUAL",
+      "rationale": "Evaluation loss shows consequence, not which tactical motif caused it."
+    },
+    {
+      "conceptStableId": "tactics.decoy",
+      "evidenceTypeStableId": "position.tactical_motif",
+      "role": "DIRECT",
+      "rationale": "A deterministic motif detector can identify this concrete tactical pattern."
+    },
+    {
+      "conceptStableId": "tactics.decoy",
+      "evidenceTypeStableId": "decision.classification",
+      "role": "DIRECT",
+      "rationale": "A decision classifier can link a played or missed decision to this motif."
+    },
+    {
+      "conceptStableId": "tactics.decoy",
+      "evidenceTypeStableId": "training.attempt",
+      "role": "DIRECT",
+      "rationale": "A targeted exercise can directly assess recognition and execution of this motif."
+    },
+    {
+      "conceptStableId": "tactics.decoy",
+      "evidenceTypeStableId": "coach.annotation",
+      "role": "SUPPORTING",
+      "rationale": "A coach can support the classification with explicit game or position context."
+    },
+    {
+      "conceptStableId": "tactics.decoy",
+      "evidenceTypeStableId": "engine.eval_loss",
+      "role": "CONTEXTUAL",
+      "rationale": "Evaluation loss shows consequence, not which tactical motif caused it."
+    },
+    {
+      "conceptStableId": "tactics.clearance",
+      "evidenceTypeStableId": "position.tactical_motif",
+      "role": "DIRECT",
+      "rationale": "A deterministic motif detector can identify this concrete tactical pattern."
+    },
+    {
+      "conceptStableId": "tactics.clearance",
+      "evidenceTypeStableId": "decision.classification",
+      "role": "DIRECT",
+      "rationale": "A decision classifier can link a played or missed decision to this motif."
+    },
+    {
+      "conceptStableId": "tactics.clearance",
+      "evidenceTypeStableId": "training.attempt",
+      "role": "DIRECT",
+      "rationale": "A targeted exercise can directly assess recognition and execution of this motif."
+    },
+    {
+      "conceptStableId": "tactics.clearance",
+      "evidenceTypeStableId": "coach.annotation",
+      "role": "SUPPORTING",
+      "rationale": "A coach can support the classification with explicit game or position context."
+    },
+    {
+      "conceptStableId": "tactics.clearance",
+      "evidenceTypeStableId": "engine.eval_loss",
+      "role": "CONTEXTUAL",
+      "rationale": "Evaluation loss shows consequence, not which tactical motif caused it."
+    },
+    {
+      "conceptStableId": "tactics.interference",
+      "evidenceTypeStableId": "position.tactical_motif",
+      "role": "DIRECT",
+      "rationale": "A deterministic motif detector can identify this concrete tactical pattern."
+    },
+    {
+      "conceptStableId": "tactics.interference",
+      "evidenceTypeStableId": "decision.classification",
+      "role": "DIRECT",
+      "rationale": "A decision classifier can link a played or missed decision to this motif."
+    },
+    {
+      "conceptStableId": "tactics.interference",
+      "evidenceTypeStableId": "training.attempt",
+      "role": "DIRECT",
+      "rationale": "A targeted exercise can directly assess recognition and execution of this motif."
+    },
+    {
+      "conceptStableId": "tactics.interference",
+      "evidenceTypeStableId": "coach.annotation",
+      "role": "SUPPORTING",
+      "rationale": "A coach can support the classification with explicit game or position context."
+    },
+    {
+      "conceptStableId": "tactics.interference",
+      "evidenceTypeStableId": "engine.eval_loss",
+      "role": "CONTEXTUAL",
+      "rationale": "Evaluation loss shows consequence, not which tactical motif caused it."
+    },
+    {
+      "conceptStableId": "tactics.overload",
+      "evidenceTypeStableId": "position.tactical_motif",
+      "role": "DIRECT",
+      "rationale": "A deterministic motif detector can identify this concrete tactical pattern."
+    },
+    {
+      "conceptStableId": "tactics.overload",
+      "evidenceTypeStableId": "decision.classification",
+      "role": "DIRECT",
+      "rationale": "A decision classifier can link a played or missed decision to this motif."
+    },
+    {
+      "conceptStableId": "tactics.overload",
+      "evidenceTypeStableId": "training.attempt",
+      "role": "DIRECT",
+      "rationale": "A targeted exercise can directly assess recognition and execution of this motif."
+    },
+    {
+      "conceptStableId": "tactics.overload",
+      "evidenceTypeStableId": "coach.annotation",
+      "role": "SUPPORTING",
+      "rationale": "A coach can support the classification with explicit game or position context."
+    },
+    {
+      "conceptStableId": "tactics.overload",
+      "evidenceTypeStableId": "engine.eval_loss",
+      "role": "CONTEXTUAL",
+      "rationale": "Evaluation loss shows consequence, not which tactical motif caused it."
+    },
+    {
+      "conceptStableId": "tactics.removal_of_defender",
+      "evidenceTypeStableId": "position.tactical_motif",
+      "role": "DIRECT",
+      "rationale": "A deterministic motif detector can identify this concrete tactical pattern."
+    },
+    {
+      "conceptStableId": "tactics.removal_of_defender",
+      "evidenceTypeStableId": "decision.classification",
+      "role": "DIRECT",
+      "rationale": "A decision classifier can link a played or missed decision to this motif."
+    },
+    {
+      "conceptStableId": "tactics.removal_of_defender",
+      "evidenceTypeStableId": "training.attempt",
+      "role": "DIRECT",
+      "rationale": "A targeted exercise can directly assess recognition and execution of this motif."
+    },
+    {
+      "conceptStableId": "tactics.removal_of_defender",
+      "evidenceTypeStableId": "coach.annotation",
+      "role": "SUPPORTING",
+      "rationale": "A coach can support the classification with explicit game or position context."
+    },
+    {
+      "conceptStableId": "tactics.removal_of_defender",
+      "evidenceTypeStableId": "engine.eval_loss",
+      "role": "CONTEXTUAL",
+      "rationale": "Evaluation loss shows consequence, not which tactical motif caused it."
+    },
+    {
+      "conceptStableId": "tactics.zwischenzug",
+      "evidenceTypeStableId": "position.tactical_motif",
+      "role": "DIRECT",
+      "rationale": "A deterministic motif detector can identify this concrete tactical pattern."
+    },
+    {
+      "conceptStableId": "tactics.zwischenzug",
+      "evidenceTypeStableId": "decision.classification",
+      "role": "DIRECT",
+      "rationale": "A decision classifier can link a played or missed decision to this motif."
+    },
+    {
+      "conceptStableId": "tactics.zwischenzug",
+      "evidenceTypeStableId": "training.attempt",
+      "role": "DIRECT",
+      "rationale": "A targeted exercise can directly assess recognition and execution of this motif."
+    },
+    {
+      "conceptStableId": "tactics.zwischenzug",
+      "evidenceTypeStableId": "coach.annotation",
+      "role": "SUPPORTING",
+      "rationale": "A coach can support the classification with explicit game or position context."
+    },
+    {
+      "conceptStableId": "tactics.zwischenzug",
+      "evidenceTypeStableId": "engine.eval_loss",
+      "role": "CONTEXTUAL",
+      "rationale": "Evaluation loss shows consequence, not which tactical motif caused it."
+    },
+    {
+      "conceptStableId": "tactics.back_rank",
+      "evidenceTypeStableId": "position.tactical_motif",
+      "role": "DIRECT",
+      "rationale": "A deterministic motif detector can identify this concrete tactical pattern."
+    },
+    {
+      "conceptStableId": "tactics.back_rank",
+      "evidenceTypeStableId": "decision.classification",
+      "role": "DIRECT",
+      "rationale": "A decision classifier can link a played or missed decision to this motif."
+    },
+    {
+      "conceptStableId": "tactics.back_rank",
+      "evidenceTypeStableId": "training.attempt",
+      "role": "DIRECT",
+      "rationale": "A targeted exercise can directly assess recognition and execution of this motif."
+    },
+    {
+      "conceptStableId": "tactics.back_rank",
+      "evidenceTypeStableId": "coach.annotation",
+      "role": "SUPPORTING",
+      "rationale": "A coach can support the classification with explicit game or position context."
+    },
+    {
+      "conceptStableId": "tactics.back_rank",
+      "evidenceTypeStableId": "engine.eval_loss",
+      "role": "CONTEXTUAL",
+      "rationale": "Evaluation loss shows consequence, not which tactical motif caused it."
+    },
+    {
+      "conceptStableId": "tactics.mating_net",
+      "evidenceTypeStableId": "position.tactical_motif",
+      "role": "DIRECT",
+      "rationale": "A deterministic motif detector can identify this concrete tactical pattern."
+    },
+    {
+      "conceptStableId": "tactics.mating_net",
+      "evidenceTypeStableId": "decision.classification",
+      "role": "DIRECT",
+      "rationale": "A decision classifier can link a played or missed decision to this motif."
+    },
+    {
+      "conceptStableId": "tactics.mating_net",
+      "evidenceTypeStableId": "training.attempt",
+      "role": "DIRECT",
+      "rationale": "A targeted exercise can directly assess recognition and execution of this motif."
+    },
+    {
+      "conceptStableId": "tactics.mating_net",
+      "evidenceTypeStableId": "coach.annotation",
+      "role": "SUPPORTING",
+      "rationale": "A coach can support the classification with explicit game or position context."
+    },
+    {
+      "conceptStableId": "tactics.mating_net",
+      "evidenceTypeStableId": "engine.eval_loss",
+      "role": "CONTEXTUAL",
+      "rationale": "Evaluation loss shows consequence, not which tactical motif caused it."
+    },
+    {
+      "conceptStableId": "strategy.piece_activity",
+      "evidenceTypeStableId": "decision.classification",
+      "role": "DIRECT",
+      "rationale": "A position-aware decision classifier can identify this strategic decision."
+    },
+    {
+      "conceptStableId": "strategy.piece_activity",
+      "evidenceTypeStableId": "coach.annotation",
+      "role": "SUPPORTING",
+      "rationale": "A coach can document how the decision reflects this principle."
+    },
+    {
+      "conceptStableId": "strategy.piece_activity",
+      "evidenceTypeStableId": "engine.eval_loss",
+      "role": "CONTEXTUAL",
+      "rationale": "Generic evaluation loss cannot establish a specific strategic explanation."
+    },
+    {
+      "conceptStableId": "strategy.weak_squares",
+      "evidenceTypeStableId": "decision.classification",
+      "role": "DIRECT",
+      "rationale": "A position-aware decision classifier can identify this strategic decision."
+    },
+    {
+      "conceptStableId": "strategy.weak_squares",
+      "evidenceTypeStableId": "coach.annotation",
+      "role": "SUPPORTING",
+      "rationale": "A coach can document how the decision reflects this principle."
+    },
+    {
+      "conceptStableId": "strategy.weak_squares",
+      "evidenceTypeStableId": "engine.eval_loss",
+      "role": "CONTEXTUAL",
+      "rationale": "Generic evaluation loss cannot establish a specific strategic explanation."
+    },
+    {
+      "conceptStableId": "strategy.outpost",
+      "evidenceTypeStableId": "decision.classification",
+      "role": "DIRECT",
+      "rationale": "A position-aware decision classifier can identify this strategic decision."
+    },
+    {
+      "conceptStableId": "strategy.outpost",
+      "evidenceTypeStableId": "coach.annotation",
+      "role": "SUPPORTING",
+      "rationale": "A coach can document how the decision reflects this principle."
+    },
+    {
+      "conceptStableId": "strategy.outpost",
+      "evidenceTypeStableId": "engine.eval_loss",
+      "role": "CONTEXTUAL",
+      "rationale": "Generic evaluation loss cannot establish a specific strategic explanation."
+    },
+    {
+      "conceptStableId": "strategy.open_file",
+      "evidenceTypeStableId": "decision.classification",
+      "role": "DIRECT",
+      "rationale": "A position-aware decision classifier can identify this strategic decision."
+    },
+    {
+      "conceptStableId": "strategy.open_file",
+      "evidenceTypeStableId": "coach.annotation",
+      "role": "SUPPORTING",
+      "rationale": "A coach can document how the decision reflects this principle."
+    },
+    {
+      "conceptStableId": "strategy.open_file",
+      "evidenceTypeStableId": "engine.eval_loss",
+      "role": "CONTEXTUAL",
+      "rationale": "Generic evaluation loss cannot establish a specific strategic explanation."
+    },
+    {
+      "conceptStableId": "strategy.space",
+      "evidenceTypeStableId": "decision.classification",
+      "role": "DIRECT",
+      "rationale": "A position-aware decision classifier can identify this strategic decision."
+    },
+    {
+      "conceptStableId": "strategy.space",
+      "evidenceTypeStableId": "coach.annotation",
+      "role": "SUPPORTING",
+      "rationale": "A coach can document how the decision reflects this principle."
+    },
+    {
+      "conceptStableId": "strategy.space",
+      "evidenceTypeStableId": "engine.eval_loss",
+      "role": "CONTEXTUAL",
+      "rationale": "Generic evaluation loss cannot establish a specific strategic explanation."
+    },
+    {
+      "conceptStableId": "strategy.initiative",
+      "evidenceTypeStableId": "decision.classification",
+      "role": "DIRECT",
+      "rationale": "A position-aware decision classifier can identify this strategic decision."
+    },
+    {
+      "conceptStableId": "strategy.initiative",
+      "evidenceTypeStableId": "coach.annotation",
+      "role": "SUPPORTING",
+      "rationale": "A coach can document how the decision reflects this principle."
+    },
+    {
+      "conceptStableId": "strategy.initiative",
+      "evidenceTypeStableId": "engine.eval_loss",
+      "role": "CONTEXTUAL",
+      "rationale": "Generic evaluation loss cannot establish a specific strategic explanation."
+    },
+    {
+      "conceptStableId": "strategy.prophylaxis",
+      "evidenceTypeStableId": "decision.classification",
+      "role": "DIRECT",
+      "rationale": "A position-aware decision classifier can identify this strategic decision."
+    },
+    {
+      "conceptStableId": "strategy.prophylaxis",
+      "evidenceTypeStableId": "coach.annotation",
+      "role": "SUPPORTING",
+      "rationale": "A coach can document how the decision reflects this principle."
+    },
+    {
+      "conceptStableId": "strategy.prophylaxis",
+      "evidenceTypeStableId": "engine.eval_loss",
+      "role": "CONTEXTUAL",
+      "rationale": "Generic evaluation loss cannot establish a specific strategic explanation."
+    },
+    {
+      "conceptStableId": "strategy.exchange_decision",
+      "evidenceTypeStableId": "decision.classification",
+      "role": "DIRECT",
+      "rationale": "A position-aware decision classifier can identify this strategic decision."
+    },
+    {
+      "conceptStableId": "strategy.exchange_decision",
+      "evidenceTypeStableId": "coach.annotation",
+      "role": "SUPPORTING",
+      "rationale": "A coach can document how the decision reflects this principle."
+    },
+    {
+      "conceptStableId": "strategy.exchange_decision",
+      "evidenceTypeStableId": "engine.eval_loss",
+      "role": "CONTEXTUAL",
+      "rationale": "Generic evaluation loss cannot establish a specific strategic explanation."
+    },
+    {
+      "conceptStableId": "strategy.pawn_break",
+      "evidenceTypeStableId": "decision.classification",
+      "role": "DIRECT",
+      "rationale": "A position-aware decision classifier can identify this strategic decision."
+    },
+    {
+      "conceptStableId": "strategy.pawn_break",
+      "evidenceTypeStableId": "coach.annotation",
+      "role": "SUPPORTING",
+      "rationale": "A coach can document how the decision reflects this principle."
+    },
+    {
+      "conceptStableId": "strategy.pawn_break",
+      "evidenceTypeStableId": "engine.eval_loss",
+      "role": "CONTEXTUAL",
+      "rationale": "Generic evaluation loss cannot establish a specific strategic explanation."
+    },
+    {
+      "conceptStableId": "strategy.king_safety",
+      "evidenceTypeStableId": "decision.classification",
+      "role": "DIRECT",
+      "rationale": "A position-aware decision classifier can identify this strategic decision."
+    },
+    {
+      "conceptStableId": "strategy.king_safety",
+      "evidenceTypeStableId": "coach.annotation",
+      "role": "SUPPORTING",
+      "rationale": "A coach can document how the decision reflects this principle."
+    },
+    {
+      "conceptStableId": "strategy.king_safety",
+      "evidenceTypeStableId": "engine.eval_loss",
+      "role": "CONTEXTUAL",
+      "rationale": "Generic evaluation loss cannot establish a specific strategic explanation."
+    },
+    {
+      "conceptStableId": "pawn_structure.isolated_queen_pawn",
+      "evidenceTypeStableId": "position.structural_feature",
+      "role": "DIRECT",
+      "rationale": "A deterministic board-state rule can identify this pawn structure."
+    },
+    {
+      "conceptStableId": "pawn_structure.isolated_queen_pawn",
+      "evidenceTypeStableId": "coach.annotation",
+      "role": "SUPPORTING",
+      "rationale": "A coach can explain the structure's relevance in the observed position."
+    },
+    {
+      "conceptStableId": "pawn_structure.hanging_pawns",
+      "evidenceTypeStableId": "position.structural_feature",
+      "role": "DIRECT",
+      "rationale": "A deterministic board-state rule can identify this pawn structure."
+    },
+    {
+      "conceptStableId": "pawn_structure.hanging_pawns",
+      "evidenceTypeStableId": "coach.annotation",
+      "role": "SUPPORTING",
+      "rationale": "A coach can explain the structure's relevance in the observed position."
+    },
+    {
+      "conceptStableId": "pawn_structure.backward_pawn",
+      "evidenceTypeStableId": "position.structural_feature",
+      "role": "DIRECT",
+      "rationale": "A deterministic board-state rule can identify this pawn structure."
+    },
+    {
+      "conceptStableId": "pawn_structure.backward_pawn",
+      "evidenceTypeStableId": "coach.annotation",
+      "role": "SUPPORTING",
+      "rationale": "A coach can explain the structure's relevance in the observed position."
+    },
+    {
+      "conceptStableId": "pawn_structure.doubled_pawns",
+      "evidenceTypeStableId": "position.structural_feature",
+      "role": "DIRECT",
+      "rationale": "A deterministic board-state rule can identify this pawn structure."
+    },
+    {
+      "conceptStableId": "pawn_structure.doubled_pawns",
+      "evidenceTypeStableId": "coach.annotation",
+      "role": "SUPPORTING",
+      "rationale": "A coach can explain the structure's relevance in the observed position."
+    },
+    {
+      "conceptStableId": "pawn_structure.passed_pawn",
+      "evidenceTypeStableId": "position.structural_feature",
+      "role": "DIRECT",
+      "rationale": "A deterministic board-state rule can identify this pawn structure."
+    },
+    {
+      "conceptStableId": "pawn_structure.passed_pawn",
+      "evidenceTypeStableId": "coach.annotation",
+      "role": "SUPPORTING",
+      "rationale": "A coach can explain the structure's relevance in the observed position."
+    },
+    {
+      "conceptStableId": "pawn_structure.pawn_majority",
+      "evidenceTypeStableId": "position.structural_feature",
+      "role": "DIRECT",
+      "rationale": "A deterministic board-state rule can identify this pawn structure."
+    },
+    {
+      "conceptStableId": "pawn_structure.pawn_majority",
+      "evidenceTypeStableId": "coach.annotation",
+      "role": "SUPPORTING",
+      "rationale": "A coach can explain the structure's relevance in the observed position."
+    },
+    {
+      "conceptStableId": "pawn_structure.minority_attack",
+      "evidenceTypeStableId": "position.structural_feature",
+      "role": "DIRECT",
+      "rationale": "A deterministic board-state rule can identify this pawn structure."
+    },
+    {
+      "conceptStableId": "pawn_structure.minority_attack",
+      "evidenceTypeStableId": "coach.annotation",
+      "role": "SUPPORTING",
+      "rationale": "A coach can explain the structure's relevance in the observed position."
+    },
+    {
+      "conceptStableId": "opening.development",
+      "evidenceTypeStableId": "decision.classification",
+      "role": "DIRECT",
+      "rationale": "A phase-aware decision classifier can identify application of this opening principle."
+    },
+    {
+      "conceptStableId": "opening.development",
+      "evidenceTypeStableId": "training.attempt",
+      "role": "DIRECT",
+      "rationale": "A targeted exercise can directly assess this opening principle."
+    },
+    {
+      "conceptStableId": "opening.development",
+      "evidenceTypeStableId": "coach.annotation",
+      "role": "SUPPORTING",
+      "rationale": "A coach can support the principle classification with concrete context."
+    },
+    {
+      "conceptStableId": "opening.center_control",
+      "evidenceTypeStableId": "decision.classification",
+      "role": "DIRECT",
+      "rationale": "A phase-aware decision classifier can identify application of this opening principle."
+    },
+    {
+      "conceptStableId": "opening.center_control",
+      "evidenceTypeStableId": "training.attempt",
+      "role": "DIRECT",
+      "rationale": "A targeted exercise can directly assess this opening principle."
+    },
+    {
+      "conceptStableId": "opening.center_control",
+      "evidenceTypeStableId": "coach.annotation",
+      "role": "SUPPORTING",
+      "rationale": "A coach can support the principle classification with concrete context."
+    },
+    {
+      "conceptStableId": "opening.king_safety",
+      "evidenceTypeStableId": "decision.classification",
+      "role": "DIRECT",
+      "rationale": "A phase-aware decision classifier can identify application of this opening principle."
+    },
+    {
+      "conceptStableId": "opening.king_safety",
+      "evidenceTypeStableId": "training.attempt",
+      "role": "DIRECT",
+      "rationale": "A targeted exercise can directly assess this opening principle."
+    },
+    {
+      "conceptStableId": "opening.king_safety",
+      "evidenceTypeStableId": "coach.annotation",
+      "role": "SUPPORTING",
+      "rationale": "A coach can support the principle classification with concrete context."
+    },
+    {
+      "conceptStableId": "opening.tempo",
+      "evidenceTypeStableId": "decision.classification",
+      "role": "DIRECT",
+      "rationale": "A phase-aware decision classifier can identify application of this opening principle."
+    },
+    {
+      "conceptStableId": "opening.tempo",
+      "evidenceTypeStableId": "training.attempt",
+      "role": "DIRECT",
+      "rationale": "A targeted exercise can directly assess this opening principle."
+    },
+    {
+      "conceptStableId": "opening.tempo",
+      "evidenceTypeStableId": "coach.annotation",
+      "role": "SUPPORTING",
+      "rationale": "A coach can support the principle classification with concrete context."
+    },
+    {
+      "conceptStableId": "opening.piece_coordination",
+      "evidenceTypeStableId": "decision.classification",
+      "role": "DIRECT",
+      "rationale": "A phase-aware decision classifier can identify application of this opening principle."
+    },
+    {
+      "conceptStableId": "opening.piece_coordination",
+      "evidenceTypeStableId": "training.attempt",
+      "role": "DIRECT",
+      "rationale": "A targeted exercise can directly assess this opening principle."
+    },
+    {
+      "conceptStableId": "opening.piece_coordination",
+      "evidenceTypeStableId": "coach.annotation",
+      "role": "SUPPORTING",
+      "rationale": "A coach can support the principle classification with concrete context."
+    },
+    {
+      "conceptStableId": "opening.move_order",
+      "evidenceTypeStableId": "decision.classification",
+      "role": "DIRECT",
+      "rationale": "A phase-aware decision classifier can identify application of this opening principle."
+    },
+    {
+      "conceptStableId": "opening.move_order",
+      "evidenceTypeStableId": "training.attempt",
+      "role": "DIRECT",
+      "rationale": "A targeted exercise can directly assess this opening principle."
+    },
+    {
+      "conceptStableId": "opening.move_order",
+      "evidenceTypeStableId": "coach.annotation",
+      "role": "SUPPORTING",
+      "rationale": "A coach can support the principle classification with concrete context."
+    },
+    {
+      "conceptStableId": "opening.premature_queen_activity",
+      "evidenceTypeStableId": "decision.classification",
+      "role": "DIRECT",
+      "rationale": "A phase-aware decision classifier can identify application of this opening principle."
+    },
+    {
+      "conceptStableId": "opening.premature_queen_activity",
+      "evidenceTypeStableId": "training.attempt",
+      "role": "DIRECT",
+      "rationale": "A targeted exercise can directly assess this opening principle."
+    },
+    {
+      "conceptStableId": "opening.premature_queen_activity",
+      "evidenceTypeStableId": "coach.annotation",
+      "role": "SUPPORTING",
+      "rationale": "A coach can support the principle classification with concrete context."
+    },
+    {
+      "conceptStableId": "endgame.king_activity",
+      "evidenceTypeStableId": "decision.classification",
+      "role": "DIRECT",
+      "rationale": "An endgame-aware decision classifier can identify use of this principle or technique."
+    },
+    {
+      "conceptStableId": "endgame.king_activity",
+      "evidenceTypeStableId": "training.attempt",
+      "role": "DIRECT",
+      "rationale": "A targeted endgame exercise can directly assess this concept."
+    },
+    {
+      "conceptStableId": "endgame.king_activity",
+      "evidenceTypeStableId": "coach.annotation",
+      "role": "SUPPORTING",
+      "rationale": "A coach can verify the endgame interpretation and relevant technique."
+    },
+    {
+      "conceptStableId": "endgame.opposition",
+      "evidenceTypeStableId": "decision.classification",
+      "role": "DIRECT",
+      "rationale": "An endgame-aware decision classifier can identify use of this principle or technique."
+    },
+    {
+      "conceptStableId": "endgame.opposition",
+      "evidenceTypeStableId": "training.attempt",
+      "role": "DIRECT",
+      "rationale": "A targeted endgame exercise can directly assess this concept."
+    },
+    {
+      "conceptStableId": "endgame.opposition",
+      "evidenceTypeStableId": "coach.annotation",
+      "role": "SUPPORTING",
+      "rationale": "A coach can verify the endgame interpretation and relevant technique."
+    },
+    {
+      "conceptStableId": "endgame.key_squares",
+      "evidenceTypeStableId": "decision.classification",
+      "role": "DIRECT",
+      "rationale": "An endgame-aware decision classifier can identify use of this principle or technique."
+    },
+    {
+      "conceptStableId": "endgame.key_squares",
+      "evidenceTypeStableId": "training.attempt",
+      "role": "DIRECT",
+      "rationale": "A targeted endgame exercise can directly assess this concept."
+    },
+    {
+      "conceptStableId": "endgame.key_squares",
+      "evidenceTypeStableId": "coach.annotation",
+      "role": "SUPPORTING",
+      "rationale": "A coach can verify the endgame interpretation and relevant technique."
+    },
+    {
+      "conceptStableId": "endgame.triangulation",
+      "evidenceTypeStableId": "decision.classification",
+      "role": "DIRECT",
+      "rationale": "An endgame-aware decision classifier can identify use of this principle or technique."
+    },
+    {
+      "conceptStableId": "endgame.triangulation",
+      "evidenceTypeStableId": "training.attempt",
+      "role": "DIRECT",
+      "rationale": "A targeted endgame exercise can directly assess this concept."
+    },
+    {
+      "conceptStableId": "endgame.triangulation",
+      "evidenceTypeStableId": "coach.annotation",
+      "role": "SUPPORTING",
+      "rationale": "A coach can verify the endgame interpretation and relevant technique."
+    },
+    {
+      "conceptStableId": "endgame.passed_pawn",
+      "evidenceTypeStableId": "decision.classification",
+      "role": "DIRECT",
+      "rationale": "An endgame-aware decision classifier can identify use of this principle or technique."
+    },
+    {
+      "conceptStableId": "endgame.passed_pawn",
+      "evidenceTypeStableId": "training.attempt",
+      "role": "DIRECT",
+      "rationale": "A targeted endgame exercise can directly assess this concept."
+    },
+    {
+      "conceptStableId": "endgame.passed_pawn",
+      "evidenceTypeStableId": "coach.annotation",
+      "role": "SUPPORTING",
+      "rationale": "A coach can verify the endgame interpretation and relevant technique."
+    },
+    {
+      "conceptStableId": "endgame.rook_activity",
+      "evidenceTypeStableId": "decision.classification",
+      "role": "DIRECT",
+      "rationale": "An endgame-aware decision classifier can identify use of this principle or technique."
+    },
+    {
+      "conceptStableId": "endgame.rook_activity",
+      "evidenceTypeStableId": "training.attempt",
+      "role": "DIRECT",
+      "rationale": "A targeted endgame exercise can directly assess this concept."
+    },
+    {
+      "conceptStableId": "endgame.rook_activity",
+      "evidenceTypeStableId": "coach.annotation",
+      "role": "SUPPORTING",
+      "rationale": "A coach can verify the endgame interpretation and relevant technique."
+    },
+    {
+      "conceptStableId": "endgame.rook_behind_passed_pawn",
+      "evidenceTypeStableId": "decision.classification",
+      "role": "DIRECT",
+      "rationale": "An endgame-aware decision classifier can identify use of this principle or technique."
+    },
+    {
+      "conceptStableId": "endgame.rook_behind_passed_pawn",
+      "evidenceTypeStableId": "training.attempt",
+      "role": "DIRECT",
+      "rationale": "A targeted endgame exercise can directly assess this concept."
+    },
+    {
+      "conceptStableId": "endgame.rook_behind_passed_pawn",
+      "evidenceTypeStableId": "coach.annotation",
+      "role": "SUPPORTING",
+      "rationale": "A coach can verify the endgame interpretation and relevant technique."
+    },
+    {
+      "conceptStableId": "endgame.lucena",
+      "evidenceTypeStableId": "decision.classification",
+      "role": "DIRECT",
+      "rationale": "An endgame-aware decision classifier can identify use of this principle or technique."
+    },
+    {
+      "conceptStableId": "endgame.lucena",
+      "evidenceTypeStableId": "training.attempt",
+      "role": "DIRECT",
+      "rationale": "A targeted endgame exercise can directly assess this concept."
+    },
+    {
+      "conceptStableId": "endgame.lucena",
+      "evidenceTypeStableId": "coach.annotation",
+      "role": "SUPPORTING",
+      "rationale": "A coach can verify the endgame interpretation and relevant technique."
+    },
+    {
+      "conceptStableId": "endgame.philidor",
+      "evidenceTypeStableId": "decision.classification",
+      "role": "DIRECT",
+      "rationale": "An endgame-aware decision classifier can identify use of this principle or technique."
+    },
+    {
+      "conceptStableId": "endgame.philidor",
+      "evidenceTypeStableId": "training.attempt",
+      "role": "DIRECT",
+      "rationale": "A targeted endgame exercise can directly assess this concept."
+    },
+    {
+      "conceptStableId": "endgame.philidor",
+      "evidenceTypeStableId": "coach.annotation",
+      "role": "SUPPORTING",
+      "rationale": "A coach can verify the endgame interpretation and relevant technique."
+    },
+    {
+      "conceptStableId": "decision.threat_identification",
+      "evidenceTypeStableId": "decision.classification",
+      "role": "DIRECT",
+      "rationale": "A versioned classifier can identify this observable decision-process behavior."
+    },
+    {
+      "conceptStableId": "decision.threat_identification",
+      "evidenceTypeStableId": "coach.annotation",
+      "role": "DIRECT",
+      "rationale": "A coach can explicitly annotate this decision-process behavior."
+    },
+    {
+      "conceptStableId": "decision.threat_identification",
+      "evidenceTypeStableId": "engine.decision_sensitivity",
+      "role": "CONTEXTUAL",
+      "rationale": "Engine sensitivity provides decision context without proving the underlying process."
+    },
+    {
+      "conceptStableId": "decision.position_evaluation",
+      "evidenceTypeStableId": "decision.classification",
+      "role": "DIRECT",
+      "rationale": "A versioned classifier can identify this observable decision-process behavior."
+    },
+    {
+      "conceptStableId": "decision.position_evaluation",
+      "evidenceTypeStableId": "coach.annotation",
+      "role": "DIRECT",
+      "rationale": "A coach can explicitly annotate this decision-process behavior."
+    },
+    {
+      "conceptStableId": "decision.position_evaluation",
+      "evidenceTypeStableId": "engine.decision_sensitivity",
+      "role": "CONTEXTUAL",
+      "rationale": "Engine sensitivity provides decision context without proving the underlying process."
+    },
+    {
+      "conceptStableId": "decision.plan_selection",
+      "evidenceTypeStableId": "decision.classification",
+      "role": "DIRECT",
+      "rationale": "A versioned classifier can identify this observable decision-process behavior."
+    },
+    {
+      "conceptStableId": "decision.plan_selection",
+      "evidenceTypeStableId": "coach.annotation",
+      "role": "DIRECT",
+      "rationale": "A coach can explicitly annotate this decision-process behavior."
+    },
+    {
+      "conceptStableId": "decision.plan_selection",
+      "evidenceTypeStableId": "engine.decision_sensitivity",
+      "role": "CONTEXTUAL",
+      "rationale": "Engine sensitivity provides decision context without proving the underlying process."
+    },
+    {
+      "conceptStableId": "decision.reassessment",
+      "evidenceTypeStableId": "decision.classification",
+      "role": "DIRECT",
+      "rationale": "A versioned classifier can identify this observable decision-process behavior."
+    },
+    {
+      "conceptStableId": "decision.reassessment",
+      "evidenceTypeStableId": "coach.annotation",
+      "role": "DIRECT",
+      "rationale": "A coach can explicitly annotate this decision-process behavior."
+    },
+    {
+      "conceptStableId": "decision.reassessment",
+      "evidenceTypeStableId": "engine.decision_sensitivity",
+      "role": "CONTEXTUAL",
+      "rationale": "Engine sensitivity provides decision context without proving the underlying process."
+    },
+    {
+      "conceptStableId": "decision.time_management",
+      "evidenceTypeStableId": "decision.classification",
+      "role": "DIRECT",
+      "rationale": "A versioned classifier can identify this observable decision-process behavior."
+    },
+    {
+      "conceptStableId": "decision.time_management",
+      "evidenceTypeStableId": "coach.annotation",
+      "role": "DIRECT",
+      "rationale": "A coach can explicitly annotate this decision-process behavior."
+    },
+    {
+      "conceptStableId": "decision.time_management",
+      "evidenceTypeStableId": "engine.decision_sensitivity",
+      "role": "CONTEXTUAL",
+      "rationale": "Engine sensitivity provides decision context without proving the underlying process."
+    }
+  ]
+}

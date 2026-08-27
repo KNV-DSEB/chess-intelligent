@@ -1,0 +1,86 @@
+{
+  "generated_at": "2026-08-22T19:25:49.085446+00:00",
+  "nodes": {
+    "apps_api_src_concept_classification_application_conceptclassificationapplicationservice": {
+      "code_fingerprint": "6a5cc5c88fef2100ce1cc83a067a071f72183a2399c7c742de71eab30baaefe8",
+      "label": "ConceptClassificationApplicationService",
+      "last": "2026-08-22T19:12:57.083487+00:00",
+      "provenance": [
+        {
+          "date": "2026-08-22T19:12:57.083487+00:00",
+          "outcome": "useful",
+          "q": "Graphify current repository and trace Tasks 007-008 paths to validate the Task 009 implementation plan."
+        }
+      ],
+      "score": 0.999793574,
+      "source_file": "apps/api/src/concept-classification-application.ts",
+      "status": "tentative",
+      "uses": 1
+    },
+    "packages_db_migrations_009_concept_evidence_classification_concept_classification_runs": {
+      "code_fingerprint": "72c9809cc056238504d36127fa21cd92ba8819e1a701e2372197665152bb99e9",
+      "label": "concept_classification_runs",
+      "last": "2026-08-22T19:12:57.083487+00:00",
+      "provenance": [
+        {
+          "date": "2026-08-22T19:12:57.083487+00:00",
+          "outcome": "useful",
+          "q": "Graphify current repository and trace Tasks 007-008 paths to validate the Task 009 implementation plan."
+        }
+      ],
+      "score": 0.999793574,
+      "source_file": "packages/db/migrations/009_concept_evidence_classification.sql",
+      "status": "tentative",
+      "uses": 1
+    },
+    "packages_db_migrations_009_concept_evidence_classification_concept_evidence_instances": {
+      "code_fingerprint": "72c9809cc056238504d36127fa21cd92ba8819e1a701e2372197665152bb99e9",
+      "label": "concept_evidence_instances",
+      "last": "2026-08-22T19:12:57.083487+00:00",
+      "provenance": [
+        {
+          "date": "2026-08-22T19:12:57.083487+00:00",
+          "outcome": "useful",
+          "q": "Graphify current repository and trace Tasks 007-008 paths to validate the Task 009 implementation plan."
+        }
+      ],
+      "score": 0.999793574,
+      "source_file": "packages/db/migrations/009_concept_evidence_classification.sql",
+      "status": "tentative",
+      "uses": 1
+    },
+    "packages_db_src_classification_repository_classificationrepository": {
+      "code_fingerprint": "582cbed5497ec922caab5daa1b57eb7ca0bdbc4101e3e69695ae6847bffaf73c",
+      "label": "ClassificationRepository",
+      "last": "2026-08-22T19:12:57.083487+00:00",
+      "provenance": [
+        {
+          "date": "2026-08-22T19:12:57.083487+00:00",
+          "outcome": "useful",
+          "q": "Graphify current repository and trace Tasks 007-008 paths to validate the Task 009 implementation plan."
+        }
+      ],
+      "score": 0.999793574,
+      "source_file": "packages/db/src/classification-repository.ts",
+      "status": "tentative",
+      "uses": 1
+    },
+    "packages_db_src_ontology_repository_ontologyrepository": {
+      "code_fingerprint": "15e962a433e37a8ac276d8240bd5ed6354d33cafe73f10fa14c049254d5701d6",
+      "label": "OntologyRepository",
+      "last": "2026-08-22T19:12:57.083487+00:00",
+      "provenance": [
+        {
+          "date": "2026-08-22T19:12:57.083487+00:00",
+          "outcome": "useful",
+          "q": "Graphify current repository and trace Tasks 007-008 paths to validate the Task 009 implementation plan."
+        }
+      ],
+      "score": 0.999793574,
+      "source_file": "packages/db/src/ontology-repository.ts",
+      "status": "tentative",
+      "uses": 1
+    }
+  },
+  "version": 1
+}

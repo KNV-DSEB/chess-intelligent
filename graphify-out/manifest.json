@@ -1,0 +1,742 @@
+{
+  ".prettierrc.json": {
+    "mtime": 1787175150.0650582,
+    "ast_hash": "609bb7f60f4a8eb73782ecbb203381a8",
+    "semantic_hash": "609bb7f60f4a8eb73782ecbb203381a8"
+  },
+  "apps/api/package.json": {
+    "mtime": 1787175589.1279647,
+    "ast_hash": "c39461cb385eb33b81c92aaf8ce568de",
+    "semantic_hash": "c39461cb385eb33b81c92aaf8ce568de"
+  },
+  "apps/api/src/app.ts": {
+    "mtime": 1787336927.7531257,
+    "ast_hash": "d34fafdb905c6865e915502f95770f0b",
+    "semantic_hash": "d34fafdb905c6865e915502f95770f0b"
+  },
+  "apps/api/src/concept-classification-application.ts": {
+    "mtime": 1787369721.6333978,
+    "ast_hash": "cfad3f313f4ea92700987661448ba86f",
+    "semantic_hash": "cfad3f313f4ea92700987661448ba86f"
+  },
+  "apps/api/src/game-reconciliation-application.ts": {
+    "mtime": 1787213034.468922,
+    "ast_hash": "9b2acc57eb777e08199bdc8807df261b",
+    "semantic_hash": "9b2acc57eb777e08199bdc8807df261b"
+  },
+  "apps/api/src/ontology-application.ts": {
+    "mtime": 1787306730.7153554,
+    "ast_hash": "97b040db678a7e1bad0096a18e17f905",
+    "semantic_hash": "97b040db678a7e1bad0096a18e17f905"
+  },
+  "apps/api/src/opponent-preparation-application.ts": {
+    "mtime": 1787294329.9816196,
+    "ast_hash": "1a6fb5692a8aed3fd439dadb5677ea39",
+    "semantic_hash": "1a6fb5692a8aed3fd439dadb5677ea39"
+  },
+  "apps/api/src/player-dossier-application.ts": {
+    "mtime": 1787294854.1362102,
+    "ast_hash": "0f31a68121fa06c8a4290cb3a9d14258",
+    "semantic_hash": "0f31a68121fa06c8a4290cb3a9d14258"
+  },
+  "apps/api/src/position-explorer-application.ts": {
+    "mtime": 1787217866.740148,
+    "ast_hash": "e0267d15a1abb694f5730a1c0a72025c",
+    "semantic_hash": "e0267d15a1abb694f5730a1c0a72025c"
+  },
+  "apps/api/src/server.ts": {
+    "mtime": 1787176876.3448348,
+    "ast_hash": "4a02a8a95637c08f3ae7e988c32a2c8e",
+    "semantic_hash": "4a02a8a95637c08f3ae7e988c32a2c8e"
+  },
+  "apps/api/test/concept-classification.test.ts": {
+    "mtime": 1787336927.7836404,
+    "ast_hash": "234cb8e5f88e9764f009f27127ed9628",
+    "semantic_hash": "234cb8e5f88e9764f009f27127ed9628"
+  },
+  "apps/api/test/fixtures/corpus-games.ts": {
+    "mtime": 1787217403.909591,
+    "ast_hash": "4d4b21651015aee25656958021c40a85",
+    "semantic_hash": "4d4b21651015aee25656958021c40a85"
+  },
+  "apps/api/test/games.test.ts": {
+    "mtime": 1787217566.11298,
+    "ast_hash": "f13370ea82fa4ddaa328cb3005d58b63",
+    "semantic_hash": "f13370ea82fa4ddaa328cb3005d58b63"
+  },
+  "apps/api/test/manual-http.test.ts": {
+    "mtime": 1787337076.873823,
+    "ast_hash": "60f8ed4014466f9d9b94179fd5a7e7d0",
+    "semantic_hash": "60f8ed4014466f9d9b94179fd5a7e7d0"
+  },
+  "apps/api/test/manual-smoke.ts": {
+    "mtime": 1787176446.570407,
+    "ast_hash": "f96838142941da43d286074a0e883658",
+    "semantic_hash": "f96838142941da43d286074a0e883658"
+  },
+  "apps/api/test/manual-task002-http.test.ts": {
+    "mtime": 1787212917.820092,
+    "ast_hash": "78c620ddd14e920285a8dcf0c6be8116",
+    "semantic_hash": "78c620ddd14e920285a8dcf0c6be8116"
+  },
+  "apps/api/test/manual-task003-http.test.ts": {
+    "mtime": 1787218598.7010329,
+    "ast_hash": "d89806fd4f079b0f5072818affb0eeae",
+    "semantic_hash": "d89806fd4f079b0f5072818affb0eeae"
+  },
+  "apps/api/test/manual-task006-server.ts": {
+    "mtime": 1787302974.7511244,
+    "ast_hash": "a5dc7904d6ca3a51ebe1332842abdb71",
+    "semantic_hash": "a5dc7904d6ca3a51ebe1332842abdb71"
+  },
+  "apps/api/test/manual-task008-browser.test.ts": {
+    "mtime": 1787369306.4165921,
+    "ast_hash": "49b6aa046192ec0a65b87a455270eb5f",
+    "semantic_hash": "49b6aa046192ec0a65b87a455270eb5f"
+  },
+  "apps/api/test/manual-task008-server.ts": {
+    "mtime": 1787369531.9838412,
+    "ast_hash": "2b8136895dd4dfb8dca174e065f5f12d",
+    "semantic_hash": "2b8136895dd4dfb8dca174e065f5f12d"
+  },
+  "apps/api/test/metadata-reconciliation.test.ts": {
+    "mtime": 1787217567.6229463,
+    "ast_hash": "d372e53c5791c64330c8ac75eb2e78e0",
+    "semantic_hash": "d372e53c5791c64330c8ac75eb2e78e0"
+  },
+  "apps/api/test/ontology.test.ts": {
+    "mtime": 1787306677.5237308,
+    "ast_hash": "f881b934318a79c41f11c2eed337d3bf",
+    "semantic_hash": "f881b934318a79c41f11c2eed337d3bf"
+  },
+  "apps/api/test/opponent-preparation.test.ts": {
+    "mtime": 1787286390.5763085,
+    "ast_hash": "5299f50fe44ba0e688d8a1e3bdd4f9af",
+    "semantic_hash": "5299f50fe44ba0e688d8a1e3bdd4f9af"
+  },
+  "apps/api/test/player-intelligence.test.ts": {
+    "mtime": 1787294900.0725868,
+    "ast_hash": "d8ffbd4347774eabcbc60ba44d00de0f",
+    "semantic_hash": "d8ffbd4347774eabcbc60ba44d00de0f"
+  },
+  "apps/api/test/position-corpus-explorer.test.ts": {
+    "mtime": 1787218267.0173633,
+    "ast_hash": "bd121040b30caefac778e5b159a04af5",
+    "semantic_hash": "bd121040b30caefac778e5b159a04af5"
+  },
+  "apps/api/tsconfig.json": {
+    "mtime": 1787175589.1304877,
+    "ast_hash": "c20a099793305ae3c0e936ee1cc55a4a",
+    "semantic_hash": "c20a099793305ae3c0e936ee1cc55a4a"
+  },
+  "apps/web/app/explorer/page.tsx": {
+    "mtime": 1787218585.6326818,
+    "ast_hash": "47894b1fc44a68b8cb6092ec086a45f8",
+    "semantic_hash": "47894b1fc44a68b8cb6092ec086a45f8"
+  },
+  "apps/web/app/games/[id]/attach-pgn/page.tsx": {
+    "mtime": 1787212991.3514786,
+    "ast_hash": "78f28ec946fb79659a27a90bd565493c",
+    "semantic_hash": "78f28ec946fb79659a27a90bd565493c"
+  },
+  "apps/web/app/games/[id]/concept-evidence-panel.tsx": {
+    "mtime": 1787336927.8216517,
+    "ast_hash": "6fd2cf324ee0a7a3167358a1f9a5205b",
+    "semantic_hash": "6fd2cf324ee0a7a3167358a1f9a5205b"
+  },
+  "apps/web/app/games/[id]/engine-analysis-panel.tsx": {
+    "mtime": 1787234104.3353739,
+    "ast_hash": "20b712f96bf39cb31572b7fbaf6adfd8",
+    "semantic_hash": "20b712f96bf39cb31572b7fbaf6adfd8"
+  },
+  "apps/web/app/games/[id]/page.tsx": {
+    "mtime": 1787336713.9365468,
+    "ast_hash": "44897841cae850331513bd34e52ce19f",
+    "semantic_hash": "44897841cae850331513bd34e52ce19f"
+  },
+  "apps/web/app/games/new-metadata/page.tsx": {
+    "mtime": 1787212784.8177464,
+    "ast_hash": "1970b3e5653af75d8947fe18528daaef",
+    "semantic_hash": "1970b3e5653af75d8947fe18528daaef"
+  },
+  "apps/web/app/import/page.tsx": {
+    "mtime": 1787175733.0873525,
+    "ast_hash": "b24889742a28c879ff7d25ee9d441026",
+    "semantic_hash": "b24889742a28c879ff7d25ee9d441026"
+  },
+  "apps/web/app/intelligence/player/page.tsx": {
+    "mtime": 1787294854.3397367,
+    "ast_hash": "0f64a4bc6004fdf32a218ad913972f1a",
+    "semantic_hash": "0f64a4bc6004fdf32a218ad913972f1a"
+  },
+  "apps/web/app/layout.tsx": {
+    "mtime": 1787306089.8572917,
+    "ast_hash": "91dcb1b09940367b276886109925198a",
+    "semantic_hash": "91dcb1b09940367b276886109925198a"
+  },
+  "apps/web/app/ontology/page.tsx": {
+    "mtime": 1787306677.5788484,
+    "ast_hash": "d45b73f687d8e40797f96a6db5905629",
+    "semantic_hash": "d45b73f687d8e40797f96a6db5905629"
+  },
+  "apps/web/app/page.tsx": {
+    "mtime": 1787306091.2020848,
+    "ast_hash": "ecd3773c2ec95795647c73e3c507a928",
+    "semantic_hash": "ecd3773c2ec95795647c73e3c507a928"
+  },
+  "apps/web/app/preparation/page.tsx": {
+    "mtime": 1787285482.0285044,
+    "ast_hash": "67e0b8292f02e492a98445cb985e8fba",
+    "semantic_hash": "67e0b8292f02e492a98445cb985e8fba"
+  },
+  "apps/web/next-env.d.ts": {
+    "mtime": 1787369561.0939555,
+    "ast_hash": "836af4dc441a29abbeb0404a9408639c",
+    "semantic_hash": "836af4dc441a29abbeb0404a9408639c"
+  },
+  "apps/web/next.config.ts": {
+    "mtime": 1787175733.0843523,
+    "ast_hash": "e6447de2f057bc0a440c03116810b7b6",
+    "semantic_hash": "e6447de2f057bc0a440c03116810b7b6"
+  },
+  "apps/web/package.json": {
+    "mtime": 1787175733.0823536,
+    "ast_hash": "7dd9ea06f82a9a64eb5282667b228ad9",
+    "semantic_hash": "7dd9ea06f82a9a64eb5282667b228ad9"
+  },
+  "apps/web/tsconfig.json": {
+    "mtime": 1787175733.0833504,
+    "ast_hash": "38fc08f4eb25221a863a5bb626b0fd29",
+    "semantic_hash": "38fc08f4eb25221a863a5bb626b0fd29"
+  },
+  "apps/worker/package.json": {
+    "mtime": 1787233877.0915034,
+    "ast_hash": "0b24ef0bfcdbe219292fefd7ab77620c",
+    "semantic_hash": "0b24ef0bfcdbe219292fefd7ab77620c"
+  },
+  "apps/worker/src/analysis-worker.ts": {
+    "mtime": 1787335433.2178297,
+    "ast_hash": "9c5a7dbe63aee85e0468ac46a475770a",
+    "semantic_hash": "9c5a7dbe63aee85e0468ac46a475770a"
+  },
+  "apps/worker/src/index.ts": {
+    "mtime": 1787233273.3634076,
+    "ast_hash": "e47dabcb9b7fb59f3e7dec6fa0ffe3a2",
+    "semantic_hash": "e47dabcb9b7fb59f3e7dec6fa0ffe3a2"
+  },
+  "apps/worker/src/stockfish-uci-engine.ts": {
+    "mtime": 1787234105.3584387,
+    "ast_hash": "9ef57ab8d0108b11a398cffbde9e561a",
+    "semantic_hash": "9ef57ab8d0108b11a398cffbde9e561a"
+  },
+  "apps/worker/src/worker.ts": {
+    "mtime": 1787233271.0579815,
+    "ast_hash": "518b660c96b073dbda5a5688e44c6a9b",
+    "semantic_hash": "518b660c96b073dbda5a5688e44c6a9b"
+  },
+  "apps/worker/test/analysis-worker.test.ts": {
+    "mtime": 1787237672.8174858,
+    "ast_hash": "3997146c5fce43c87dbdd6f22b2b493d",
+    "semantic_hash": "3997146c5fce43c87dbdd6f22b2b493d"
+  },
+  "apps/worker/test/postgres-analysis-worker.test.ts": {
+    "mtime": 1787237000.9074135,
+    "ast_hash": "4254695d0af021dbb73cd44ddd44f70b",
+    "semantic_hash": "4254695d0af021dbb73cd44ddd44f70b"
+  },
+  "apps/worker/test/stockfish-uci-engine.test.ts": {
+    "mtime": 1787234105.4520702,
+    "ast_hash": "f94854ec85867b2b858c907978de2228",
+    "semantic_hash": "f94854ec85867b2b858c907978de2228"
+  },
+  "apps/worker/tsconfig.json": {
+    "mtime": 1787235899.5079732,
+    "ast_hash": "c20a099793305ae3c0e936ee1cc55a4a",
+    "semantic_hash": "c20a099793305ae3c0e936ee1cc55a4a"
+  },
+  "eslint.config.mjs": {
+    "mtime": 1787176287.6491778,
+    "ast_hash": "84e06899ffe1e473efe3c4916f025dc7",
+    "semantic_hash": "84e06899ffe1e473efe3c4916f025dc7"
+  },
+  "ontology/chess/1.0.0.json": {
+    "mtime": 1787306677.0854003,
+    "ast_hash": "040d9e043d2a4e4e28de13e716f2e286",
+    "semantic_hash": "040d9e043d2a4e4e28de13e716f2e286"
+  },
+  "package.json": {
+    "mtime": 1787305787.0959766,
+    "ast_hash": "e968914fbdd3314cb31b80f29f91f82c",
+    "semantic_hash": "e968914fbdd3314cb31b80f29f91f82c"
+  },
+  "packages/chess-core/package.json": {
+    "mtime": 1787175812.714203,
+    "ast_hash": "83d025372fdf04474864ce3ecdf564a6",
+    "semantic_hash": "83d025372fdf04474864ce3ecdf564a6"
+  },
+  "packages/chess-core/src/concept-facts.test.ts": {
+    "mtime": 1787336927.547963,
+    "ast_hash": "51509fbe6b4846ee49f4977706a2b72d",
+    "semantic_hash": "51509fbe6b4846ee49f4977706a2b72d"
+  },
+  "packages/chess-core/src/concept-facts.ts": {
+    "mtime": 1787336927.5339515,
+    "ast_hash": "da261c6178764e8faf1541d61ca69467",
+    "semantic_hash": "da261c6178764e8faf1541d61ca69467"
+  },
+  "packages/chess-core/src/errors.ts": {
+    "mtime": 1787216939.7580018,
+    "ast_hash": "00a319328de5e677a54248c622763200",
+    "semantic_hash": "00a319328de5e677a54248c622763200"
+  },
+  "packages/chess-core/src/game-phase.test.ts": {
+    "mtime": 1787294644.2460608,
+    "ast_hash": "d16c1c67328aa2a0a3d728ea005ab44b",
+    "semantic_hash": "d16c1c67328aa2a0a3d728ea005ab44b"
+  },
+  "packages/chess-core/src/game-phase.ts": {
+    "mtime": 1787294081.8269482,
+    "ast_hash": "d586f3ffb3219ae911d80bccf8c818c7",
+    "semantic_hash": "d586f3ffb3219ae911d80bccf8c818c7"
+  },
+  "packages/chess-core/src/hash.test.ts": {
+    "mtime": 1787216947.680854,
+    "ast_hash": "a22d21217f032fe1d8019681c87bf0f7",
+    "semantic_hash": "a22d21217f032fe1d8019681c87bf0f7"
+  },
+  "packages/chess-core/src/hash.ts": {
+    "mtime": 1787176089.370814,
+    "ast_hash": "30d55d180e2bf7a681b04cf201e6cd51",
+    "semantic_hash": "30d55d180e2bf7a681b04cf201e6cd51"
+  },
+  "packages/chess-core/src/index.ts": {
+    "mtime": 1787335569.2359495,
+    "ast_hash": "b1af29acb1c160bd2cf9cff07c0739db",
+    "semantic_hash": "b1af29acb1c160bd2cf9cff07c0739db"
+  },
+  "packages/chess-core/src/parse-pgn.ts": {
+    "mtime": 1787217075.0591433,
+    "ast_hash": "defb9b9a0519c8ed9ab23c71348b5f9d",
+    "semantic_hash": "defb9b9a0519c8ed9ab23c71348b5f9d"
+  },
+  "packages/chess-core/src/position.test.ts": {
+    "mtime": 1787285483.0534549,
+    "ast_hash": "4d06d3fcadfd24467b9525f376a22990",
+    "semantic_hash": "4d06d3fcadfd24467b9525f376a22990"
+  },
+  "packages/chess-core/src/position.ts": {
+    "mtime": 1787284818.948486,
+    "ast_hash": "b9904e60ae209381b23d4356eaa6f93f",
+    "semantic_hash": "b9904e60ae209381b23d4356eaa6f93f"
+  },
+  "packages/chess-core/tsconfig.json": {
+    "mtime": 1787175259.0579839,
+    "ast_hash": "496fe73f21a2d846d086114e3d1ab94f",
+    "semantic_hash": "496fe73f21a2d846d086114e3d1ab94f"
+  },
+  "packages/config/package.json": {
+    "mtime": 1787176900.5688288,
+    "ast_hash": "ff857670473609b7cc5d2ab94954fb91",
+    "semantic_hash": "ff857670473609b7cc5d2ab94954fb91"
+  },
+  "packages/config/src/index.ts": {
+    "mtime": 1787232922.2498853,
+    "ast_hash": "ceb42d3dac8487f492b902420236d470",
+    "semantic_hash": "ceb42d3dac8487f492b902420236d470"
+  },
+  "packages/config/tsconfig.json": {
+    "mtime": 1787175259.0544605,
+    "ast_hash": "496fe73f21a2d846d086114e3d1ab94f",
+    "semantic_hash": "496fe73f21a2d846d086114e3d1ab94f"
+  },
+  "packages/db/migrations/001_foundation.sql": {
+    "mtime": 1787175443.080593,
+    "ast_hash": "d714e2ff7dd69633c10b9a3e8242bdca",
+    "semantic_hash": "d714e2ff7dd69633c10b9a3e8242bdca"
+  },
+  "packages/db/migrations/002_repeatable_source_observations.sql": {
+    "mtime": 1787176572.5852082,
+    "ast_hash": "28df48d08820b83aba95ec4b8d13c90c",
+    "semantic_hash": "28df48d08820b83aba95ec4b8d13c90c"
+  },
+  "packages/db/migrations/003_metadata_reconciliation.sql": {
+    "mtime": 1787212094.6375575,
+    "ast_hash": "e9333c9383b48d4125f4ee18dbb07d2e",
+    "semantic_hash": "e9333c9383b48d4125f4ee18dbb07d2e"
+  },
+  "packages/db/migrations/004_position_corpus_explorer.sql": {
+    "mtime": 1787218758.1666372,
+    "ast_hash": "4199ea9a7dcda2abe2d12d96fbb75d1a",
+    "semantic_hash": "4199ea9a7dcda2abe2d12d96fbb75d1a"
+  },
+  "packages/db/migrations/005_engine_analysis.sql": {
+    "mtime": 1787232715.1479225,
+    "ast_hash": "2b9b8ec0f84e2ffc1d6e9b4968da40ff",
+    "semantic_hash": "2b9b8ec0f84e2ffc1d6e9b4968da40ff"
+  },
+  "packages/db/migrations/006_opponent_opening_intelligence.sql": {
+    "mtime": 1787284508.6958756,
+    "ast_hash": "ddd5d40716ac6a4bb71e07a8dd06c0a7",
+    "semantic_hash": "ddd5d40716ac6a4bb71e07a8dd06c0a7"
+  },
+  "packages/db/migrations/007_player_intelligence_dossier.sql": {
+    "mtime": 1787294084.704267,
+    "ast_hash": "f59112166e7dffe67b72d0ea49a3305c",
+    "semantic_hash": "f59112166e7dffe67b72d0ea49a3305c"
+  },
+  "packages/db/migrations/008_chess_concept_ontology.sql": {
+    "mtime": 1787305888.4617035,
+    "ast_hash": "55c5b14cd7406c58c73016e87a70417e",
+    "semantic_hash": "55c5b14cd7406c58c73016e87a70417e"
+  },
+  "packages/db/migrations/009_concept_evidence_classification.sql": {
+    "mtime": 1787335840.6434898,
+    "ast_hash": "f23f71cedc0ff8609236a94ca626c973",
+    "semantic_hash": "f23f71cedc0ff8609236a94ca626c973"
+  },
+  "packages/db/package.json": {
+    "mtime": 1787175812.7152023,
+    "ast_hash": "d6275063575a792365a547de9d828308",
+    "semantic_hash": "d6275063575a792365a547de9d828308"
+  },
+  "packages/db/src/analysis-repository.ts": {
+    "mtime": 1787234106.52408,
+    "ast_hash": "e1c380d689517d9f42b8ff0b84b3e2d9",
+    "semantic_hash": "e1c380d689517d9f42b8ff0b84b3e2d9"
+  },
+  "packages/db/src/classification-repository.ts": {
+    "mtime": 1787369719.957494,
+    "ast_hash": "86a034e3ff7267ffa32d082e95393be9",
+    "semantic_hash": "86a034e3ff7267ffa32d082e95393be9"
+  },
+  "packages/db/src/database.ts": {
+    "mtime": 1787176089.5172489,
+    "ast_hash": "36cacebb5cf14dddd55da00dd2acfc74",
+    "semantic_hash": "36cacebb5cf14dddd55da00dd2acfc74"
+  },
+  "packages/db/src/date-values.test.ts": {
+    "mtime": 1787218549.268691,
+    "ast_hash": "bd1b32b861470245e4414d6d02bc3c24",
+    "semantic_hash": "bd1b32b861470245e4414d6d02bc3c24"
+  },
+  "packages/db/src/date-values.ts": {
+    "mtime": 1787218547.6963112,
+    "ast_hash": "6ec7f0a624bb2fe08a366ed272c78773",
+    "semantic_hash": "6ec7f0a624bb2fe08a366ed272c78773"
+  },
+  "packages/db/src/game-repository.ts": {
+    "mtime": 1787218551.1661346,
+    "ast_hash": "016b208092f5621673b57ec2d9976dc7",
+    "semantic_hash": "016b208092f5621673b57ec2d9976dc7"
+  },
+  "packages/db/src/index.ts": {
+    "mtime": 1787335963.4391873,
+    "ast_hash": "7b4c6b78798c5ccb4fcf87d94df2b3d3",
+    "semantic_hash": "7b4c6b78798c5ccb4fcf87d94df2b3d3"
+  },
+  "packages/db/src/metadata-game-repository.ts": {
+    "mtime": 1787218553.1273215,
+    "ast_hash": "09eca468529cbb2f3212aeee4eccd902",
+    "semantic_hash": "09eca468529cbb2f3212aeee4eccd902"
+  },
+  "packages/db/src/migrate-cli.ts": {
+    "mtime": 1787176876.345826,
+    "ast_hash": "c23c73bee52b73a76d4163582f2226b6",
+    "semantic_hash": "c23c73bee52b73a76d4163582f2226b6"
+  },
+  "packages/db/src/migrations.test.ts": {
+    "mtime": 1787336311.5376508,
+    "ast_hash": "c2efd429be3ca72654fa6f97b5459430",
+    "semantic_hash": "c2efd429be3ca72654fa6f97b5459430"
+  },
+  "packages/db/src/migrations.ts": {
+    "mtime": 1787175443.0821056,
+    "ast_hash": "969f1858d434e163ff28ddf9beb33cc0",
+    "semantic_hash": "969f1858d434e163ff28ddf9beb33cc0"
+  },
+  "packages/db/src/move-persistence.ts": {
+    "mtime": 1787217013.647781,
+    "ast_hash": "b2d6a85aaeda1dde9046a8ca947a99c5",
+    "semantic_hash": "b2d6a85aaeda1dde9046a8ca947a99c5"
+  },
+  "packages/db/src/ontology-repository.test.ts": {
+    "mtime": 1787307303.0122104,
+    "ast_hash": "6d38a95e6834614c6cfc6935b701cabf",
+    "semantic_hash": "6d38a95e6834614c6cfc6935b701cabf"
+  },
+  "packages/db/src/ontology-repository.ts": {
+    "mtime": 1787306607.7266154,
+    "ast_hash": "bd86f0646689d86811224e03ade5d55a",
+    "semantic_hash": "bd86f0646689d86811224e03ade5d55a"
+  },
+  "packages/db/src/ontology-source.ts": {
+    "mtime": 1787305779.7443962,
+    "ast_hash": "a72fbee7c1220855c22c4859a62eee5d",
+    "semantic_hash": "a72fbee7c1220855c22c4859a62eee5d"
+  },
+  "packages/db/src/ontology-sync-cli.ts": {
+    "mtime": 1787305783.97708,
+    "ast_hash": "81913f9750c22739be1fed4862614547",
+    "semantic_hash": "81913f9750c22739be1fed4862614547"
+  },
+  "packages/db/src/ontology-validate-cli.ts": {
+    "mtime": 1787307099.3134813,
+    "ast_hash": "3d47a06354340537d983a6990e1c3b75",
+    "semantic_hash": "3d47a06354340537d983a6990e1c3b75"
+  },
+  "packages/db/src/opponent-preparation-repository.ts": {
+    "mtime": 1787286372.9958565,
+    "ast_hash": "19248f46fa27fa51ae35522ff216ba6b",
+    "semantic_hash": "19248f46fa27fa51ae35522ff216ba6b"
+  },
+  "packages/db/src/player-intelligence-repository.ts": {
+    "mtime": 1787294854.0287406,
+    "ast_hash": "71a665cb27d806080e55fdcc52ab6bb6",
+    "semantic_hash": "71a665cb27d806080e55fdcc52ab6bb6"
+  },
+  "packages/db/src/position-corpus-repository.ts": {
+    "mtime": 1787218554.641965,
+    "ast_hash": "325ca498b73987a01e38778866c3a125",
+    "semantic_hash": "325ca498b73987a01e38778866c3a125"
+  },
+  "packages/db/src/postgres-verification.test.ts": {
+    "mtime": 1787336314.0291433,
+    "ast_hash": "d8a62d0a11bb7543122b6ee60da0d154",
+    "semantic_hash": "d8a62d0a11bb7543122b6ee60da0d154"
+  },
+  "packages/db/src/testing.ts": {
+    "mtime": 1787176089.645799,
+    "ast_hash": "9fa585dbb70f830bc4656bc7dc5bfeda",
+    "semantic_hash": "9fa585dbb70f830bc4656bc7dc5bfeda"
+  },
+  "packages/db/tsconfig.json": {
+    "mtime": 1787175443.0795932,
+    "ast_hash": "496fe73f21a2d846d086114e3d1ab94f",
+    "semantic_hash": "496fe73f21a2d846d086114e3d1ab94f"
+  },
+  "packages/domain/package.json": {
+    "mtime": 1787232626.9157302,
+    "ast_hash": "f6e49fa2904dccd4d3aab9ddb44246e7",
+    "semantic_hash": "f6e49fa2904dccd4d3aab9ddb44246e7"
+  },
+  "packages/domain/src/concept-classification.test.ts": {
+    "mtime": 1787336991.5119429,
+    "ast_hash": "0e5ea2a7fe57ab2c2eb16b64a1b17fc5",
+    "semantic_hash": "0e5ea2a7fe57ab2c2eb16b64a1b17fc5"
+  },
+  "packages/domain/src/concept-classification.ts": {
+    "mtime": 1787336927.4126375,
+    "ast_hash": "6c26e5ef3a41248513b8a46aaa879555",
+    "semantic_hash": "6c26e5ef3a41248513b8a46aaa879555"
+  },
+  "packages/domain/src/corpus.ts": {
+    "mtime": 1787217829.957523,
+    "ast_hash": "5c209b7157cf11fda8be4cdcfc267282",
+    "semantic_hash": "5c209b7157cf11fda8be4cdcfc267282"
+  },
+  "packages/domain/src/engine-analysis.test.ts": {
+    "mtime": 1787234107.1783166,
+    "ast_hash": "e63d75d545ae22704de31448126a6ef0",
+    "semantic_hash": "e63d75d545ae22704de31448126a6ef0"
+  },
+  "packages/domain/src/engine-analysis.ts": {
+    "mtime": 1787335430.6517632,
+    "ast_hash": "29cbbc9f0c3461ab8b84f9aef1d4d2ef",
+    "semantic_hash": "29cbbc9f0c3461ab8b84f9aef1d4d2ef"
+  },
+  "packages/domain/src/index.ts": {
+    "mtime": 1787335293.8480532,
+    "ast_hash": "5d1d48eadef7bfeb37c8db3dbf5f8ba9",
+    "semantic_hash": "5d1d48eadef7bfeb37c8db3dbf5f8ba9"
+  },
+  "packages/domain/src/ontology.test.ts": {
+    "mtime": 1787307204.476891,
+    "ast_hash": "5e7bc633c68c2bcfc4d920b414ccebbd",
+    "semantic_hash": "5e7bc633c68c2bcfc4d920b414ccebbd"
+  },
+  "packages/domain/src/ontology.ts": {
+    "mtime": 1787307202.68628,
+    "ast_hash": "3786aa0db5e93f119403d6798d66c7fe",
+    "semantic_hash": "3786aa0db5e93f119403d6798d66c7fe"
+  },
+  "packages/domain/src/player-intelligence.test.ts": {
+    "mtime": 1787294853.9100862,
+    "ast_hash": "b86c5dd3fe23ad43ea4da7388e4a6bb6",
+    "semantic_hash": "b86c5dd3fe23ad43ea4da7388e4a6bb6"
+  },
+  "packages/domain/src/player-intelligence.ts": {
+    "mtime": 1787294853.8741205,
+    "ast_hash": "74fecdf0e1cb08ba1e27c0c3920b4619",
+    "semantic_hash": "74fecdf0e1cb08ba1e27c0c3920b4619"
+  },
+  "packages/domain/src/preparation.test.ts": {
+    "mtime": 1787285483.620267,
+    "ast_hash": "9022248002b915a137c5144e0578dd5f",
+    "semantic_hash": "9022248002b915a137c5144e0578dd5f"
+  },
+  "packages/domain/src/preparation.ts": {
+    "mtime": 1787294328.3518133,
+    "ast_hash": "17aa4f46aacfb8da8cdb78a67fc8b803",
+    "semantic_hash": "17aa4f46aacfb8da8cdb78a67fc8b803"
+  },
+  "packages/domain/src/reconciliation.ts": {
+    "mtime": 1787212991.9404187,
+    "ast_hash": "f7ec9895ee47b040f452a2e26ea6b048",
+    "semantic_hash": "f7ec9895ee47b040f452a2e26ea6b048"
+  },
+  "packages/domain/tsconfig.json": {
+    "mtime": 1787175259.051435,
+    "ast_hash": "496fe73f21a2d846d086114e3d1ab94f",
+    "semantic_hash": "496fe73f21a2d846d086114e3d1ab94f"
+  },
+  "packages/ui/package.json": {
+    "mtime": 1787175733.075843,
+    "ast_hash": "9317eca8a671007e2e4ff863b6fc470c",
+    "semantic_hash": "9317eca8a671007e2e4ff863b6fc470c"
+  },
+  "packages/ui/src/index.tsx": {
+    "mtime": 1787175733.0788386,
+    "ast_hash": "f43c830086745a9e8d137fd25f21e8a8",
+    "semantic_hash": "f43c830086745a9e8d137fd25f21e8a8"
+  },
+  "packages/ui/tsconfig.json": {
+    "mtime": 1787175733.076841,
+    "ast_hash": "0efd64c1308c4e21ca475d4f51752247",
+    "semantic_hash": "0efd64c1308c4e21ca475d4f51752247"
+  },
+  "tsconfig.base.json": {
+    "mtime": 1787175150.0660572,
+    "ast_hash": "f87395883d4ee68f13cdd607ad672bd7",
+    "semantic_hash": "f87395883d4ee68f13cdd607ad672bd7"
+  },
+  "vitest.config.ts": {
+    "mtime": 1787218070.0865593,
+    "ast_hash": "c23927e219e545637ddf548cf388fcb2",
+    "semantic_hash": "c23927e219e545637ddf548cf388fcb2"
+  },
+  ".github/workflows/ci.yml": {
+    "mtime": 1787175150.0725715,
+    "ast_hash": "e3645ec8a5949524575bdadecffd8ba3",
+    "semantic_hash": "e3645ec8a5949524575bdadecffd8ba3"
+  },
+  "AGENTS.md": {
+    "mtime": 1787336825.945897,
+    "ast_hash": "5f407d4a6d93223fc90cefa19d28c0be",
+    "semantic_hash": "5f407d4a6d93223fc90cefa19d28c0be"
+  },
+  "README.md": {
+    "mtime": 1787336824.27906,
+    "ast_hash": "3a03b24b3a49a59ddf7c44148a38f85a",
+    "semantic_hash": "3a03b24b3a49a59ddf7c44148a38f85a"
+  },
+  "THIRD_PARTY_LICENSES.md": {
+    "mtime": 1787234107.7833345,
+    "ast_hash": "b3bc8e9a20b8f61e02f91946ed80120c",
+    "semantic_hash": "b3bc8e9a20b8f61e02f91946ed80120c"
+  },
+  "docker-compose.yml": {
+    "mtime": 1787175150.0690627,
+    "ast_hash": "1567421e04e05d8708cb2573816f2dcf",
+    "semantic_hash": "1567421e04e05d8708cb2573816f2dcf"
+  },
+  "docs/architecture/chess-concept-ontology.md": {
+    "mtime": 1787307257.8906083,
+    "ast_hash": "36fe4c23a864d4a06a4068296090f2ba",
+    "semantic_hash": "36fe4c23a864d4a06a4068296090f2ba"
+  },
+  "docs/architecture/concept-evidence-classification.md": {
+    "mtime": 1787336927.100216,
+    "ast_hash": "ba338aebaae0fe169dc9f79d6ad8bccf",
+    "semantic_hash": "ba338aebaae0fe169dc9f79d6ad8bccf"
+  },
+  "docs/architecture/data-provenance.md": {
+    "mtime": 1787212849.69053,
+    "ast_hash": "cecd270b214ee6f0c4129e7916363b0e",
+    "semantic_hash": "cecd270b214ee6f0c4129e7916363b0e"
+  },
+  "docs/architecture/engine-analysis.md": {
+    "mtime": 1787234105.6442266,
+    "ast_hash": "a3d1ad01b3270ef606d779353996c64b",
+    "semantic_hash": "a3d1ad01b3270ef606d779353996c64b"
+  },
+  "docs/architecture/game-reconciliation.md": {
+    "mtime": 1787212847.1677203,
+    "ast_hash": "8d8d3017453c9ca2096c11e5266fc10d",
+    "semantic_hash": "8d8d3017453c9ca2096c11e5266fc10d"
+  },
+  "docs/architecture/opponent-opening-intelligence.md": {
+    "mtime": 1787285482.749814,
+    "ast_hash": "ea09b2a13a1e98710fea849ac726c1ae",
+    "semantic_hash": "ea09b2a13a1e98710fea849ac726c1ae"
+  },
+  "docs/architecture/overview.md": {
+    "mtime": 1787336822.5130978,
+    "ast_hash": "1ff320f0c2d61c7223d5afc5635b131d",
+    "semantic_hash": "1ff320f0c2d61c7223d5afc5635b131d"
+  },
+  "docs/architecture/player-intelligence-dossier.md": {
+    "mtime": 1787303327.7559323,
+    "ast_hash": "aec79cdce6590f7347088d1b8ede537c",
+    "semantic_hash": "aec79cdce6590f7347088d1b8ede537c"
+  },
+  "docs/architecture/position-corpus-explorer.md": {
+    "mtime": 1787217810.5586233,
+    "ast_hash": "d55c1ba2290d3bce3547c0589f1e8f36",
+    "semantic_hash": "d55c1ba2290d3bce3547c0589f1e8f36"
+  },
+  "docs/classifiers/v1.md": {
+    "mtime": 1787369745.5361466,
+    "ast_hash": "89a70afc00ec9cf29abf4fa6aa95b7f0",
+    "semantic_hash": "89a70afc00ec9cf29abf4fa6aa95b7f0"
+  },
+  "docs/ontology/concept-authoring-guide.md": {
+    "mtime": 1787306435.5469801,
+    "ast_hash": "e862bdca212e7a5cad5085e1799e5165",
+    "semantic_hash": "e862bdca212e7a5cad5085e1799e5165"
+  },
+  "docs/plans/001-foundation-pgn-ingestion.md": {
+    "mtime": 1787175033.150245,
+    "ast_hash": "67e673f973e50d7a67a38b67a6564c2d",
+    "semantic_hash": "67e673f973e50d7a67a38b67a6564c2d"
+  },
+  "docs/plans/002-metadata-game-reconciliation.md": {
+    "mtime": 1787212075.5297012,
+    "ast_hash": "929447e0e15ed9ee085ffdf813210449",
+    "semantic_hash": "929447e0e15ed9ee085ffdf813210449"
+  },
+  "docs/plans/003-position-corpus-explorer.md": {
+    "mtime": 1787216858.6736882,
+    "ast_hash": "bd61556157d93364c05ea6be97c49eb8",
+    "semantic_hash": "bd61556157d93364c05ea6be97c49eb8"
+  },
+  "docs/plans/004-stockfish-analysis-pipeline.md": {
+    "mtime": 1787234038.6742315,
+    "ast_hash": "4a06eacc869ea1454cd5cf5af2a8b71d",
+    "semantic_hash": "4a06eacc869ea1454cd5cf5af2a8b71d"
+  },
+  "docs/plans/005-opponent-opening-intelligence.md": {
+    "mtime": 1787285482.910138,
+    "ast_hash": "899e236a6a117ea3821c03750382a81d",
+    "semantic_hash": "899e236a6a117ea3821c03750382a81d"
+  },
+  "docs/plans/006-player-intelligence-dossier.md": {
+    "mtime": 1787294853.5387754,
+    "ast_hash": "5935434b2abdca30e4a46c618db06ca1",
+    "semantic_hash": "5935434b2abdca30e4a46c618db06ca1"
+  },
+  "docs/plans/007-chess-concept-ontology.md": {
+    "mtime": 1787305873.49328,
+    "ast_hash": "8bebc51946e240b063f902853049fe0b",
+    "semantic_hash": "8bebc51946e240b063f902853049fe0b"
+  },
+  "docs/plans/008-concept-evidence-classification.md": {
+    "mtime": 1787336880.456365,
+    "ast_hash": "0d91bbc1acaa44d808206d7f71435772",
+    "semantic_hash": "0d91bbc1acaa44d808206d7f71435772"
+  },
+  "pnpm-workspace.yaml": {
+    "mtime": 1787175934.5115,
+    "ast_hash": "9e7109cd57cb44f7b1764b1b4e810ecd",
+    "semantic_hash": "9e7109cd57cb44f7b1764b1b4e810ecd"
+  }
+}

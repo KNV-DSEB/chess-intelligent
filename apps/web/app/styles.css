@@ -1,0 +1,1128 @@
+:root {
+  color-scheme: light;
+  font-family:
+    Inter,
+    ui-sans-serif,
+    system-ui,
+    -apple-system,
+    BlinkMacSystemFont,
+    'Segoe UI',
+    sans-serif;
+  color: #17211b;
+  background: #f1f3ef;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+}
+
+a {
+  color: #175b3b;
+}
+
+.site-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem max(1rem, calc((100vw - 1080px) / 2));
+  background: #17211b;
+}
+
+.site-header a {
+  color: white;
+  text-decoration: none;
+  font-weight: 650;
+}
+
+.site-header nav {
+  display: flex;
+  gap: 1rem;
+}
+
+main {
+  padding: 3rem 1rem;
+}
+
+.panel {
+  max-width: 760px;
+  margin: 0 auto;
+  padding: 2rem;
+  background: white;
+  border: 1px solid #d7ddd8;
+  border-radius: 12px;
+}
+
+.panel.wide {
+  max-width: 1080px;
+}
+
+.eyebrow {
+  color: #52705e;
+  font-size: 0.78rem;
+  font-weight: 750;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+h1 {
+  margin-top: 0.25rem;
+}
+
+h2 {
+  margin-top: 2rem;
+}
+
+form {
+  display: grid;
+  gap: 0.75rem;
+  margin: 1.5rem 0;
+}
+
+label {
+  font-weight: 700;
+}
+
+textarea {
+  width: 100%;
+  resize: vertical;
+  padding: 0.9rem;
+  border: 1px solid #aab5ad;
+  border-radius: 8px;
+  font:
+    0.9rem/1.5 ui-monospace,
+    SFMono-Regular,
+    Consolas,
+    monospace;
+}
+
+input,
+select {
+  width: 100%;
+  margin-top: 0.35rem;
+  padding: 0.65rem;
+  border: 1px solid #aab5ad;
+  border-radius: 7px;
+  background: white;
+  color: inherit;
+  font: inherit;
+}
+
+.form-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1rem;
+}
+
+.form-grid.three {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+fieldset,
+.review-card {
+  padding: 1rem;
+  border: 1px solid #d7ddd8;
+  border-radius: 8px;
+}
+
+legend,
+summary {
+  font-weight: 700;
+}
+
+details .form-grid {
+  margin-top: 1rem;
+}
+
+.help-text {
+  margin-bottom: 0;
+  color: #52705e;
+  font-size: 0.88rem;
+}
+
+.metric-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 1rem;
+  margin: 1.5rem 0;
+}
+
+.metric-grid div {
+  display: grid;
+  gap: 0.25rem;
+  padding: 1rem;
+  border: 1px solid #d7ddd8;
+  border-radius: 8px;
+}
+
+.metric-grid span {
+  color: #52705e;
+  font-size: 0.78rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.metric-grid strong {
+  font-size: 1.25rem;
+}
+
+.position-key code {
+  overflow-wrap: anywhere;
+}
+
+@media (max-width: 720px) {
+  .site-header {
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 0.75rem;
+  }
+
+  .site-header nav {
+    flex-wrap: wrap;
+    gap: 0.5rem 0.8rem;
+  }
+
+  .form-grid,
+  .form-grid.three {
+    grid-template-columns: 1fr;
+  }
+
+  .metric-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+button,
+.button-link {
+  justify-self: start;
+  display: inline-block;
+  padding: 0.7rem 1rem;
+  border: 0;
+  border-radius: 7px;
+  color: white;
+  background: #175b3b;
+  font: inherit;
+  font-weight: 700;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+button:disabled {
+  opacity: 0.5;
+  cursor: wait;
+}
+
+.move-link {
+  display: inline;
+  padding: 0;
+  border: 0;
+  color: #175b3b;
+  background: none;
+  font-weight: 750;
+  text-decoration: underline;
+}
+
+.status {
+  margin: 1rem 0;
+  padding: 0.9rem 1rem;
+  border-radius: 7px;
+  overflow-wrap: anywhere;
+}
+
+.status-success {
+  background: #e4f4e9;
+  border: 1px solid #acd0b8;
+}
+
+.status-error {
+  background: #fce8e7;
+  border: 1px solid #e2b8b5;
+}
+
+.status-info {
+  background: #e7f0fc;
+  border: 1px solid #b7cae4;
+}
+
+.table-scroll {
+  overflow-x: auto;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.88rem;
+}
+
+th,
+td {
+  padding: 0.65rem;
+  border-bottom: 1px solid #d7ddd8;
+  text-align: left;
+  white-space: nowrap;
+}
+
+td:last-child code {
+  display: block;
+  max-width: 440px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.representative-links {
+  display: grid;
+  gap: 0.25rem;
+  white-space: normal;
+}
+
+.engine-panel {
+  margin-top: 2.5rem;
+  padding-top: 0.5rem;
+  border-top: 1px solid #d7ddd8;
+}
+
+.concept-evidence-panel {
+  margin-top: 2.5rem;
+  padding-top: 1.5rem;
+  border-top: 1px solid #d7ddd8;
+}
+
+.concept-evidence-panel .section-heading h2 {
+  margin: 0.2rem 0;
+}
+
+.classification-provenance {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin: 1rem 0;
+}
+
+.classification-provenance span {
+  padding: 0.35rem 0.55rem;
+  border-radius: 999px;
+  color: #345343;
+  background: #e7f0ea;
+  font-size: 0.72rem;
+  font-weight: 750;
+}
+
+.concept-occurrences {
+  display: grid;
+  gap: 1.25rem;
+  margin-top: 1.5rem;
+}
+
+.concept-occurrence {
+  padding: 1rem;
+  border: 1px solid #d7ddd8;
+  border-radius: 10px;
+  background: #f7f9f6;
+}
+
+.concept-occurrence > header,
+.concept-card-heading {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 1rem;
+}
+
+.concept-card-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.8rem;
+  margin-top: 1rem;
+}
+
+.concept-evidence-card {
+  min-width: 0;
+  padding: 1rem;
+  border: 1px solid #dce2dd;
+  border-radius: 8px;
+  background: white;
+}
+
+.concept-evidence-card h3 {
+  margin: 0.15rem 0 0;
+}
+
+.polarity {
+  flex: 0 0 auto;
+  padding: 0.25rem 0.5rem;
+  border-radius: 999px;
+  font-size: 0.68rem;
+  font-weight: 850;
+}
+
+.polarity-neutral {
+  color: #355b85;
+  background: #e7f0fc;
+}
+
+.polarity-positive {
+  color: #155b37;
+  background: #dff2e5;
+}
+
+.polarity-negative {
+  color: #8a302b;
+  background: #fce8e7;
+}
+
+.classifier-facts {
+  color: #52705e;
+  font-size: 0.82rem;
+  overflow-wrap: anywhere;
+}
+
+.evidence-metadata {
+  display: grid;
+  gap: 0.45rem;
+  margin: 1rem 0;
+}
+
+.evidence-metadata div {
+  display: grid;
+  grid-template-columns: 78px minmax(0, 1fr);
+  gap: 0.6rem;
+}
+
+.evidence-metadata dt {
+  color: #52705e;
+  font-size: 0.75rem;
+  font-weight: 750;
+}
+
+.evidence-metadata dd {
+  min-width: 0;
+  margin: 0;
+  font-size: 0.8rem;
+  overflow-wrap: anywhere;
+}
+
+.concept-evidence-card details p,
+.concept-evidence-card details code {
+  overflow-wrap: anywhere;
+}
+
+.analysis-history {
+  display: grid;
+  gap: 0.5rem;
+  margin: 1.5rem 0;
+}
+
+.run-link {
+  width: 100%;
+  color: #175b3b;
+  background: #edf4ef;
+  text-align: left;
+}
+
+.critical-row {
+  background: #fff8e7;
+}
+
+.severity {
+  display: inline-block;
+  padding: 0.15rem 0.4rem;
+  border-radius: 999px;
+  font-size: 0.72rem;
+  font-weight: 800;
+}
+
+.severity-medium {
+  background: #e7f0fc;
+}
+.severity-high {
+  background: #ffe5b5;
+}
+.severity-critical {
+  color: white;
+  background: #9f2d28;
+}
+
+.preparation-workspace h3,
+.preparation-workspace h4 {
+  margin: 0;
+}
+
+.inline-choice {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  margin: 0.45rem 1rem 0.2rem 0;
+  font-weight: 600;
+}
+
+.inline-choice input {
+  width: auto;
+  margin: 0;
+}
+
+.filter-choices {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.25rem 0.5rem;
+}
+
+.filter-dates {
+  margin-top: 1rem;
+}
+
+.dossier-heading,
+.node-heading,
+.candidate-card > header,
+.candidate-card > footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1rem;
+}
+
+.dossier-heading h2,
+.node-heading h2 {
+  margin: 0.2rem 0;
+}
+
+.secondary-button {
+  color: #175b3b;
+  background: #edf4ef;
+}
+
+.coverage-grid {
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+}
+
+.small-metric {
+  font-size: 0.9rem !important;
+}
+
+.tree-path {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem;
+  margin: 1.5rem 0;
+  padding: 0.75rem 1rem;
+  border: 1px solid #d7ddd8;
+  border-radius: 8px;
+  background: #f7f9f6;
+}
+
+.compact-position {
+  max-width: 280px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.repertoire-list,
+.candidate-grid {
+  display: grid;
+  gap: 0.75rem;
+  margin: 1rem 0 2rem;
+}
+
+.repertoire-row {
+  width: 100%;
+  display: grid;
+  grid-template-columns: 80px 90px repeat(3, minmax(120px, 1fr));
+  align-items: center;
+  gap: 0.75rem;
+  color: inherit;
+  background: white;
+  border: 1px solid #d7ddd8;
+  text-align: left;
+}
+
+.repertoire-row:hover {
+  border-color: #59866d;
+  background: #f7faf8;
+}
+
+.trend,
+.interest {
+  justify-self: start;
+  display: inline-block;
+  padding: 0.2rem 0.5rem;
+  border-radius: 999px;
+  background: #e7f0fc;
+  font-size: 0.72rem;
+  font-weight: 800;
+}
+
+.trend-new,
+.trend-increasing,
+.interest-high {
+  background: #dff2e5;
+  color: #155b37;
+}
+
+.trend-decreasing,
+.trend-dormant,
+.interest-low {
+  background: #f3e8e4;
+  color: #7a3e31;
+}
+
+.interest-medium {
+  background: #fff0cd;
+  color: #73530b;
+}
+
+.candidate-card {
+  border: 1px solid #cbd5ce;
+  border-radius: 10px;
+  overflow: hidden;
+  background: white;
+}
+
+.candidate-card > header,
+.candidate-card > footer {
+  padding: 1rem;
+  background: #f7f9f6;
+}
+
+.candidate-card > footer {
+  font-size: 0.82rem;
+}
+
+.evidence-columns {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.evidence-columns section {
+  min-width: 0;
+  padding: 1rem;
+  border-right: 1px solid #e0e4e1;
+}
+
+.evidence-columns section:last-child {
+  border-right: 0;
+}
+
+.evidence-columns h4 {
+  margin-bottom: 0.75rem;
+  color: #52705e;
+  font-size: 0.78rem;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.evidence-columns p,
+.evidence-columns small {
+  overflow-wrap: anywhere;
+}
+
+.evidence-columns small {
+  color: #52705e;
+}
+
+.hotspots {
+  margin: 2rem 0 1rem;
+  padding: 1rem;
+  border: 1px solid #d7ddd8;
+  border-radius: 8px;
+}
+
+.hotspots li {
+  margin: 0.55rem 0;
+}
+
+.evidence-disclaimer {
+  padding-top: 1rem;
+  border-top: 1px solid #d7ddd8;
+}
+
+.home-actions {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin-top: 1.5rem;
+}
+
+.player-intelligence h3 {
+  margin-top: 1.5rem;
+}
+
+.dossier-section,
+.evidence-card {
+  margin-top: 2rem;
+  padding: 1.25rem;
+  border: 1px solid #d7ddd8;
+  border-radius: 10px;
+  background: #fff;
+}
+
+.coverage-first {
+  border-color: #8eb39a;
+  background: #f7fbf8;
+}
+
+.section-heading {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 1rem;
+}
+
+.section-heading h2,
+.evidence-card h3 {
+  margin: 0.2rem 0;
+}
+
+.quality-badge {
+  display: inline-block;
+  padding: 0.4rem 0.65rem;
+  border-radius: 999px;
+  background: #e7f0fc;
+  font-size: 0.75rem;
+  font-weight: 800;
+}
+
+.quality-high {
+  color: #155b37;
+  background: #dff2e5;
+}
+
+.quality-insufficient,
+.quality-low {
+  color: #7a3e31;
+  background: #f3e8e4;
+}
+
+.opportunity-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1rem;
+}
+
+.dossier-section details,
+.evidence-card details {
+  margin-top: 1rem;
+}
+
+.dossier-section pre {
+  padding: 0.75rem;
+  overflow-x: auto;
+  border-radius: 7px;
+  background: #edf1ed;
+}
+
+.ontology-title-row,
+.ontology-provenance,
+.evidence-policy > div {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1rem;
+}
+
+.ontology-title-row h1 {
+  margin-bottom: 0.5rem;
+}
+
+.ontology-title-row p:not(.eyebrow) {
+  max-width: 720px;
+  color: #52705e;
+}
+
+.ontology-version {
+  flex: 0 0 auto;
+  display: grid;
+  gap: 0.2rem;
+  padding: 0.8rem 1rem;
+  border: 1px solid #8eb39a;
+  border-radius: 10px;
+  color: #155b37;
+  background: #f0f8f2;
+  text-align: center;
+}
+
+.ontology-version span {
+  font-size: 0.7rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+}
+
+.ontology-metrics {
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+}
+
+.ontology-workspace {
+  display: grid;
+  grid-template-columns: minmax(260px, 0.8fr) minmax(0, 1.7fr);
+  gap: 1.5rem;
+  margin-top: 2rem;
+}
+
+.ontology-browser,
+.ontology-detail {
+  min-width: 0;
+  padding: 1.25rem;
+  border: 1px solid #d7ddd8;
+  border-radius: 10px;
+  background: #fff;
+}
+
+.ontology-browser {
+  align-self: start;
+  max-height: 76vh;
+  overflow-y: auto;
+}
+
+.ontology-tree,
+.ontology-tree ul {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.ontology-tree {
+  margin-top: 1rem;
+}
+
+.ontology-tree-item {
+  width: 100%;
+  display: grid;
+  gap: 0.15rem;
+  padding-block: 0.55rem;
+  border-radius: 5px;
+  color: #25382c;
+  background: transparent;
+  text-align: left;
+}
+
+.ontology-tree-item:hover,
+.ontology-tree-item.selected {
+  color: #154d33;
+  background: #e8f2eb;
+}
+
+.ontology-tree-item span {
+  font-size: 0.9rem;
+}
+
+.ontology-tree-item code {
+  color: #668071;
+  font-size: 0.68rem;
+  overflow-wrap: anywhere;
+}
+
+.ontology-detail > header h2 {
+  margin: 0.6rem 0 0.2rem;
+}
+
+.stable-id {
+  color: #52705e;
+  overflow-wrap: anywhere;
+}
+
+.concept-badges,
+.concept-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+}
+
+.concept-badges span,
+.evidence-role {
+  padding: 0.2rem 0.45rem;
+  border-radius: 999px;
+  color: #345343;
+  background: #e7f0ea;
+  font-size: 0.68rem;
+  font-weight: 800;
+  letter-spacing: 0.04em;
+}
+
+.ontology-metadata {
+  display: grid;
+  gap: 0;
+  margin: 1.5rem 0;
+  border-block: 1px solid #e0e4e1;
+}
+
+.ontology-metadata div {
+  display: grid;
+  grid-template-columns: 110px minmax(0, 1fr);
+  gap: 1rem;
+  padding: 0.65rem 0;
+  border-bottom: 1px solid #eef0ee;
+}
+
+.ontology-metadata div:last-child {
+  border-bottom: 0;
+}
+
+.ontology-metadata dt {
+  font-weight: 750;
+}
+
+.ontology-metadata dd {
+  margin: 0;
+  overflow-wrap: anywhere;
+}
+
+.ontology-relations {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 1rem;
+}
+
+.ontology-link-section h3,
+.ontology-evidence h3 {
+  margin: 0 0 0.7rem;
+  font-size: 0.95rem;
+}
+
+.concept-chip {
+  padding: 0.35rem 0.55rem;
+  color: #175b3b;
+  background: #edf4ef;
+  font-size: 0.78rem;
+}
+
+.ontology-evidence {
+  margin-top: 2rem;
+}
+
+.evidence-policy {
+  padding: 0.85rem 0;
+  border-top: 1px solid #e0e4e1;
+}
+
+.evidence-policy > div {
+  justify-content: flex-start;
+  flex-wrap: wrap;
+  gap: 0.55rem;
+}
+
+.evidence-policy code,
+.evidence-policy small {
+  color: #607568;
+}
+
+.role-direct {
+  color: #155b37;
+  background: #dff2e5;
+}
+
+.role-supporting {
+  color: #73530b;
+  background: #fff0cd;
+}
+
+.role-contextual {
+  color: #355b85;
+  background: #e7f0fc;
+}
+
+.ontology-provenance {
+  justify-content: flex-start;
+  flex-wrap: wrap;
+  margin-top: 1.5rem;
+  color: #607568;
+  font-size: 0.76rem;
+}
+
+.ontology-provenance code {
+  max-width: 100%;
+  overflow-wrap: anywhere;
+}
+
+.skill-coverage-grid {
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+}
+
+.skill-domain {
+  margin-top: 1.75rem;
+}
+
+.skill-domain > header,
+.skill-contribution > header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 1rem;
+}
+
+.skill-domain h3 {
+  margin: 0 0 0.2rem;
+}
+
+.skill-domain > header span,
+.skill-domain > header small {
+  color: #607568;
+  font-size: 0.78rem;
+}
+
+.skill-concept-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 0.75rem;
+  margin-top: 0.9rem;
+}
+
+.skill-concept-card {
+  width: 100%;
+  min-height: 138px;
+  display: grid;
+  align-content: start;
+  gap: 0.4rem;
+  padding: 0.9rem;
+  border: 1px solid #d7ddd8;
+  color: #22342a;
+  background: white;
+  text-align: left;
+}
+
+.skill-concept-card:hover,
+.skill-concept-card.selected {
+  border-color: #4f8063;
+  box-shadow: 0 0 0 2px #deede3;
+}
+
+.skill-concept-card > span {
+  color: #52705e;
+  font-size: 0.78rem;
+  font-weight: 750;
+}
+
+.skill-concept-card > b {
+  color: #155b37;
+  font-size: 1.35rem;
+}
+
+.skill-concept-card > small {
+  color: #607568;
+  font-size: 0.72rem;
+  font-weight: 500;
+}
+
+.skill-status-no_evidence {
+  background: #f6f7f5;
+}
+
+.skill-status-insufficient_evidence {
+  border-color: #dfcfaa;
+  background: #fffaf0;
+}
+
+.skill-status-estimated {
+  border-color: #a9c9b4;
+  background: #f5fbf7;
+}
+
+.skill-detail > h2 {
+  margin-bottom: 0.3rem;
+}
+
+.skill-contribution {
+  margin-top: 1rem;
+  padding: 1rem;
+  border: 1px solid #d7ddd8;
+  border-radius: 8px;
+  background: #f7f9f6;
+}
+
+.skill-contribution p,
+.skill-contribution li {
+  font-size: 0.82rem;
+  overflow-wrap: anywhere;
+}
+
+.skill-contribution ul {
+  padding-left: 1.2rem;
+}
+
+.methodology pre {
+  max-height: 420px;
+  overflow: auto;
+}
+
+@media (max-width: 900px) {
+  .coverage-grid,
+  .evidence-columns {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .skill-concept-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .evidence-columns section:nth-child(2) {
+    border-right: 0;
+  }
+
+  .repertoire-row {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .ontology-workspace {
+    grid-template-columns: 1fr;
+  }
+
+  .ontology-browser {
+    max-height: 430px;
+  }
+}
+
+@media (max-width: 620px) {
+  .coverage-grid,
+  .evidence-columns {
+    grid-template-columns: 1fr;
+  }
+
+  .evidence-columns section {
+    border-right: 0;
+    border-bottom: 1px solid #e0e4e1;
+  }
+
+  .dossier-heading,
+  .section-heading,
+  .node-heading,
+  .candidate-card > header,
+  .candidate-card > footer {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .opportunity-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .ontology-title-row,
+  .ontology-provenance {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .ontology-metrics,
+  .ontology-relations {
+    grid-template-columns: 1fr;
+  }
+
+  .concept-card-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .concept-occurrence > header,
+  .concept-card-heading {
+    flex-direction: column;
+  }
+
+  .skill-concept-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .skill-domain > header,
+  .skill-contribution > header {
+    flex-direction: column;
+  }
+}

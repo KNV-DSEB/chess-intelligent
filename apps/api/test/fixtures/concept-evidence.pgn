@@ -1,0 +1,11 @@
+[Event "Task 008 deterministic evidence"]
+[Site "Local fixture"]
+[Date "2026.08.22"]
+[Round "1"]
+[White "Evidence, White"]
+[Black "Evidence, Black"]
+[Result "*"]
+[SetUp "1"]
+[FEN "4k3/2pq4/Pnr5/2b5/3PN3/1PN2N1p/1P1K4/4R3 w - - 0 1"]
+
+1. Neg5+ Kf8 2. Ne5 Bb4 *
