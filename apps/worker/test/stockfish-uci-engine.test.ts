@@ -4,6 +4,7 @@ import { ANALYSIS_PROFILE_CONFIGURATIONS } from '@chess-intelligent/domain';
 
 import {
   StockfishUciEngine,
+  buildUciGoCommand,
   buildUciPositionCommand,
   parseUciInfoLine,
 } from '../src/stockfish-uci-engine';
@@ -21,6 +22,20 @@ describe('Stockfish UCI adapter', () => {
     expect(buildUciPositionCommand('8/8/8/8/8/8/K6k/8 w - - 0 1', [])).toBe(
       'position fen 8/8/8/8/8/8/K6k/8 w - - 0 1',
     );
+  });
+
+  it('places the search budget before forced root moves in the UCI go command', () => {
+    expect(
+      buildUciGoCommand({
+        position: {
+          initialFen: 'rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1',
+          moves: [],
+          sideToMove: 'WHITE',
+        },
+        configuration: ANALYSIS_PROFILE_CONFIGURATIONS.QUICK_V1.engine,
+        allowedRootMoves: ['e2e4'],
+      }),
+    ).toBe('go depth 10 searchmoves e2e4');
   });
 
   it('parses metrics and normalizes Black-to-move UCI scores to White perspective', () => {

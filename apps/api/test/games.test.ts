@@ -37,7 +37,7 @@ describe('games API', () => {
     validPgn = await readFile(fixtureUrl, 'utf8');
     database = await PGliteDatabase.create();
     await runMigrations(database);
-    app = await buildApp({ database });
+    app = await buildApp({ database, internalDevRoutes: true });
   });
 
   afterEach(async () => {

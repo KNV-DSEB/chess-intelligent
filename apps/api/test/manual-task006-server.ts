@@ -60,7 +60,11 @@ class ManualDossierEngine implements ChessEngine {
 
 const database = await PGliteDatabase.create();
 await runMigrations(database);
-const app = await buildApp({ database, now: () => new Date('2026-08-21T08:00:00Z') });
+const app = await buildApp({
+  database,
+  internalDevRoutes: true,
+  now: () => new Date('2026-08-21T08:00:00Z'),
+});
 
 const pgns = [
   `[Event "Manual dossier White"]

@@ -33,7 +33,7 @@ describe.sequential('position corpus explorer', () => {
       ? new PgDatabase(process.env.TEST_CORPUS_DATABASE_URL)
       : await PGliteDatabase.create();
     await runMigrations(database);
-    app = await buildApp({ database });
+    app = await buildApp({ database, internalDevRoutes: true });
 
     for (const fixture of CORPUS_FIXTURE_GAMES) {
       const response = await app.inject({

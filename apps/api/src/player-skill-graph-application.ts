@@ -3,13 +3,17 @@ import type {
   PlayerSkillGraphRepository,
   PlayerSkillGraphRunRecord,
   PositionCorpusRepository,
+  TrainingRepository,
 } from '@chess-intelligent/db';
 import {
   CLASSIFICATION_SELECTION_VERSION,
   CONCEPT_CLASSIFIER_BUNDLE_VERSION,
   OntologyRegistry,
   SKILL_GRAPH_POLICY_VERSION,
+  SKILL_GRAPH_POLICY_V2,
+  SKILL_GRAPH_POLICY_V2_VERSION,
   aggregatePlayerSkillGraph,
+  aggregateTrainingAugmentedSkillGraph,
   calculateBetaPosterior,
   conceptClassifierConfigurationSha256,
   deterministicSha256,
@@ -17,12 +21,14 @@ import {
   skillGraphInputSnapshotSha256,
   skillGraphPolicyConfig,
   skillGraphPolicyConfigSha256,
+  skillGraphV2EvidenceSnapshotSha256,
+  skillGraphV2PolicyConfigSha256,
   type ExactExternalIdentityInput,
   type OntologyConceptDetail,
   type OntologySnapshot,
-  type PlayerConceptStateComputation,
   type PlayerSkillGraphScopeInput,
   type ResolvedPlayerIdentity,
+  type TrainingAugmentedConceptState,
 } from '@chess-intelligent/domain';
 
 export interface PublishedOntologySnapshotReader {
@@ -51,9 +57,11 @@ export interface GeneratePlayerSkillGraphInput {
   ontologyVersion: string;
   asOfDate: string;
   scope?: PlayerSkillGraphScopeInput | undefined;
+  skillGraphPolicyVersion?:
+    typeof SKILL_GRAPH_POLICY_VERSION | typeof SKILL_GRAPH_POLICY_V2_VERSION | undefined;
 }
 
-export interface PlayerSkillGraphConceptView extends PlayerConceptStateComputation {
+export interface PlayerSkillGraphConceptView extends TrainingAugmentedConceptState {
   displayName: string;
   shortDescription: string;
   kind: OntologyConceptDetail['kind'];
@@ -69,7 +77,7 @@ export interface PlayerSkillGraphConceptView extends PlayerConceptStateComputati
 export interface PlayerSkillGraphView {
   run: PlayerSkillGraphRunRecord & { player: ResolvedPlayerIdentity; deduplicated?: boolean };
   coverage: PlayerSkillGraphRunRecord['coverage'];
-  policy: ReturnType<typeof skillGraphPolicyConfig>;
+  policy: ReturnType<typeof skillGraphPolicyConfig> | typeof SKILL_GRAPH_POLICY_V2;
   domains: Array<{
     stableId: string;
     displayName: string;
@@ -80,7 +88,9 @@ export interface PlayerSkillGraphView {
   }>;
   concepts: PlayerSkillGraphConceptView[];
   selectedClassificationRuns: Awaited<ReturnType<PlayerSkillGraphRepository['getSelectedRuns']>>;
-  interpretation: 'BETA_POSTERIOR_HEURISTIC_NOT_BKT_NOT_TRAINING_RECOMMENDATION';
+  interpretation:
+    | 'BETA_POSTERIOR_HEURISTIC_NOT_BKT_NOT_TRAINING_RECOMMENDATION'
+    | 'TRAINING_AUGMENTED_BETA_POSTERIOR_EXPLICIT_SOURCE_BREAKDOWN';
 }
 
 export interface PlayerSkillGraphConceptDetailView {
@@ -94,6 +104,11 @@ export interface PlayerSkillGraphConceptDetailView {
         conceptEvidence: string;
         engineAnalysis: string | null;
       };
+    }
+  >;
+  trainingContributions: Array<
+    Awaited<ReturnType<PlayerSkillGraphRepository['getTrainingConceptLineage']>>[number] & {
+      links: { trainingItem: string; sourceGame: string; sourceConceptEvidence: string };
     }
   >;
   reconstruction: {
@@ -111,6 +126,7 @@ export class PlayerSkillGraphApplicationService {
     private readonly repository: PlayerSkillGraphRepository,
     private readonly corpusRepository: PositionCorpusRepository,
     private readonly ontologies: PublishedOntologySnapshotReader,
+    private readonly training: TrainingRepository,
   ) {}
 
   async generate(input: GeneratePlayerSkillGraphInput): Promise<PlayerSkillGraphView> {
@@ -132,27 +148,68 @@ export class PlayerSkillGraphApplicationService {
       ...projection,
       asOfDate: input.asOfDate,
     };
-    const aggregation = aggregatePlayerSkillGraph(aggregationInput);
-    const policyConfigSha256 = skillGraphPolicyConfigSha256({
+    const requestedPolicy = input.skillGraphPolicyVersion ?? SKILL_GRAPH_POLICY_VERSION;
+    const trainingEvidence =
+      requestedPolicy === SKILL_GRAPH_POLICY_V2_VERSION
+        ? await this.training.loadTrainingEvidenceForSkillGraph({
+            playerId: player.playerId,
+            ontologyVersion: snapshot.version,
+            asOfDate: input.asOfDate,
+          })
+        : [];
+    const trainingAggregation =
+      requestedPolicy === SKILL_GRAPH_POLICY_V2_VERSION
+        ? aggregateTrainingAugmentedSkillGraph({
+            ontologyVersion: snapshot.version,
+            gameEvidence: aggregationInput,
+            trainingEvidence,
+          })
+        : null;
+    const aggregation = trainingAggregation ?? aggregatePlayerSkillGraph(aggregationInput);
+    const policyIdentity = {
       ontologyVersion: snapshot.version,
       classifierBundleVersion: CONCEPT_CLASSIFIER_BUNDLE_VERSION,
       classifierConfigSha256,
       classificationSelectionPolicyVersion: CLASSIFICATION_SELECTION_VERSION,
-    });
+    };
+    const policyConfigSha256 =
+      requestedPolicy === SKILL_GRAPH_POLICY_V2_VERSION
+        ? skillGraphV2PolicyConfigSha256(policyIdentity)
+        : skillGraphPolicyConfigSha256(policyIdentity);
+    const evidenceSnapshotSha256 =
+      requestedPolicy === SKILL_GRAPH_POLICY_V2_VERSION
+        ? skillGraphV2EvidenceSnapshotSha256({
+            playerId: player.playerId,
+            ontologyVersion: snapshot.version,
+            asOfDate: input.asOfDate,
+            selectedClassificationRunIds: projection.selectedRuns.map(
+              (run) => run.classificationRunId,
+            ),
+            selectedGameEvidenceIds: projection.evidence.map((evidence) => evidence.id),
+            selectedTrainingEvidenceIds: trainingAggregation!.selectedTrainingEvidence.map(
+              (evidence) => evidence.id,
+            ),
+          })
+        : null;
     const persisted = await this.repository.persistSuccessfulRun({
       playerId: player.playerId,
       ontologyVersion: snapshot.version,
       classifierBundleVersion: CONCEPT_CLASSIFIER_BUNDLE_VERSION,
       classifierConfigSha256,
       classificationSelectionPolicyVersion: CLASSIFICATION_SELECTION_VERSION,
-      skillGraphPolicyVersion: SKILL_GRAPH_POLICY_VERSION,
+      skillGraphPolicyVersion: requestedPolicy,
       policyConfigSha256,
-      inputSnapshotSha256: skillGraphInputSnapshotSha256(aggregationInput),
+      inputSnapshotSha256:
+        evidenceSnapshotSha256 ?? skillGraphInputSnapshotSha256(aggregationInput),
+      evidenceSnapshotSha256,
       evidenceScope: scope,
       evidenceScopeSha256: deterministicSha256(scope),
       asOfDate: input.asOfDate,
       selectedRuns: projection.selectedRuns,
       aggregation,
+      ...(trainingAggregation
+        ? { trainingContributions: trainingAggregation.trainingContributions }
+        : {}),
     });
     const view = await this.getRun(persisted.runId);
     view.run.deduplicated = persisted.deduplicated;
@@ -190,16 +247,22 @@ export class PlayerSkillGraphApplicationService {
     return {
       run: { ...run, player },
       coverage: run.coverage,
-      policy: skillGraphPolicyConfig({
-        ontologyVersion: run.ontologyVersion,
-        classifierBundleVersion: run.classifierBundleVersion,
-        classifierConfigSha256: run.classifierConfigSha256,
-        classificationSelectionPolicyVersion: run.classificationSelectionPolicyVersion,
-      }),
+      policy:
+        run.skillGraphPolicyVersion === SKILL_GRAPH_POLICY_V2_VERSION
+          ? SKILL_GRAPH_POLICY_V2
+          : skillGraphPolicyConfig({
+              ontologyVersion: run.ontologyVersion,
+              classifierBundleVersion: run.classifierBundleVersion,
+              classifierConfigSha256: run.classifierConfigSha256,
+              classificationSelectionPolicyVersion: run.classificationSelectionPolicyVersion,
+            }),
       domains,
       concepts,
       selectedClassificationRuns: await this.repository.getSelectedRuns(runId),
-      interpretation: 'BETA_POSTERIOR_HEURISTIC_NOT_BKT_NOT_TRAINING_RECOMMENDATION',
+      interpretation:
+        run.skillGraphPolicyVersion === SKILL_GRAPH_POLICY_V2_VERSION
+          ? 'TRAINING_AUGMENTED_BETA_POSTERIOR_EXPLICIT_SOURCE_BREAKDOWN'
+          : 'BETA_POSTERIOR_HEURISTIC_NOT_BKT_NOT_TRAINING_RECOMMENDATION',
     };
   }
 
@@ -243,14 +306,34 @@ export class PlayerSkillGraphApplicationService {
         },
       }),
     );
-    const positiveEvidenceMass = contributions.reduce(
+    const trainingContributions = (
+      await this.repository.getTrainingConceptLineage(runId, stableId)
+    ).map((contribution) => ({
+      ...contribution,
+      links: {
+        trainingItem: `/training?item=${contribution.trainingItemId}`,
+        sourceGame: `/games/${contribution.item.sourceGameId}`,
+        sourceConceptEvidence: `/games/${contribution.item.sourceGameId}?classificationRunId=${contribution.item.sourceClassificationRunId}&concept=${stableId}#concept-evidence`,
+      },
+    }));
+    const gamePositiveEvidenceMass = contributions.reduce(
       (sum, contribution) => sum + contribution.weights.effectivePositive,
       0,
     );
-    const negativeEvidenceMass = contributions.reduce(
+    const gameNegativeEvidenceMass = contributions.reduce(
       (sum, contribution) => sum + contribution.weights.effectiveNegative,
       0,
     );
+    const trainingPositiveEvidenceMass = trainingContributions.reduce(
+      (sum, contribution) => sum + contribution.weights.effectivePositive,
+      0,
+    );
+    const trainingNegativeEvidenceMass = trainingContributions.reduce(
+      (sum, contribution) => sum + contribution.weights.effectiveNegative,
+      0,
+    );
+    const positiveEvidenceMass = gamePositiveEvidenceMass + trainingPositiveEvidenceMass;
+    const negativeEvidenceMass = gameNegativeEvidenceMass + trainingNegativeEvidenceMass;
     const posterior = calculateBetaPosterior(positiveEvidenceMass, negativeEvidenceMass);
     const tolerance = 1e-9;
     return {
@@ -258,6 +341,7 @@ export class PlayerSkillGraphApplicationService {
       ontology,
       state: this.conceptView(registry, rawState),
       contributions,
+      trainingContributions,
       reconstruction: {
         positiveEvidenceMass,
         negativeEvidenceMass,
@@ -275,7 +359,7 @@ export class PlayerSkillGraphApplicationService {
 
   private conceptView(
     registry: OntologyRegistry,
-    state: PlayerConceptStateComputation,
+    state: TrainingAugmentedConceptState,
   ): PlayerSkillGraphConceptView {
     const detail = registry.getConceptDetail(state.conceptStableId);
     if (!detail) throw new Error(`Pinned ontology concept ${state.conceptStableId} is missing.`);

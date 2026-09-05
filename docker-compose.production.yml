@@ -1,0 +1,182 @@
+name: chess-intelligent-production-gate
+
+services:
+  postgres:
+    image: postgres:17-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB:?POSTGRES_DB is required}
+      POSTGRES_USER: ${POSTGRES_ADMIN_USER:?POSTGRES_ADMIN_USER is required}
+      POSTGRES_PASSWORD: ${POSTGRES_ADMIN_PASSWORD:?POSTGRES_ADMIN_PASSWORD is required}
+      APP_DATABASE_USER: ${APP_DATABASE_USER:?APP_DATABASE_USER is required}
+      APP_DATABASE_PASSWORD: ${APP_DATABASE_PASSWORD:?APP_DATABASE_PASSWORD is required}
+    volumes:
+      - production_postgres_data:/var/lib/postgresql/data
+      - ./docker/postgres/init-app-user.sh:/docker-entrypoint-initdb.d/010-app-user.sh:ro
+    healthcheck:
+      test: ['CMD-SHELL', 'pg_isready -U "$${POSTGRES_USER}" -d "$${POSTGRES_DB}"']
+      interval: 5s
+      timeout: 5s
+      retries: 20
+    networks: [backend]
+
+  migrate:
+    build:
+      context: .
+      dockerfile: docker/Dockerfile.api
+    restart: 'no'
+    environment:
+      DATABASE_URL: postgresql://${APP_DATABASE_USER}:${APP_DATABASE_PASSWORD}@postgres:5432/${POSTGRES_DB}
+    command: ['node', 'packages/db/dist/migrate-cli.js']
+    depends_on:
+      postgres:
+        condition: service_healthy
+    networks: [backend]
+
+  ontology:
+    build:
+      context: .
+      dockerfile: docker/Dockerfile.api
+    restart: 'no'
+    environment:
+      DATABASE_URL: postgresql://${APP_DATABASE_USER}:${APP_DATABASE_PASSWORD}@postgres:5432/${POSTGRES_DB}
+    command: ['node', 'packages/db/dist/ontology-sync-cli.js']
+    depends_on:
+      migrate:
+        condition: service_completed_successfully
+    networks: [backend]
+
+  mailpit:
+    image: axllent/mailpit:v1.27
+    restart: unless-stopped
+    expose: ['1025', '8025']
+    healthcheck:
+      test: ['CMD', '/mailpit', 'readyz']
+      interval: 5s
+      timeout: 5s
+      retries: 10
+    networks: [backend]
+
+  api:
+    build:
+      context: .
+      dockerfile: docker/Dockerfile.api
+    restart: unless-stopped
+    environment:
+      NODE_ENV: production
+      APP_ENV: production
+      DATABASE_URL: postgresql://${APP_DATABASE_USER}:${APP_DATABASE_PASSWORD}@postgres:5432/${POSTGRES_DB}
+      API_HOST: 0.0.0.0
+      API_PORT: 4000
+      AUTH_COOKIE_SECURE: 'true'
+      INTERNAL_DEV_ROUTES: 'false'
+      AUTO_MIGRATE: 'false'
+      TRUST_PROXY: 'true'
+      ALLOWED_ORIGINS: https://${PUBLIC_HOST:-localhost}
+      PUBLIC_WEB_BASE_URL: https://${PUBLIC_HOST:-localhost}
+      SMTP_ENABLED: 'true'
+      SMTP_HOST: mailpit
+      SMTP_PORT: 1025
+      SMTP_SECURE: 'false'
+      SMTP_REQUIRE_TLS: 'false'
+      EMAIL_FROM: ${EMAIL_FROM:?EMAIL_FROM is required}
+      DB_POOL_MAX: ${API_DB_POOL_MAX:-10}
+      DB_CONNECTION_TIMEOUT_MS: 5000
+      DB_STATEMENT_TIMEOUT_MS: 30000
+    expose: ['4000']
+    depends_on:
+      ontology:
+        condition: service_completed_successfully
+      mailpit:
+        condition: service_healthy
+    healthcheck:
+      test:
+        [
+          'CMD',
+          'node',
+          '-e',
+          "fetch('http://127.0.0.1:4000/readyz').then(r=>{if(!r.ok)process.exit(1)})",
+        ]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+    networks: [backend]
+
+  worker:
+    build:
+      context: .
+      dockerfile: docker/Dockerfile.worker
+    restart: unless-stopped
+    environment:
+      DATABASE_URL: postgresql://${APP_DATABASE_USER}:${APP_DATABASE_PASSWORD}@postgres:5432/${POSTGRES_DB}
+      STOCKFISH_PATH: ${STOCKFISH_PATH_CONTAINER:-/opt/stockfish/stockfish}
+      WORKER_ID: production-analysis-worker
+      WORKER_POLL_INTERVAL_MS: 1000
+      WORKER_ONCE: 'false'
+      AUTO_MIGRATE: 'false'
+      DB_POOL_MAX: ${WORKER_DB_POOL_MAX:-5}
+      DB_CONNECTION_TIMEOUT_MS: 5000
+      DB_STATEMENT_TIMEOUT_MS: 60000
+    volumes:
+      - ${STOCKFISH_HOST_PATH:?STOCKFISH_HOST_PATH is required}:/opt/stockfish/stockfish:ro
+    depends_on:
+      ontology:
+        condition: service_completed_successfully
+    healthcheck:
+      test: ['CMD', 'node', 'apps/worker/dist/health-cli.js']
+      interval: 30s
+      timeout: 10s
+      retries: 5
+    networks: [backend]
+
+  web:
+    build:
+      context: .
+      dockerfile: docker/Dockerfile.web
+    restart: unless-stopped
+    environment:
+      NODE_ENV: production
+      API_URL: http://api:4000
+    expose: ['3000']
+    depends_on:
+      api:
+        condition: service_healthy
+    healthcheck:
+      test:
+        [
+          'CMD',
+          'node',
+          '-e',
+          "fetch('http://127.0.0.1:3000/login').then(r=>{if(!r.ok)process.exit(1)})",
+        ]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+    networks: [backend]
+
+  proxy:
+    image: caddy:2.10-alpine
+    restart: unless-stopped
+    environment:
+      PUBLIC_HOST: ${PUBLIC_HOST:-localhost}
+    ports:
+      - '80:80'
+      - '443:443'
+    volumes:
+      - ./docker/Caddyfile:/etc/caddy/Caddyfile:ro
+      - production_caddy_data:/data
+      - production_caddy_config:/config
+    depends_on:
+      web:
+        condition: service_healthy
+    networks: [frontend, backend]
+
+networks:
+  frontend:
+  backend:
+    internal: true
+
+volumes:
+  production_postgres_data:
+  production_caddy_data:
+  production_caddy_config:

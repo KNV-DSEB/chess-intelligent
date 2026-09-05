@@ -3,11 +3,17 @@ import { AnalysisRepository, PgDatabase, runMigrations } from '@chess-intelligen
 
 import { AnalysisWorker } from './analysis-worker';
 import { StockfishUciEngine } from './stockfish-uci-engine';
+import { runWorkerLoop } from './worker-loop';
 
 loadRootEnvironment();
 const environment = readWorkerEnvironment();
-const database = new PgDatabase(environment.DATABASE_URL);
-await runMigrations(database);
+const database = new PgDatabase(environment.DATABASE_URL, {
+  maxConnections: environment.DB_POOL_MAX,
+  connectionTimeoutMillis: environment.DB_CONNECTION_TIMEOUT_MS,
+  statementTimeoutMillis: environment.DB_STATEMENT_TIMEOUT_MS,
+  applicationName: 'chess-intelligent-worker',
+});
+if (environment.AUTO_MIGRATE) await runMigrations(database);
 const repository = new AnalysisRepository(database);
 const worker = new AnalysisWorker(
   repository,
@@ -24,14 +30,14 @@ process.once('SIGTERM', () => {
 });
 
 try {
-  await worker.recoverStaleWork();
-  do {
-    const claimed = await worker.runNext();
-    if (environment.WORKER_ONCE) break;
-    if (!claimed) {
-      await new Promise((resolve) => setTimeout(resolve, environment.WORKER_POLL_INTERVAL_MS));
-    }
-  } while (!stopping);
+  await runWorkerLoop(worker, {
+    once: environment.WORKER_ONCE,
+    pollIntervalMs: environment.WORKER_POLL_INTERVAL_MS,
+    shouldStop: () => stopping,
+    onDependencyError: () => {
+      process.stderr.write('Analysis Worker dependency unavailable; retrying.\n');
+    },
+  });
 } finally {
   await database.close();
 }

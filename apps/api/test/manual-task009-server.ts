@@ -62,7 +62,11 @@ class ManualSkillGraphEngine implements ChessEngine {
 const database = await PGliteDatabase.create();
 await runMigrations(database);
 await new OntologyRepository(database).sync(await readOntologySourceFile());
-const app = await buildApp({ database, now: () => new Date('2026-08-27T12:00:00Z') });
+const app = await buildApp({
+  database,
+  internalDevRoutes: true,
+  now: () => new Date('2026-08-27T12:00:00Z'),
+});
 
 async function importFixture(name: string): Promise<string> {
   const pgn = await readFile(new URL(`./fixtures/${name}`, import.meta.url), 'utf8');

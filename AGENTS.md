@@ -76,6 +76,43 @@
 - Mastery recency requires an explicit date-only `asOfDate`; policy changes create new immutable SkillGraphRuns rather than rewriting history.
 - Every effective mastery contribution must retain exact `concept_evidence_instances.id` lineage.
 - Skill Graph output must not infer weakness, strength, psychology, or training priority.
+- Training must distinguish remediation from diagnosis; unknown or insufficient evidence is not a weakness label.
+- Every TrainingPlan consumes an explicit immutable SkillGraphRun; persistence must never resolve a latest graph implicitly.
+- Training targets must originate from ontology-valid Task 008 concept evidence and compatible exact-history Task 004 evidence, never generic engine loss.
+- Correctness is server-validated against immutable private TrainingItem truth; normal pre-attempt APIs must not leak accepted moves.
+- TrainingAttempts are immutable, and their evidence role comes from the exact pinned ontology policy.
+- Training evidence is a separate origin and must not be inserted into Game/classification-scoped concept evidence tables.
+- Retries on one TrainingItem are correlated and must not become independent mastery samples.
+- Completed SkillGraphRuns are never mutated after training; training-augmented mastery uses a new explicit policy version and evidence snapshot.
+- Every training-derived mastery contribution must trace to the exact attempt, item, source concept evidence, Game, and occurrence.
+- Never conflate StudentProfile, canonical Player, Academy membership, and future User identity.
+- Academy queries must remain Academy-scoped. Production actors come from an authenticated User session and an active same-Academy membership; browser-supplied membership IDs are never authorization.
+- Student progress must not compare SkillGraphRuns with incompatible Player, ontology, policy configuration, classifier semantics, or evidence scope.
+- Assignment content must reference immutable Task 010 TrainingPlan and TrainingItem artifacts and the plan's exact baseline SkillGraphRun.
+- Assignment creation must not generate TrainingEvidence, and operational coach notes must not generate concept evidence.
+- TrainingAttempts before assignment creation do not satisfy assignment completion; retries do not add another completion.
+- Previously measured remediation items are practice-only when reassigned; previously measured diagnostic items are not clean V1 measurements.
+- Student dashboards must not convert missing evidence into weaknesses or rank Students by mastery.
+- Read requests must not silently create SkillGraphRuns or TrainingPlans.
+- Keep User, AcademyMembership, StudentProfile, and Player identities separate. Player identity never authenticates a caller.
+- Persist only Argon2id password hashes and SHA-256 digests of high-entropy session/invitation tokens; raw tokens and credentials never enter persistence, logs, or audit metadata.
+- Student training writes derive User → active STUDENT membership → StudentProfile → Player and exact active assignment. Operational roles cannot impersonate Student measurement.
+- `ACADEMY_RBAC_V1` is the canonical capability map. Membership disable takes effect immediately, and the last active Owner cannot be disabled or demoted.
+- Cookie-authenticated mutations require the configured exact Origin. Production requires Secure `__Host-` cookies and must reject internal development routes.
+- Security audit events are append-only security provenance, never chess, concept, mastery, or training evidence.
+- Guardian-consent records are Academy attestations and a product access gate, never verified guardian identity or a legal-compliance claim.
+- Do not claim production verification from PGlite; production conclusions require a real PostgreSQL run.
+- Do not claim backup success without restoring into a separate database and verifying integrity.
+- Production migration rollback is backup/restore based unless an explicitly safe reversible migration exists.
+- Never weaken Academy tenant, Student ownership, or evidence-lineage predicates for benchmark speed.
+- Production authentication, cookie, Origin/CORS, and role authorization behavior must be verified through the deployed HTTPS browser/API boundary.
+- Password-reset and invitation raw tokens must never be logged or persisted; production invitation APIs must not return them.
+- Deployment, backup/restore, verification, and benchmark scripts must require explicit targets and acknowledgement and must not operate on developer databases accidentally.
+- Production images must run compiled artifacts, carry their bundle-relative migrations and ontology assets, and complete explicit migration plus ontology publication boundaries before API/Worker startup.
+- An operator-supplied Stockfish executable must match the Worker image architecture and libc; preserve its immutable binary hash and reported version in every engine run.
+- Readiness must fail when critical database/schema dependencies are unavailable, and authorization dependency failures must fail closed.
+- Idle PostgreSQL pool errors must be handled so an outage does not terminate API/Worker processes; liveness remains process-level while readiness and protected requests fail closed.
+- Production gate failures must be reported honestly; do not downgrade blockers to warnings merely to finish a task.
 
 ## External data rule
 

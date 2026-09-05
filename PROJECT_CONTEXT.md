@@ -115,19 +115,41 @@ Task 006 — Player Intelligence / Opponent Dossier
 Task 007 — Chess Concept Ontology
 Task 008 — Concept Evidence Classification
 Task 009 — Player Skill Graph & Mastery Estimation V1
+Task 010 — Adaptive Training Engine V1
+Task 011 — Coach / Student Intelligence V1
+Task 012 — Academy Production Foundation V1
+Task 013 — Production Verification & Deployment Gate V1 (implementation complete)
+Task 014 — Production Gate Execution & Blocker Remediation V1 (execution complete)
+Task 015 — Production Topology & Four-Role Browser Gate Closure V1
 ```
 
-Current planned milestone:
+Current production gate:
 
 ```text
-Task 010 — Adaptive Training Engine V1
+PRODUCTION_GATE_PASSED_WITH_NON_BLOCKING_RISKS
+
+The eight-service production Compose topology, migrations, explicit ontology
+publication, HTTPS proxy, SMTP failure/recovery, real Stockfish 18 Worker job,
+four-role browser UI matrix, session/password/consent lifecycle, tenant attacks,
+exact training lineage, persistence recreation, repository checks, and build passed.
+
+Non-blocking risks:
+- a fresh dependency audit remains NOT_RUN because external manifest disclosure
+  was not authorized;
+- the Windows Docker Desktop acceptance host has a recurring optional-component
+  stale AF_UNIX listener defect; non-destructive recovery preserved all data;
+- internal Caddy TLS and Mailpit prove protocol behavior, not public certificate
+  issuance or real-provider deliverability;
+- production operators must supply a Worker-compatible Stockfish binary and
+  retain its exact hash/version provenance.
 ```
 
 Expected future direction:
 
 ```text
-Task 011 — Coach / Student Intelligence
-Task 012 — Grounded AI Coach
+Next — Task 016: broader deterministic concept/training coverage
+Then — private academy pilot
+Future — Grounded AI Coach after security and evidence coverage are trustworthy
 ```
 
 Do not implement future milestones inside the current task unless explicitly requested.
@@ -153,9 +175,13 @@ The current system can be understood as these layers:
       ↓
 7. Skill Graph
       ↓
-8. Training               ← Task 010
+8. Training
       ↓
-9. AI Coach               ← future
+9. Academy / Coach Workflow
+      ↓
+10. Secure Production Access
+      ↓
+11. AI Coach              ← future
 ```
 
 Each layer should depend on trusted structured outputs from earlier layers.
@@ -590,9 +616,9 @@ One canonical Game is the V1 correlation unit; multiple evidence events or class
 
 ---
 
-# 17. Future learning architecture
+# 17. Adaptive Training Engine
 
-Expected future flow:
+Task 010 closes the first explicit learning loop:
 
 ```text
 Concept Evidence
@@ -601,16 +627,32 @@ Player Skill Graph
       ↓
 Training Candidate Selection
       ↓
-Exercises
+Training Plan / exact-state Item
       ↓
 Training Attempts
       ↓
-New Evidence
+Training Evidence
       ↓
-Updated Skill Graph
+New Skill Graph V2
 ```
 
-This creates the desired closed learning loop.
+Current invariants:
+
+```text
+NO_EVIDENCE → diagnostic uncertainty, never weakness
+remediation → sufficiently supported negative mastery evidence
+TrainingPlanRun → one explicit immutable SkillGraphRun
+TrainingItem → verifiable local Task 008 + Task 004 source truth
+TrainingAttempt → immutable server-scored interaction
+TrainingEvidenceInstance → separate ontology-governed evidence origin
+one TrainingItem's retries → correlated, first scored attempt selected in V1
+SKILL_GRAPH_POLICY_V1 → unchanged historical truth
+SKILL_GRAPH_POLICY_V2 → additive Game + Training evidence with exact snapshot
+```
+
+Every training-derived contribution traces to its evidence, attempt, item, Task 008 source evidence, canonical Game, and exact occurrence. Training never creates a concept from generic engine loss and never mutates an earlier Skill Graph.
+
+Future coach/academy workflows should consume these structured runs, plans, attempts, and evidence.
 
 Future LLM behavior should consume this structured evidence.
 
@@ -618,7 +660,28 @@ The LLM must not invent player state from raw PGNs.
 
 ---
 
-# 18. Data provenance
+# 18. Academy / Coach Workflow
+
+Task 011 adds an operational layer over immutable Skill Graph and Training artifacts:
+
+```text
+Academy roster
+→ StudentProfile linked to canonical Player
+→ compatible Student Intelligence
+→ TrainingAssignment from an existing TrainingPlan
+→ Task 010 attempts/evidence
+→ explicit comparable Skill Graph review
+```
+
+StudentProfile, Player, Academy membership, and future User identity remain separate. The same Player may appear through different StudentProfiles in multiple Academies. Progress requires identical Player, ontology, policy configuration, classifier semantics, and evidence scope; a different evidence snapshot is expected.
+
+Assignments never create mastery evidence. Completion derives from Task 010 attempts after assignment time, and a repeated measured item remains practice rather than a new independent measurement. Coach notes are operational text only. Academy dashboards expose coverage and operational attention signals without ranking Students.
+
+Current Academy routes authenticate opaque server-side sessions, derive the active same-Academy membership on the server, enforce `ACADEMY_RBAC_V1`, and expose Student self-service only through User → membership → StudentProfile → Player attribution. Generic evidence-writing routes are disabled by default outside explicit internal development mode.
+
+---
+
+# 19. Data provenance
 
 Data provenance is first-class.
 
@@ -636,7 +699,7 @@ Do not build a data dependency on unauthorized scraping.
 
 ---
 
-# 19. External data policy
+# 20. External data policy
 
 Current strategy:
 
@@ -672,7 +735,7 @@ No external provider integration should be added unless explicitly scoped and pe
 
 ---
 
-# 20. Important licensing boundaries
+# 21. Important licensing boundaries
 
 Stockfish is used as:
 
@@ -697,7 +760,7 @@ Do not copy proprietary UI/content/code from:
 
 ---
 
-# 21. Core technology
+# 22. Core technology
 
 Current architecture is primarily:
 
@@ -730,7 +793,7 @@ Do not introduce new infrastructure without demonstrated need.
 
 ---
 
-# 22. Infrastructure philosophy
+# 23. Infrastructure philosophy
 
 Prefer:
 
@@ -756,7 +819,7 @@ unless a later scale requirement clearly justifies them.
 
 ---
 
-# 23. Domain boundaries
+# 24. Domain boundaries
 
 General ownership:
 
@@ -784,7 +847,7 @@ Do not place heavy chess truth or statistical policy inside route handlers.
 
 ---
 
-# 24. Immutability philosophy
+# 25. Immutability philosophy
 
 The project heavily relies on historical reproducibility.
 
@@ -813,7 +876,7 @@ rewrite history
 
 ---
 
-# 25. AI philosophy
+# 26. AI philosophy
 
 AI is a future explanation/orchestration layer.
 
@@ -841,7 +904,7 @@ Structured systems remain authoritative.
 
 ---
 
-# 26. Academy-first principle
+# 27. Academy-first principle
 
 The long-term product must work for:
 
@@ -872,7 +935,7 @@ Do not hard-code one player level into core domain models.
 
 ---
 
-# 27. Child-friendly product principle
+# 28. Child-friendly product principle
 
 The product should eventually be much more approachable than traditional professional chess database software.
 
@@ -884,7 +947,7 @@ Use different presentation layers over the same trusted core.
 
 ---
 
-# 28. Current verification constraints
+# 29. Current verification constraints
 
 Development has historically encountered:
 
@@ -913,7 +976,7 @@ Do not fabricate verification.
 
 ---
 
-# 29. Testing philosophy
+# 30. Testing philosophy
 
 Prefer:
 
@@ -941,7 +1004,7 @@ neutral evidence ≠ mastery
 
 ---
 
-# 30. Current major project invariants
+# 31. Current major project invariants
 
 Do not violate these without explicit architectural review:
 
@@ -960,10 +1023,23 @@ Do not violate these without explicit architectural review:
 13. Historical analytical artifacts should remain reproducible.
 14. External sites must not be scraped without authorization.
 15. AI may explain structured truth but must not replace it.
+16. Unknown/insufficient evidence is diagnostic uncertainty, not weakness.
+17. Training decisions pin one immutable Skill Graph and verifiable local source evidence.
+18. Training attempts and evidence are immutable; retries on one item are correlated.
+19. Training-augmented mastery uses explicit V2 policy/snapshot lineage and never rewrites V1.
+20. Production conclusions require real PostgreSQL; PGlite alone is insufficient.
+21. A backup is trusted only after a separate restore and integrity comparison succeeds.
+22. Production migration rollback uses verified backup/restore unless a migration is explicitly and safely reversible.
+23. Secure cookies and authorization must be verified through the deployed HTTPS/browser boundary.
+24. Invitation and password-reset tokens are high-entropy, single-use, hashed at rest, and never logged.
+25. Readiness fails on unavailable or incompatible critical dependencies; authorization failures fail closed.
+26. Deployment, recovery, and benchmark commands require explicit acknowledged targets.
+27. Release status is evidence-based and blockers are never relabeled as warnings for milestone completion.
+28. The Task 015 production report supersedes the Task 014 blocked decision with `PRODUCTION_GATE_PASSED_WITH_NON_BLOCKING_RISKS`; the remaining dependency-audit, public TLS, transactional-email, Docker Desktop host, and operator Stockfish concerns stay explicit non-blocking risks.
 
 ---
 
-# 31. Important documentation
+# 32. Important documentation
 
 Read task-specific details from:
 
@@ -989,6 +1065,7 @@ Task 009 architecture:
 
 ```text
 player-skill-graph.md
+adaptive-training-engine.md
 ```
 
 Classifier rules:
@@ -1007,11 +1084,12 @@ Skill Graph policy:
 
 ```text
 docs/skill-model/v1.md
+docs/training/v1.md
 ```
 
 ---
 
-# 32. Agent workflow
+# 33. Agent workflow
 
 For a new task:
 
@@ -1031,7 +1109,7 @@ Do not turn `PROJECT_CONTEXT.md` into a detailed task log.
 
 ---
 
-# 33. Product decision heuristic
+# 34. Product decision heuristic
 
 When choosing between:
 
@@ -1065,7 +1143,7 @@ AI prose
 
 ---
 
-# 34. North-star philosophy
+# 35. North-star philosophy
 
 The long-term product should optimize for:
 
@@ -1093,7 +1171,7 @@ with evidence flowing back into the Player Skill Graph.
 
 ---
 
-# 35. Keep this file current
+# 36. Keep this file current
 
 At milestone completion:
 

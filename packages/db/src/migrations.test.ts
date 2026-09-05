@@ -5,7 +5,7 @@ import { describe, expect, it } from 'vitest';
 
 import { PGliteDatabase } from './testing';
 
-describe('Task 002 through 009 migration compatibility', () => {
+describe('Task 002 through 013 migration compatibility', () => {
   it('upgrades Task 001 rows and backfills position occurrences without changing lifecycle meaning', async () => {
     const database = await PGliteDatabase.create();
     try {
@@ -47,6 +47,22 @@ describe('Task 002 through 009 migration compatibility', () => {
       );
       const migration010 = await readFile(
         new URL('../migrations/010_player_skill_graph.sql', import.meta.url),
+        'utf8',
+      );
+      const migration011 = await readFile(
+        new URL('../migrations/011_adaptive_training_engine.sql', import.meta.url),
+        'utf8',
+      );
+      const migration012 = await readFile(
+        new URL('../migrations/012_coach_student_intelligence.sql', import.meta.url),
+        'utf8',
+      );
+      const migration013 = await readFile(
+        new URL('../migrations/013_academy_production_foundation.sql', import.meta.url),
+        'utf8',
+      );
+      const migration014 = await readFile(
+        new URL('../migrations/014_production_verification_foundation.sql', import.meta.url),
         'utf8',
       );
       const initialFen = 'rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1';
@@ -116,6 +132,10 @@ describe('Task 002 through 009 migration compatibility', () => {
       await database.execute(migration008);
       await database.execute(migration009);
       await database.execute(migration010);
+      await database.execute(migration011);
+      await database.execute(migration012);
+      await database.execute(migration013);
+      await database.execute(migration014);
       const games = await database.query<{
         id: string;
         content_status: string;
@@ -253,6 +273,72 @@ describe('Task 002 through 009 migration compatibility', () => {
         'player_skill_graph_runs',
         'skill_graph_evidence_contributions',
         'skill_graph_selected_classification_runs',
+      ]);
+      const trainingTables = await database.query<{ table_name: string }>(
+        `SELECT table_name FROM information_schema.tables
+         WHERE table_schema = 'public' AND table_name IN (
+           'training_plan_runs', 'training_candidates', 'training_items',
+           'training_attempts', 'training_evidence_instances',
+           'player_concept_training_contributions',
+           'skill_graph_training_evidence_contributions'
+         ) ORDER BY table_name`,
+      );
+      expect(trainingTables.rows.map((row) => row.table_name)).toEqual([
+        'player_concept_training_contributions',
+        'skill_graph_training_evidence_contributions',
+        'training_attempts',
+        'training_candidates',
+        'training_evidence_instances',
+        'training_items',
+        'training_plan_runs',
+      ]);
+      const academyTables = await database.query<{ table_name: string }>(
+        `SELECT table_name FROM information_schema.tables
+         WHERE table_schema = 'public' AND table_name IN (
+           'academies', 'academy_memberships', 'student_profiles',
+           'training_assignments', 'training_assignment_items'
+         ) ORDER BY table_name`,
+      );
+      expect(academyTables.rows.map((row) => row.table_name)).toEqual([
+        'academies',
+        'academy_memberships',
+        'student_profiles',
+        'training_assignment_items',
+        'training_assignments',
+      ]);
+      const securityTables = await database.query<{ table_name: string }>(
+        `SELECT table_name FROM information_schema.tables
+         WHERE table_schema = 'public' AND table_name IN (
+           'users', 'user_credentials', 'auth_sessions', 'auth_login_attempts',
+           'academy_invitations', 'security_audit_events',
+           'student_access_consent_records', 'password_reset_requests',
+           'password_reset_tokens'
+         ) ORDER BY table_name`,
+      );
+      expect(securityTables.rows.map((row) => row.table_name)).toEqual([
+        'academy_invitations',
+        'auth_login_attempts',
+        'auth_sessions',
+        'password_reset_requests',
+        'password_reset_tokens',
+        'security_audit_events',
+        'student_access_consent_records',
+        'user_credentials',
+        'users',
+      ]);
+      const preservedAcademyColumns = await database.query<{
+        column_name: string;
+      }>(
+        `SELECT column_name FROM information_schema.columns
+         WHERE table_name = 'academy_memberships'
+           AND column_name IN ('id', 'user_id', 'status', 'updated_at')
+         ORDER BY column_name`,
+      );
+      expect(preservedAcademyColumns.rows.map((row) => row.column_name)).toEqual([
+        'id',
+        'status',
+        'updated_at',
+        'user_id',
       ]);
     } finally {
       await database.close();

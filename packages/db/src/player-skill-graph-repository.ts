@@ -13,6 +13,8 @@ import type {
   SkillGraphGameInput,
   SkillGraphRunStatus,
   SkillGraphSelectedRunInput,
+  TrainingAugmentedConceptState,
+  TrainingMasteryContributionComputation,
 } from '@chess-intelligent/domain';
 
 import type { Database, QueryClient } from './database';
@@ -77,6 +79,7 @@ interface SkillGraphRunRow {
   skill_graph_policy_version: string;
   policy_config_sha256: string;
   input_snapshot_sha256: string;
+  evidence_snapshot_sha256: string | null;
   evidence_scope: PlayerSkillGraphScope | string;
   as_of_date: string | Date;
   status: SkillGraphRunStatus;
@@ -92,6 +95,8 @@ interface SkillGraphRunRow {
   negative_mastery_evidence_count: number;
   neutral_exposure_evidence_count: number;
   concept_state_count: number;
+  selected_training_evidence_count: number;
+  selected_training_item_count: number;
   started_at: string | Date;
   completed_at: string | Date | null;
 }
@@ -111,6 +116,12 @@ interface ConceptStateRow {
   neutral_exposure_game_count: number;
   contextual_evidence_count: number;
   canonical_game_count: number;
+  game_positive_evidence_mass: string | number;
+  game_negative_evidence_mass: string | number;
+  training_positive_evidence_mass: string | number;
+  training_negative_evidence_mass: string | number;
+  training_item_count: number;
+  independent_evidence_unit_count: number;
   first_evidence_at: string | Date | null;
   last_evidence_at: string | Date | null;
   evidence_confidence: PlayerConceptStateComputation['evidenceConfidence'];
@@ -189,11 +200,13 @@ export interface PersistPlayerSkillGraphInput {
   skillGraphPolicyVersion: string;
   policyConfigSha256: string;
   inputSnapshotSha256: string;
+  evidenceSnapshotSha256?: string | null | undefined;
   evidenceScope: PlayerSkillGraphScope;
   evidenceScopeSha256: string;
   asOfDate: string;
   selectedRuns: readonly SkillGraphSelectedRunInput[];
   aggregation: SkillGraphAggregationResult;
+  trainingContributions?: readonly TrainingMasteryContributionComputation[] | undefined;
 }
 
 export interface PersistPlayerSkillGraphResult {
@@ -211,13 +224,52 @@ export interface PlayerSkillGraphRunRecord {
   skillGraphPolicyVersion: string;
   policyConfigSha256: string;
   inputSnapshotSha256: string;
+  evidenceSnapshotSha256: string | null;
   evidenceScope: PlayerSkillGraphScope;
   asOfDate: string;
   status: SkillGraphRunStatus;
   coverage: SkillGraphAggregationResult['coverage'];
   conceptStateCount: number;
+  selectedTrainingEvidenceCount: number;
+  selectedTrainingItemCount: number;
   startedAt: string;
   completedAt: string | null;
+}
+
+export interface PersistedTrainingConceptLineage {
+  contributionId: string;
+  trainingEvidenceInstanceId: string;
+  trainingAttemptId: string;
+  trainingItemId: string;
+  trainingPlanRunId: string;
+  conceptStableId: string;
+  historicalEvidenceRole: EvidenceRole;
+  polarity: 'POSITIVE' | 'NEGATIVE';
+  weights: {
+    role: number;
+    source: number;
+    recency: number;
+    effectivePositive: number;
+    effectiveNegative: number;
+  };
+  evidenceDate: string;
+  attempt: {
+    number: number;
+    result: 'CORRECT' | 'INCORRECT';
+    submittedMoveUci: string;
+    submittedAt: string;
+  };
+  item: {
+    trainingCandidateId: string;
+    trainingMode: 'REMEDIATION' | 'DIAGNOSTIC';
+    sourceEvidenceInstanceId: string;
+    sourceGameId: string;
+    sourceOccurrenceId: string;
+    sourceOccurrencePly: number;
+    sourceClassificationRunId: string;
+    sourceAnalysisRunId: string;
+    exactHistorySha256: string;
+  };
 }
 
 export interface PersistedConceptLineage {
@@ -418,18 +470,19 @@ export class PlayerSkillGraphRepository {
            id, player_id, ontology_version_id, ontology_version,
            classifier_bundle_version, classifier_config_sha256,
            classification_selection_policy_version, skill_graph_policy_version,
-           policy_config_sha256, input_snapshot_sha256,
+           policy_config_sha256, input_snapshot_sha256, evidence_snapshot_sha256,
            evidence_scope, evidence_scope_sha256, as_of_date, status,
            selected_canonical_game_count, games_with_moves_count,
            selected_classification_run_count, decision_occurrence_count,
            classified_decision_count, engine_backed_decision_count,
            eligible_evidence_count, mastery_eligible_evidence_count,
            positive_mastery_evidence_count, negative_mastery_evidence_count,
-           neutral_exposure_evidence_count, concept_state_count, completed_at
+           neutral_exposure_evidence_count, concept_state_count,
+           selected_training_evidence_count, selected_training_item_count, completed_at
          ) VALUES (
-           $1, $2, $3, $4, $5, $6, $7, $8, $9, $10,
-           $11::jsonb, $12, $13::date, 'SUCCEEDED', $14, $15, $16, $17, $18, $19,
-           $20, $21, $22, $23, $24, $25, now()
+           $1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11,
+           $12::jsonb, $13, $14::date, 'SUCCEEDED', $15, $16, $17, $18, $19, $20,
+           $21, $22, $23, $24, $25, $26, $27, $28, now()
          )`,
         [
           runId,
@@ -442,6 +495,7 @@ export class PlayerSkillGraphRepository {
           input.skillGraphPolicyVersion,
           input.policyConfigSha256,
           input.inputSnapshotSha256,
+          input.evidenceSnapshotSha256 ?? null,
           JSON.stringify(input.evidenceScope),
           input.evidenceScopeSha256,
           input.asOfDate,
@@ -457,6 +511,8 @@ export class PlayerSkillGraphRepository {
           coverage.negativeMasteryEvidence,
           coverage.neutralExposureEvidence,
           input.aggregation.conceptStates.length,
+          input.trainingContributions?.length ?? 0,
+          new Set(input.trainingContributions?.map((entry) => entry.trainingItemId) ?? []).size,
         ],
       );
 
@@ -473,6 +529,16 @@ export class PlayerSkillGraphRepository {
       }
       for (const contribution of input.aggregation.gameContributions) {
         await this.insertContribution(client, runId, contribution);
+      }
+      for (const contribution of input.trainingContributions ?? []) {
+        await this.insertTrainingContribution(
+          client,
+          runId,
+          input.playerId,
+          input.ontologyVersion,
+          ontologyVersionId,
+          contribution,
+        );
       }
       return { runId, deduplicated: false };
     });
@@ -496,7 +562,7 @@ export class PlayerSkillGraphRepository {
     return result.rows.map((row) => this.runRecord(row));
   }
 
-  async getConceptStates(runId: string): Promise<PlayerConceptStateComputation[]> {
+  async getConceptStates(runId: string): Promise<TrainingAugmentedConceptState[]> {
     const result = await this.database.query<ConceptStateRow>(
       `SELECT * FROM player_concept_states
        WHERE skill_graph_run_id = $1 ORDER BY concept_stable_id`,
@@ -608,6 +674,103 @@ export class PlayerSkillGraphRepository {
     return [...grouped.values()];
   }
 
+  async getTrainingConceptLineage(
+    runId: string,
+    conceptStableId: string,
+  ): Promise<PersistedTrainingConceptLineage[]> {
+    const result = await this.database.query<{
+      contribution_id: string;
+      training_evidence_instance_id: string;
+      training_attempt_id: string;
+      training_item_id: string;
+      training_plan_run_id: string;
+      concept_stable_id: string;
+      historical_evidence_role: EvidenceRole;
+      polarity: 'POSITIVE' | 'NEGATIVE';
+      role_weight: string | number;
+      source_weight: string | number;
+      recency_weight: string | number;
+      effective_positive_weight: string | number;
+      effective_negative_weight: string | number;
+      evidence_date: string | Date;
+      attempt_number: number;
+      result: 'CORRECT' | 'INCORRECT';
+      submitted_move_uci: string;
+      submitted_at: string | Date;
+      training_mode: 'REMEDIATION' | 'DIAGNOSTIC';
+      training_candidate_id: string;
+      source_evidence_instance_id: string;
+      source_game_id: string;
+      source_occurrence_id: string;
+      source_occurrence_ply: number;
+      source_classification_run_id: string;
+      source_analysis_run_id: string;
+      exact_history_sha256: string;
+    }>(
+      `SELECT contribution.id AS contribution_id,
+              contribution.training_evidence_instance_id,
+              contribution.training_attempt_id, contribution.training_item_id,
+              item.training_plan_run_id, contribution.concept_stable_id,
+              contribution.historical_evidence_role, contribution.polarity,
+              contribution.role_weight, contribution.source_weight,
+              contribution.recency_weight, contribution.effective_positive_weight,
+              contribution.effective_negative_weight, contribution.evidence_date,
+              attempt.attempt_number, attempt.result, attempt.submitted_move_uci,
+              attempt.submitted_at, item.training_candidate_id, item.training_mode,
+              item.source_evidence_instance_id, item.source_game_id,
+              item.source_occurrence_id, item.source_occurrence_ply,
+              item.source_classification_run_id, item.source_analysis_run_id,
+              item.exact_history_sha256
+       FROM player_concept_training_contributions contribution
+       JOIN skill_graph_training_evidence_contributions lineage
+         ON lineage.player_concept_training_contribution_id = contribution.id
+        AND lineage.training_evidence_instance_id = contribution.training_evidence_instance_id
+       JOIN training_evidence_instances evidence
+         ON evidence.id = lineage.training_evidence_instance_id
+       JOIN training_attempts attempt ON attempt.id = evidence.training_attempt_id
+       JOIN training_items item ON item.id = evidence.training_item_id
+       WHERE contribution.skill_graph_run_id = $1
+         AND contribution.concept_stable_id = $2
+       ORDER BY contribution.evidence_date DESC, item.id`,
+      [runId, conceptStableId],
+    );
+    return result.rows.map((row) => ({
+      contributionId: row.contribution_id,
+      trainingEvidenceInstanceId: row.training_evidence_instance_id,
+      trainingAttemptId: row.training_attempt_id,
+      trainingItemId: row.training_item_id,
+      trainingPlanRunId: row.training_plan_run_id,
+      conceptStableId: row.concept_stable_id,
+      historicalEvidenceRole: row.historical_evidence_role,
+      polarity: row.polarity,
+      weights: {
+        role: number(row.role_weight),
+        source: number(row.source_weight),
+        recency: number(row.recency_weight),
+        effectivePositive: number(row.effective_positive_weight),
+        effectiveNegative: number(row.effective_negative_weight),
+      },
+      evidenceDate: dateOnly(row.evidence_date)!,
+      attempt: {
+        number: row.attempt_number,
+        result: row.result,
+        submittedMoveUci: row.submitted_move_uci,
+        submittedAt: iso(row.submitted_at)!,
+      },
+      item: {
+        trainingCandidateId: row.training_candidate_id,
+        trainingMode: row.training_mode,
+        sourceEvidenceInstanceId: row.source_evidence_instance_id,
+        sourceGameId: row.source_game_id,
+        sourceOccurrenceId: row.source_occurrence_id,
+        sourceOccurrencePly: row.source_occurrence_ply,
+        sourceClassificationRunId: row.source_classification_run_id,
+        sourceAnalysisRunId: row.source_analysis_run_id,
+        exactHistorySha256: row.exact_history_sha256,
+      },
+    }));
+  }
+
   private selectedRunsCte(built: BuiltScope, input: LoadPlayerSkillEvidenceInput): string {
     const ontology = this.addParameter(built, input.ontologyVersion);
     const bundle = this.addParameter(built, input.classifierBundleVersion);
@@ -686,8 +849,9 @@ export class PlayerSkillGraphRepository {
     client: QueryClient,
     runId: string,
     ontologyVersionId: string,
-    state: PlayerConceptStateComputation,
+    state: PlayerConceptStateComputation | TrainingAugmentedConceptState,
   ): Promise<void> {
+    const augmented = 'trainingPositiveMass' in state ? state : null;
     await client.query(
       `INSERT INTO player_concept_states (
          skill_graph_run_id, ontology_version_id, concept_stable_id, status,
@@ -695,10 +859,14 @@ export class PlayerSkillGraphRepository {
          positive_evidence_mass, negative_evidence_mass, effective_evidence_mass,
          raw_positive_count, raw_negative_count, neutral_exposure_count,
          neutral_exposure_game_count, contextual_evidence_count, canonical_game_count,
-         first_evidence_at, last_evidence_at, evidence_confidence, mastery_band
+         first_evidence_at, last_evidence_at, evidence_confidence, mastery_band,
+         game_positive_evidence_mass, game_negative_evidence_mass,
+         training_positive_evidence_mass, training_negative_evidence_mass,
+         training_item_count, independent_evidence_unit_count
        ) VALUES (
          $1, $2, $3, $4, $5, $6, $7, $8, $9, $10,
-         $11, $12, $13, $14, $15, $16, $17::date, $18::date, $19, $20
+         $11, $12, $13, $14, $15, $16, $17::date, $18::date, $19, $20,
+         $21, $22, $23, $24, $25, $26
        )`,
       [
         runId,
@@ -721,6 +889,67 @@ export class PlayerSkillGraphRepository {
         state.lastEvidenceAt,
         state.evidenceConfidence,
         state.masteryBand,
+        augmented?.gamePositiveMass ?? state.positiveEvidenceMass,
+        augmented?.gameNegativeMass ?? state.negativeEvidenceMass,
+        augmented?.trainingPositiveMass ?? 0,
+        augmented?.trainingNegativeMass ?? 0,
+        augmented?.trainingItemCount ?? 0,
+        augmented?.independentEvidenceUnitCount ?? state.canonicalGameCount,
+      ],
+    );
+  }
+
+  private async insertTrainingContribution(
+    client: QueryClient,
+    runId: string,
+    playerId: string,
+    ontologyVersion: string,
+    ontologyVersionId: string,
+    contribution: TrainingMasteryContributionComputation,
+  ): Promise<void> {
+    const contributionId = randomUUID();
+    await client.query(
+      `INSERT INTO player_concept_training_contributions (
+         id, skill_graph_run_id, concept_stable_id, training_item_id,
+         training_attempt_id, training_evidence_instance_id, player_id,
+         ontology_version_id, ontology_version, historical_evidence_role, polarity,
+         role_weight, source_weight, recency_weight,
+         effective_positive_weight, effective_negative_weight, evidence_date
+       ) VALUES (
+         $1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11,
+         $12, $13, $14, $15, $16, $17::date
+       )`,
+      [
+        contributionId,
+        runId,
+        contribution.conceptStableId,
+        contribution.trainingItemId,
+        contribution.trainingAttemptId,
+        contribution.trainingEvidenceInstanceId,
+        playerId,
+        ontologyVersionId,
+        ontologyVersion,
+        contribution.historicalEvidenceRole,
+        contribution.polarity,
+        contribution.roleWeight,
+        contribution.sourceWeight,
+        contribution.recencyWeight,
+        contribution.effectivePositiveWeight,
+        contribution.effectiveNegativeWeight,
+        contribution.evidenceDate,
+      ],
+    );
+    await client.query(
+      `INSERT INTO skill_graph_training_evidence_contributions (
+         id, skill_graph_run_id, player_concept_training_contribution_id,
+         concept_stable_id, training_evidence_instance_id
+       ) VALUES ($1, $2, $3, $4, $5)`,
+      [
+        randomUUID(),
+        runId,
+        contributionId,
+        contribution.conceptStableId,
+        contribution.trainingEvidenceInstanceId,
       ],
     );
   }
@@ -792,6 +1021,7 @@ export class PlayerSkillGraphRepository {
       skillGraphPolicyVersion: row.skill_graph_policy_version,
       policyConfigSha256: row.policy_config_sha256,
       inputSnapshotSha256: row.input_snapshot_sha256,
+      evidenceSnapshotSha256: row.evidence_snapshot_sha256,
       evidenceScope: json(row.evidence_scope),
       asOfDate: dateOnly(row.as_of_date)!,
       status: row.status,
@@ -810,12 +1040,14 @@ export class PlayerSkillGraphRepository {
         neutralExposureEvidence: row.neutral_exposure_evidence_count,
       },
       conceptStateCount: row.concept_state_count,
+      selectedTrainingEvidenceCount: row.selected_training_evidence_count,
+      selectedTrainingItemCount: row.selected_training_item_count,
       startedAt: iso(row.started_at)!,
       completedAt: iso(row.completed_at),
     };
   }
 
-  private conceptState(row: ConceptStateRow): PlayerConceptStateComputation {
+  private conceptState(row: ConceptStateRow): TrainingAugmentedConceptState {
     return {
       conceptStableId: row.concept_stable_id,
       status: row.status,
@@ -835,6 +1067,14 @@ export class PlayerSkillGraphRepository {
       lastEvidenceAt: dateOnly(row.last_evidence_at),
       evidenceConfidence: row.evidence_confidence,
       masteryBand: row.mastery_band,
+      gamePositiveMass: number(row.game_positive_evidence_mass),
+      gameNegativeMass: number(row.game_negative_evidence_mass),
+      trainingPositiveMass: number(row.training_positive_evidence_mass),
+      trainingNegativeMass: number(row.training_negative_evidence_mass),
+      totalPositiveMass: number(row.positive_evidence_mass),
+      totalNegativeMass: number(row.negative_evidence_mass),
+      trainingItemCount: row.training_item_count,
+      independentEvidenceUnitCount: row.independent_evidence_unit_count,
     };
   }
 }

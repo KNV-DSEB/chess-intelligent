@@ -59,7 +59,7 @@ integrationDescribe('real PostgreSQL analysis lifecycle', () => {
     if (!connectionString) throw new Error('TEST_DATABASE_URL is required.');
     const database = new PgDatabase(connectionString);
     await runMigrations(database);
-    const app = await buildApp({ database });
+    const app = await buildApp({ database, internalDevRoutes: true });
     try {
       const pgn = await readFile(
         new URL('../../api/test/fixtures/successful.pgn', import.meta.url),

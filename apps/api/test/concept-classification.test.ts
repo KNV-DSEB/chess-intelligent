@@ -104,7 +104,7 @@ describe('Task 008 concept evidence classification', () => {
     database = await PGliteDatabase.create();
     await runMigrations(database);
     await new OntologyRepository(database).sync(await readOntologySourceFile());
-    app = await buildApp({ database });
+    app = await buildApp({ database, internalDevRoutes: true });
   });
 
   afterEach(async () => {

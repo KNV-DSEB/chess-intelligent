@@ -73,7 +73,7 @@ describe('metadata-only ingestion and reviewed PGN reconciliation', () => {
     matchingPgn = await readFile(fixtureUrl, 'utf8');
     database = await PGliteDatabase.create();
     await runMigrations(database);
-    app = await buildApp({ database });
+    app = await buildApp({ database, internalDevRoutes: true });
   });
 
   afterEach(async () => {
@@ -264,7 +264,7 @@ describe('metadata-only ingestion and reviewed PGN reconciliation', () => {
     };
     const separateDatabase = await PGliteDatabase.create();
     await runMigrations(separateDatabase);
-    const separateApp = await buildApp({ database: separateDatabase });
+    const separateApp = await buildApp({ database: separateDatabase, internalDevRoutes: true });
     try {
       const created = await separateApp.inject({
         method: 'POST',

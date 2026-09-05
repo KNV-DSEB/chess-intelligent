@@ -1,0 +1,15 @@
+{
+  "extends": "../../tsconfig.base.json",
+  "compilerOptions": {
+    "types": ["node"],
+    "baseUrl": "../..",
+    "paths": {
+      "@chess-intelligent/chess-core": ["packages/chess-core/src/index.ts"],
+      "@chess-intelligent/config": ["packages/config/src/index.ts"],
+      "@chess-intelligent/db": ["packages/db/src/index.ts"],
+      "@chess-intelligent/domain": ["packages/domain/src/index.ts"],
+      "@chess-intelligent/ui": ["packages/ui/src/index.ts"]
+    }
+  },
+  "include": ["*.ts"]
+}

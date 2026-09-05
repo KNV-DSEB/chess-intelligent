@@ -5,7 +5,7 @@ import { ConceptEvidencePanel } from './concept-evidence-panel';
 
 export const dynamic = 'force-dynamic';
 
-const apiUrl = process.env.API_URL ?? process.env.NEXT_PUBLIC_API_URL ?? 'http://localhost:4000';
+const apiUrl = process.env.API_URL ?? process.env.NEXT_PUBLIC_API_URL;
 
 interface GameDetails {
   id: string;
@@ -45,6 +45,7 @@ interface GameDetails {
 }
 
 async function loadGame(id: string): Promise<GameDetails | null> {
+  if (!apiUrl) throw new Error('API_URL is required for server-rendered Game details.');
   const response = await fetch(`${apiUrl}/games/${id}`, { cache: 'no-store' });
   if (response.status === 404) {
     return null;

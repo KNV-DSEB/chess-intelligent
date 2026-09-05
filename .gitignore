@@ -10,9 +10,15 @@ coverage/
 npm-debug.log*
 pnpm-debug.log*
 .tmp-task*/
+.backups/
+*.dump
+*.dump.manifest.json
 
 # Graphify's portable graph/report artifacts are versioned; machine-local caches and paths are not.
 graphify-out/cache/
 graphify-out/.graphify_health.json
 graphify-out/.graphify_python
 graphify-out/.graphify_root
+graphify-out/.graphify_analysis.json
+graphify-out/*.sig
+graphify-out/20??-??-??/

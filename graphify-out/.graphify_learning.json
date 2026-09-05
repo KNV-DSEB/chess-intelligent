@@ -1,6 +1,54 @@
 {
-  "generated_at": "2026-08-22T19:25:49.085446+00:00",
+  "generated_at": "2026-09-03T17:48:08.639503+00:00",
   "nodes": {
+    "agents_external_data_authorization": {
+      "code_fingerprint": "c2b7c100d611defcb33f7052dcb615424f32d0043a8f23d73679e4af1393d26b",
+      "label": "External Data Authorization Rule",
+      "last": "2026-08-28T05:20:04.500439+00:00",
+      "provenance": [
+        {
+          "date": "2026-08-28T05:20:04.500439+00:00",
+          "outcome": "useful",
+          "q": "Trace current authorization entry points and actor identity paths before Task 012"
+        }
+      ],
+      "score": 0.860163959,
+      "source_file": "AGENTS.md",
+      "status": "tentative",
+      "uses": 1
+    },
+    "apps_api_src_app": {
+      "code_fingerprint": "c33e5e14eb99cfa69892b905226649b483993e1adcb3029b4a9989d6783fd069",
+      "label": "app.ts",
+      "last": "2026-08-28T05:20:04.500439+00:00",
+      "provenance": [
+        {
+          "date": "2026-08-28T05:20:04.500439+00:00",
+          "outcome": "useful",
+          "q": "Trace current authorization entry points and actor identity paths before Task 012"
+        }
+      ],
+      "score": 0.860163959,
+      "source_file": "apps/api/src/app.ts",
+      "status": "tentative",
+      "uses": 1
+    },
+    "apps_api_src_app_buildapp": {
+      "code_fingerprint": "c33e5e14eb99cfa69892b905226649b483993e1adcb3029b4a9989d6783fd069",
+      "label": "buildApp()",
+      "last": "2026-08-28T05:20:04.500439+00:00",
+      "provenance": [
+        {
+          "date": "2026-08-28T05:20:04.500439+00:00",
+          "outcome": "useful",
+          "q": "Trace current authorization entry points and actor identity paths before Task 012"
+        }
+      ],
+      "score": 0.860163959,
+      "source_file": "apps/api/src/app.ts",
+      "status": "tentative",
+      "uses": 1
+    },
     "apps_api_src_concept_classification_application_conceptclassificationapplicationservice": {
       "code_fingerprint": "6a5cc5c88fef2100ce1cc83a067a071f72183a2399c7c742de71eab30baaefe8",
       "label": "ConceptClassificationApplicationService",
@@ -12,13 +60,45 @@
           "q": "Graphify current repository and trace Tasks 007-008 paths to validate the Task 009 implementation plan."
         }
       ],
-      "score": 0.999793574,
+      "score": 0.758890234,
       "source_file": "apps/api/src/concept-classification-application.ts",
       "status": "tentative",
       "uses": 1
     },
-    "packages_db_migrations_009_concept_evidence_classification_concept_classification_runs": {
-      "code_fingerprint": "72c9809cc056238504d36127fa21cd92ba8819e1a701e2372197665152bb99e9",
+    "apps_web_package": {
+      "code_fingerprint": "eb8f80ff3f1b4ea1235e0401dc18a98b8e65d78b4a4291695f583d3b3cd857a8",
+      "label": "web/package.json",
+      "last": "2026-08-27T07:40:14.668733+00:00",
+      "provenance": [
+        {
+          "date": "2026-08-27T07:40:14.668733+00:00",
+          "outcome": "useful",
+          "q": "Fix GitHub Actions pnpm check formatting failure shown in the attached screenshot"
+        }
+      ],
+      "score": 0.842410264,
+      "source_file": "apps/web/package.json",
+      "status": "tentative",
+      "uses": 1
+    },
+    "apps_worker_src_worker_worker": {
+      "code_fingerprint": "24d7ccf84a79ba503a62518e3fba5987082af3c5811af0588943f2bc43980193",
+      "label": "worker",
+      "last": "2026-08-29T11:01:26.284191+00:00",
+      "provenance": [
+        {
+          "date": "2026-08-29T11:01:26.284191+00:00",
+          "outcome": "useful",
+          "q": "Trace Task 013 production security, database, migration, worker, session, invitation, password reset, and audit paths"
+        }
+      ],
+      "score": 0.885103974,
+      "source_file": "apps/worker/src/worker.ts",
+      "status": "tentative",
+      "uses": 1
+    },
+    "concept_classification_runs": {
+      "code_fingerprint": "",
       "label": "concept_classification_runs",
       "last": "2026-08-22T19:12:57.083487+00:00",
       "provenance": [
@@ -28,40 +108,87 @@
           "q": "Graphify current repository and trace Tasks 007-008 paths to validate the Task 009 implementation plan."
         }
       ],
-      "score": 0.999793574,
-      "source_file": "packages/db/migrations/009_concept_evidence_classification.sql",
+      "score": 0.758890234,
+      "source_file": "",
       "status": "tentative",
       "uses": 1
     },
-    "packages_db_migrations_009_concept_evidence_classification_concept_evidence_instances": {
-      "code_fingerprint": "72c9809cc056238504d36127fa21cd92ba8819e1a701e2372197665152bb99e9",
-      "label": "concept_evidence_instances",
-      "last": "2026-08-22T19:12:57.083487+00:00",
+    "package_scripts_format": {
+      "code_fingerprint": "6f717a6d87acd613552881ce08f669fef8551575c61472e15ac8eb14dfbb325a",
+      "label": "format",
+      "last": "2026-08-27T07:40:14.668733+00:00",
       "provenance": [
         {
-          "date": "2026-08-22T19:12:57.083487+00:00",
+          "date": "2026-08-27T07:40:14.668733+00:00",
           "outcome": "useful",
-          "q": "Graphify current repository and trace Tasks 007-008 paths to validate the Task 009 implementation plan."
+          "q": "Fix GitHub Actions pnpm check formatting failure shown in the attached screenshot"
         }
       ],
-      "score": 0.999793574,
-      "source_file": "packages/db/migrations/009_concept_evidence_classification.sql",
+      "score": 0.842410264,
+      "source_file": "package.json",
       "status": "tentative",
       "uses": 1
+    },
+    "packages_db_src_analysis_repository_analysisrepository": {
+      "code_fingerprint": "bedd11d49ec94b294a765fbefd7c825bf9cbc3e5eb250d7b9cd412895cc64916",
+      "label": "AnalysisRepository",
+      "last": "2026-08-28T02:45:40.979780+00:00",
+      "provenance": [
+        {
+          "date": "2026-08-28T02:45:40.979780+00:00",
+          "outcome": "useful",
+          "q": "Trace Task 009 and Task 010 artifacts into Task 011 academy coach student workflow boundaries"
+        },
+        {
+          "date": "2026-08-27T17:04:02.361736+00:00",
+          "outcome": "useful",
+          "q": "Trace Task 009 to Task 010 and validate Adaptive Training Engine integration boundaries"
+        }
+      ],
+      "score": 1.70810116,
+      "source_file": "packages/db/src/analysis-repository.ts",
+      "status": "preferred",
+      "uses": 2
     },
     "packages_db_src_classification_repository_classificationrepository": {
       "code_fingerprint": "582cbed5497ec922caab5daa1b57eb7ca0bdbc4101e3e69695ae6847bffaf73c",
       "label": "ClassificationRepository",
-      "last": "2026-08-22T19:12:57.083487+00:00",
+      "last": "2026-08-28T02:45:40.979780+00:00",
       "provenance": [
+        {
+          "date": "2026-08-28T02:45:40.979780+00:00",
+          "outcome": "useful",
+          "q": "Trace Task 009 and Task 010 artifacts into Task 011 academy coach student workflow boundaries"
+        },
+        {
+          "date": "2026-08-27T17:04:02.361736+00:00",
+          "outcome": "useful",
+          "q": "Trace Task 009 to Task 010 and validate Adaptive Training Engine integration boundaries"
+        },
         {
           "date": "2026-08-22T19:12:57.083487+00:00",
           "outcome": "useful",
           "q": "Graphify current repository and trace Tasks 007-008 paths to validate the Task 009 implementation plan."
         }
       ],
-      "score": 0.999793574,
+      "score": 2.466991394,
       "source_file": "packages/db/src/classification-repository.ts",
+      "status": "preferred",
+      "uses": 3
+    },
+    "packages_db_src_migrations": {
+      "code_fingerprint": "b598289fbc769205305f6e92c82028eb2e7ce544374f244f216a960a3552331c",
+      "label": "migrations.ts",
+      "last": "2026-08-29T11:01:26.284191+00:00",
+      "provenance": [
+        {
+          "date": "2026-08-29T11:01:26.284191+00:00",
+          "outcome": "useful",
+          "q": "Trace Task 013 production security, database, migration, worker, session, invitation, password reset, and audit paths"
+        }
+      ],
+      "score": 0.885103974,
+      "source_file": "packages/db/src/migrations.ts",
       "status": "tentative",
       "uses": 1
     },
@@ -76,8 +203,72 @@
           "q": "Graphify current repository and trace Tasks 007-008 paths to validate the Task 009 implementation plan."
         }
       ],
-      "score": 0.999793574,
+      "score": 0.758890234,
       "source_file": "packages/db/src/ontology-repository.ts",
+      "status": "tentative",
+      "uses": 1
+    },
+    "packages_domain_src_ontology_conceptevidencepolicy": {
+      "code_fingerprint": "38158f99d0b1f2090db47f91bc7d77ffcd3e3d826c89b1e5e784326953c79c27",
+      "label": "ConceptEvidencePolicy",
+      "last": "2026-08-27T17:04:02.361736+00:00",
+      "provenance": [
+        {
+          "date": "2026-08-27T17:04:02.361736+00:00",
+          "outcome": "useful",
+          "q": "Trace Task 009 to Task 010 and validate Adaptive Training Engine integration boundaries"
+        }
+      ],
+      "score": 0.850065389,
+      "source_file": "packages/domain/src/ontology.ts",
+      "status": "tentative",
+      "uses": 1
+    },
+    "pnpm_workspace_pnpm_workspace": {
+      "code_fingerprint": "e0ff1713d2062ea44ae91fbe8fdaa0c1898183dad53875e41572f35bccf4f7a8",
+      "label": "pnpm Workspace",
+      "last": "2026-08-27T07:40:14.668733+00:00",
+      "provenance": [
+        {
+          "date": "2026-08-27T07:40:14.668733+00:00",
+          "outcome": "useful",
+          "q": "Fix GitHub Actions pnpm check formatting failure shown in the attached screenshot"
+        }
+      ],
+      "score": 0.842410264,
+      "source_file": "pnpm-workspace.yaml",
+      "status": "tentative",
+      "uses": 1
+    },
+    "prettier": {
+      "code_fingerprint": "6f717a6d87acd613552881ce08f669fef8551575c61472e15ac8eb14dfbb325a",
+      "label": "prettier",
+      "last": "2026-08-27T07:40:14.668733+00:00",
+      "provenance": [
+        {
+          "date": "2026-08-27T07:40:14.668733+00:00",
+          "outcome": "useful",
+          "q": "Fix GitHub Actions pnpm check formatting failure shown in the attached screenshot"
+        }
+      ],
+      "score": 0.842410264,
+      "source_file": "package.json",
+      "status": "tentative",
+      "uses": 1
+    },
+    "prettierrc": {
+      "code_fingerprint": "ebe733191f06a29fdd34a4683327d9a36c008ed8da564d8e7def1c700d7463ff",
+      "label": ".prettierrc.json",
+      "last": "2026-08-27T07:40:14.668733+00:00",
+      "provenance": [
+        {
+          "date": "2026-08-27T07:40:14.668733+00:00",
+          "outcome": "useful",
+          "q": "Fix GitHub Actions pnpm check formatting failure shown in the attached screenshot"
+        }
+      ],
+      "score": 0.842410264,
+      "source_file": ".prettierrc.json",
       "status": "tentative",
       "uses": 1
     }

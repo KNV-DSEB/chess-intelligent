@@ -9,7 +9,8 @@
   "scripts": {
     "build": "tsc --noEmit",
     "dev": "tsx watch src/worker.ts",
-    "start": "tsx src/worker.ts",
+    "start": "node dist/worker.js",
+    "health": "node dist/health-cli.js",
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {

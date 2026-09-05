@@ -222,7 +222,11 @@ describe.sequential('Task 006 Player Intelligence dossier', () => {
       ? new PgDatabase(process.env.TEST_PLAYER_INTELLIGENCE_DATABASE_URL)
       : await PGliteDatabase.create();
     await runMigrations(database);
-    app = await buildApp({ database, now: () => new Date('2026-08-21T08:00:00Z') });
+    app = await buildApp({
+      database,
+      internalDevRoutes: true,
+      now: () => new Date('2026-08-21T08:00:00Z'),
+    });
 
     for (let index = 0; index < fixtures.length; index += 1) {
       const response = await app.inject({

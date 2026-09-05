@@ -10,7 +10,7 @@ import { buildApp } from '../src/app';
 it('manually exercises import and retrieval over a real HTTP listener', async () => {
   const database = await PGliteDatabase.create();
   const applied = await runMigrations(database);
-  const app = await buildApp({ database });
+  const app = await buildApp({ database, internalDevRoutes: true });
 
   try {
     const address = await app.listen({ host: '127.0.0.1', port: 0 });
@@ -50,6 +50,10 @@ it('manually exercises import and retrieval over a real HTTP listener', async ()
         '008_chess_concept_ontology.sql',
         '009_concept_evidence_classification.sql',
         '010_player_skill_graph.sql',
+        '011_adaptive_training_engine.sql',
+        '012_coach_student_intelligence.sql',
+        '013_academy_production_foundation.sql',
+        '014_production_verification_foundation.sql',
       ],
       importHttpStatus: 201,
       importStatus: 'created',

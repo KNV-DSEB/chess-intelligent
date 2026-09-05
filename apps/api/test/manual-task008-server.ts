@@ -59,7 +59,7 @@ class ManualConceptEngine implements ChessEngine {
 const database = await PGliteDatabase.create();
 await runMigrations(database);
 await new OntologyRepository(database).sync(await readOntologySourceFile());
-const app = await buildApp({ database });
+const app = await buildApp({ database, internalDevRoutes: true });
 const pgn = await readFile(new URL('./fixtures/concept-evidence.pgn', import.meta.url), 'utf8');
 const imported = await app.inject({
   method: 'POST',

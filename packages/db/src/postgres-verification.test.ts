@@ -32,6 +32,11 @@ integrationDescribe('PostgreSQL migration verification', () => {
       '007_player_intelligence_dossier.sql',
       '008_chess_concept_ontology.sql',
       '009_concept_evidence_classification.sql',
+      '010_player_skill_graph.sql',
+      '011_adaptive_training_engine.sql',
+      '012_coach_student_intelligence.sql',
+      '013_academy_production_foundation.sql',
+      '014_production_verification_foundation.sql',
     ]);
 
     const gameColumns = await database.query<{ column_name: string }>(

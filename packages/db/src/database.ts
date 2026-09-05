@@ -15,6 +15,14 @@ export interface Database extends QueryClient {
   close(): Promise<void>;
 }
 
+export interface PgDatabaseOptions {
+  maxConnections?: number | undefined;
+  connectionTimeoutMillis?: number | undefined;
+  statementTimeoutMillis?: number | undefined;
+  applicationName?: string | undefined;
+  onPoolError?: ((error: Error) => void) | undefined;
+}
+
 class PgQueryClient implements QueryClient {
   constructor(private readonly client: Pick<Pool, 'query'>) {}
 
@@ -31,8 +39,18 @@ class PgQueryClient implements QueryClient {
 export class PgDatabase implements Database {
   private readonly pool: Pool;
 
-  constructor(connectionString: string) {
-    this.pool = new Pool({ connectionString });
+  constructor(connectionString: string, options: PgDatabaseOptions = {}) {
+    this.pool = new Pool({
+      connectionString,
+      max: options.maxConnections ?? 10,
+      connectionTimeoutMillis: options.connectionTimeoutMillis ?? 5_000,
+      statement_timeout: options.statementTimeoutMillis ?? 30_000,
+      application_name: options.applicationName ?? 'chess-intelligent',
+    });
+    // pg-pool emits errors from idle clients when PostgreSQL disappears. An
+    // unhandled EventEmitter error terminates the Node process, which would
+    // collapse liveness together with database readiness during an outage.
+    this.pool.on('error', options.onPoolError ?? (() => undefined));
   }
 
   async query<Row>(sql: string, parameters: readonly unknown[] = []): Promise<DatabaseResult<Row>> {

@@ -169,7 +169,11 @@ describe.sequential('Task 005 opponent opening intelligence', () => {
       ? new PgDatabase(process.env.TEST_PREPARATION_DATABASE_URL)
       : await PGliteDatabase.create();
     await runMigrations(database);
-    app = await buildApp({ database, now: () => new Date('2026-08-21T08:00:00Z') });
+    app = await buildApp({
+      database,
+      internalDevRoutes: true,
+      now: () => new Date('2026-08-21T08:00:00Z'),
+    });
 
     const importPgn = async (pgn: string): Promise<{ gameId: string; status: string }> => {
       const response = await app.inject({

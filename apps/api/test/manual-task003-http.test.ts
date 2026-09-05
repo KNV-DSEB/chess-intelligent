@@ -13,7 +13,7 @@ const initialFen = 'rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1';
 it('manually exercises exact Player filtering and four-ply corpus navigation over HTTP', async () => {
   const database = await PGliteDatabase.create();
   const migrations = await runMigrations(database);
-  const app = await buildApp({ database });
+  const app = await buildApp({ database, internalDevRoutes: true });
 
   try {
     const address = await app.listen({ host: '127.0.0.1', port: 0 });

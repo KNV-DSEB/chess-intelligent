@@ -1,0 +1,19 @@
+https://{$PUBLIC_HOST:localhost} {
+  tls internal
+  encode zstd gzip
+
+  header {
+    X-Content-Type-Options nosniff
+    Referrer-Policy no-referrer
+    X-Frame-Options DENY
+    Content-Security-Policy "frame-ancestors 'none'; base-uri 'self'; form-action 'self'"
+  }
+
+  handle_path /api/* {
+    reverse_proxy api:4000
+  }
+
+  handle {
+    reverse_proxy web:3000
+  }
+}

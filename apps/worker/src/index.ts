@@ -5,3 +5,4 @@ export {
   buildUciPositionCommand,
   parseUciInfoLine,
 } from './stockfish-uci-engine';
+export { runWorkerLoop, type WorkerLoopOptions, type WorkerLoopTarget } from './worker-loop';

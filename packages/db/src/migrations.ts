@@ -4,6 +4,7 @@ import { fileURLToPath } from 'node:url';
 import type { Database } from './database';
 
 const DEFAULT_MIGRATIONS_DIRECTORY = fileURLToPath(new URL('../migrations/', import.meta.url));
+export const LATEST_MIGRATION_NAME = '014_production_verification_foundation.sql';
 
 interface AppliedMigrationRow {
   name: string;
@@ -41,4 +42,12 @@ export async function runMigrations(
   }
 
   return newlyApplied;
+}
+
+export async function isSchemaCurrent(database: Database): Promise<boolean> {
+  const result = await database.query<{ name: string }>(
+    'SELECT name FROM schema_migrations WHERE name = $1',
+    [LATEST_MIGRATION_NAME],
+  );
+  return result.rows[0]?.name === LATEST_MIGRATION_NAME;
 }

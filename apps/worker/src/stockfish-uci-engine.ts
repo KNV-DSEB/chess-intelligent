@@ -83,7 +83,7 @@ export function buildUciPositionCommand(initialFen: string, moves: readonly stri
   return moves.length === 0 ? root : `${root} moves ${moves.join(' ')}`;
 }
 
-function buildGoCommand(request: EngineAnalysisRequest): string {
+export function buildUciGoCommand(request: EngineAnalysisRequest): string {
   const searchMoves = request.allowedRootMoves?.length
     ? ` searchmoves ${request.allowedRootMoves.join(' ')}`
     : '';
@@ -94,7 +94,7 @@ function buildGoCommand(request: EngineAnalysisRequest): string {
       : limit.type === 'NODES'
         ? `nodes ${limit.value}`
         : `movetime ${limit.value}`;
-  return `go${searchMoves} ${command}`;
+  return `go ${command}${searchMoves}`;
 }
 
 export class StockfishUciEngine implements ChessEngine {
@@ -217,7 +217,7 @@ export class StockfishUciEngine implements ChessEngine {
     await this.exchange('isready', (line) => line === 'readyok', this.startupTimeoutMs);
     this.write(buildUciPositionCommand(request.position.initialFen, request.position.moves));
     const lines = await this.exchange(
-      buildGoCommand(request),
+      buildUciGoCommand(request),
       (line) => line.startsWith('bestmove '),
       request.configuration.analysisTimeoutMs,
     );

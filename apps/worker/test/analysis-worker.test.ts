@@ -84,7 +84,7 @@ describe('Task 004 analysis application and worker', () => {
   beforeEach(async () => {
     database = await PGliteDatabase.create();
     await runMigrations(database);
-    app = await buildApp({ database });
+    app = await buildApp({ database, internalDevRoutes: true });
     pgn = await readFile(fixtureUrl, 'utf8');
   });
 

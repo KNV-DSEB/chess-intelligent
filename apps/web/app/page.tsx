@@ -9,6 +9,12 @@ export default function HomePage() {
         evidence kept separate.
       </p>
       <div className="home-actions">
+        <a className="button-link" href="/academy">
+          Open academy workflow
+        </a>
+        <a className="button-link" href="/training">
+          Open adaptive training
+        </a>
         <a className="button-link" href="/intelligence/skills">
           Build a Player Skill Graph
         </a>

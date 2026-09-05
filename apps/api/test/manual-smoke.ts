@@ -12,7 +12,7 @@ interface ImportResponse {
 
 const database = await PGliteDatabase.create();
 const applied = await runMigrations(database);
-const app = await buildApp({ database });
+const app = await buildApp({ database, internalDevRoutes: true });
 
 try {
   const address = await app.listen({ host: '127.0.0.1', port: 0 });
