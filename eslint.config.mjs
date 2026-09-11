@@ -13,6 +13,7 @@ export default tseslint.config(
       '**/.backups/**',
       '**/.tmp-task*/**',
       '**/graphify-out/**',
+      '**/.agents/skills/**',
     ],
   },
   eslint.configs.recommended,

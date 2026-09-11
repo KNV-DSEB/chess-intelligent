@@ -119,3 +119,8 @@ export {
   AnalysisRepositoryError,
   analysisProfileConfigurationHash,
 } from './analysis-repository';
+export type {
+  CreateGroundedAiArtifactInput,
+  GroundedAiArtifactRecord,
+} from './grounded-ai-repository';
+export { GroundedAiRepository } from './grounded-ai-repository';

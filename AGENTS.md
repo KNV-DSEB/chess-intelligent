@@ -113,6 +113,18 @@
 - Readiness must fail when critical database/schema dependencies are unavailable, and authorization dependency failures must fail closed.
 - Idle PostgreSQL pool errors must be handled so an outage does not terminate API/Worker processes; liveness remains process-level while readiness and protected requests fail closed.
 - Production gate failures must be reported honestly; do not downgrade blockers to warnings merely to finish a task.
+- New classification runs must pin CONCEPT_CLASSIFIER_BUNDLE_V1 or
+  CONCEPT_CLASSIFIER_BUNDLE_V2; never reinterpret a V1 run with V2 rules.
+- CONCEPT_COVERAGE_REPORT_V1 is system capability, not Player evidence. Keep
+  SYSTEM_UNSUPPORTED, NO_EVIDENCE, and INSUFFICIENT_EVIDENCE distinct.
+- Training Generator V2 may materialize only the eight registry-supported tactical concepts from
+  exact Task 008 + Task 004 evidence under the same classifier bundle/configuration.
+- Grounded AI receives only a compact exact structured snapshot and may emit only server-validated
+  claim types with permitted evidence references. Invalid/provider-failed output persists nothing.
+- Grounded AI artifacts are append-only explanation provenance. They never create or alter chess
+  truth, concept evidence, mastery, training, assignments, identity, consent, or security state.
+- Coach and Student AI routes remain Academy-scoped; Student scope is derived from the authenticated
+  membership and consent gate. AI is optional and the platform must operate without a provider.
 
 ## External data rule
 

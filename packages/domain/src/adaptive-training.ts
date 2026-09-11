@@ -16,9 +16,9 @@ import {
   type SkillGraphAggregationResult,
 } from './player-skill-graph';
 
-export const TRAINING_CANDIDATE_POLICY_VERSION = 'TRAINING_CANDIDATE_POLICY_V1';
+export const TRAINING_CANDIDATE_POLICY_VERSION = 'TRAINING_CANDIDATE_POLICY_V2';
 export const TRAINING_ITEM_SOURCE_POLICY_VERSION = 'TRAINING_ITEM_SOURCE_POLICY_V1';
-export const TRAINING_ITEM_GENERATOR_VERSION = 'TACTICAL_TRAINING_ITEM_GENERATOR_V1';
+export const TRAINING_ITEM_GENERATOR_VERSION = 'TACTICAL_TRAINING_ITEM_GENERATOR_V2';
 export const TRAINING_REVEAL_POLICY_VERSION = 'TRAINING_REVEAL_POLICY_V1';
 export const TRAINING_COOLDOWN_VERSION = 'TRAINING_COOLDOWN_V1';
 export const TRAINING_EVIDENCE_SELECTION_VERSION = 'TRAINING_EVIDENCE_SELECTION_V1';
@@ -68,16 +68,23 @@ export type TrainingItemType = (typeof TRAINING_ITEM_TYPES)[number];
 export const TRAINING_ATTEMPT_RESULTS = ['CORRECT', 'INCORRECT'] as const;
 export type TrainingAttemptResult = (typeof TRAINING_ATTEMPT_RESULTS)[number];
 
-export const SUPPORTED_TRAINING_CONCEPT_IDS = [
+export const SUPPORTED_TRAINING_CONCEPT_IDS_V1 = [
   'tactics.discovered_attack',
   'tactics.fork',
   'tactics.pin',
   'tactics.skewer',
 ] as const;
+export const SUPPORTED_TRAINING_CONCEPT_IDS = [
+  ...SUPPORTED_TRAINING_CONCEPT_IDS_V1,
+  'tactics.back_rank',
+  'tactics.interference',
+  'tactics.overload',
+  'tactics.removal_of_defender',
+] as const;
 export type SupportedTrainingConceptId = (typeof SUPPORTED_TRAINING_CONCEPT_IDS)[number];
 
 export const TRAINING_CANDIDATE_POLICY_V1 = {
-  version: TRAINING_CANDIDATE_POLICY_VERSION,
+  version: 'TRAINING_CANDIDATE_POLICY_V1',
   remediation: {
     statuses: ['ESTIMATED'],
     minimumEvidenceConfidence: 'MODERATE',
@@ -88,7 +95,7 @@ export const TRAINING_CANDIDATE_POLICY_V1 = {
     statuses: ['NO_EVIDENCE', 'INSUFFICIENT_EVIDENCE'],
     includeLowConfidenceEstimated: true,
   },
-  supportedConceptStableIds: SUPPORTED_TRAINING_CONCEPT_IDS,
+  supportedConceptStableIds: SUPPORTED_TRAINING_CONCEPT_IDS_V1,
   prerequisite: {
     sufficientConfidence: ['MODERATE', 'HIGH'],
     readyBands: ['ESTABLISHED', 'STRONG_EVIDENCE_OF_MASTERY'],
@@ -103,6 +110,12 @@ export const TRAINING_CANDIDATE_POLICY_V1 = {
   cooldownDays: 14,
 } as const;
 
+export const TRAINING_CANDIDATE_POLICY_V2 = {
+  ...TRAINING_CANDIDATE_POLICY_V1,
+  version: TRAINING_CANDIDATE_POLICY_VERSION,
+  supportedConceptStableIds: SUPPORTED_TRAINING_CONCEPT_IDS,
+} as const;
+
 export const TRAINING_ITEM_SOURCE_POLICY_V1 = {
   version: TRAINING_ITEM_SOURCE_POLICY_VERSION,
   scope: 'FOCAL_PLAYER_SELECTED_CANONICAL_GAMES_ONLY',
@@ -114,7 +127,7 @@ export const TRAINING_ITEM_SOURCE_POLICY_V1 = {
 } as const;
 
 export const TACTICAL_TRAINING_ITEM_GENERATOR_V1 = {
-  version: TRAINING_ITEM_GENERATOR_VERSION,
+  version: 'TACTICAL_TRAINING_ITEM_GENERATOR_V1',
   itemType: 'FIND_BEST_MOVE',
   acceptedMoveDerivation: {
     REMEDIATION: 'TASK_008_NEGATIVE_FACT_BEST_MOVE_UCI',
@@ -123,6 +136,13 @@ export const TACTICAL_TRAINING_ITEM_GENERATOR_V1 = {
   requireLegalMove: true,
   requireDetectedTargetMotif: true,
   allowNewEngineSearch: false,
+} as const;
+
+export const TACTICAL_TRAINING_ITEM_GENERATOR_V2 = {
+  ...TACTICAL_TRAINING_ITEM_GENERATOR_V1,
+  version: TRAINING_ITEM_GENERATOR_VERSION,
+  supportedConceptStableIds: SUPPORTED_TRAINING_CONCEPT_IDS,
+  requiresMatchingClassifierBundle: 'CONCEPT_CLASSIFIER_BUNDLE_V2',
 } as const;
 
 export const TRAINING_REVEAL_POLICY_V1 = {
@@ -154,12 +174,36 @@ export const SKILL_GRAPH_POLICY_V2 = {
   },
 } as const;
 
-export function trainingCandidatePolicyConfigSha256(): string {
-  return deterministicSha256(TRAINING_CANDIDATE_POLICY_V1);
+export function trainingPolicyForClassifierBundle(classifierBundleVersion: string) {
+  return classifierBundleVersion === 'CONCEPT_CLASSIFIER_BUNDLE_V1'
+    ? {
+        candidatePolicyVersion: 'TRAINING_CANDIDATE_POLICY_V1',
+        candidatePolicy: TRAINING_CANDIDATE_POLICY_V1,
+        generatorVersion: 'TACTICAL_TRAINING_ITEM_GENERATOR_V1',
+        generator: TACTICAL_TRAINING_ITEM_GENERATOR_V1,
+        supportedConceptStableIds: SUPPORTED_TRAINING_CONCEPT_IDS_V1 as readonly string[],
+      }
+    : {
+        candidatePolicyVersion: TRAINING_CANDIDATE_POLICY_VERSION,
+        candidatePolicy: TRAINING_CANDIDATE_POLICY_V2,
+        generatorVersion: TRAINING_ITEM_GENERATOR_VERSION,
+        generator: TACTICAL_TRAINING_ITEM_GENERATOR_V2,
+        supportedConceptStableIds: SUPPORTED_TRAINING_CONCEPT_IDS as readonly string[],
+      };
 }
 
-export function trainingItemGeneratorConfigSha256(): string {
-  return deterministicSha256(TACTICAL_TRAINING_ITEM_GENERATOR_V1);
+export function trainingCandidatePolicyConfigSha256(classifierBundleVersion?: string): string {
+  return deterministicSha256(
+    trainingPolicyForClassifierBundle(classifierBundleVersion ?? 'CONCEPT_CLASSIFIER_BUNDLE_V2')
+      .candidatePolicy,
+  );
+}
+
+export function trainingItemGeneratorConfigSha256(classifierBundleVersion?: string): string {
+  return deterministicSha256(
+    trainingPolicyForClassifierBundle(classifierBundleVersion ?? 'CONCEPT_CLASSIFIER_BUNDLE_V2')
+      .generator,
+  );
 }
 
 export function skillGraphV2PolicyConfigSha256(input: {
@@ -193,6 +237,7 @@ export interface TrainingCandidateSelectionInput {
   }>;
   sources: readonly TrainingSourceCandidate[];
   recentlyAttemptedSourceEvidenceIds?: readonly string[] | undefined;
+  supportedConceptStableIds?: readonly string[] | undefined;
 }
 
 export interface TrainingCandidateDecision {
@@ -215,8 +260,8 @@ const CONFIDENCE_RANK: Readonly<Record<SkillEvidenceConfidence, number>> = {
   HIGH: 3,
 };
 
-function isSupportedConcept(stableId: string): stableId is SupportedTrainingConceptId {
-  return (SUPPORTED_TRAINING_CONCEPT_IDS as readonly string[]).includes(stableId);
+function isSupportedConcept(stableId: string, supported: readonly string[]): boolean {
+  return supported.includes(stableId);
 }
 
 function prerequisiteReadiness(
@@ -300,6 +345,7 @@ export function selectTrainingCandidates(
     input.concepts.map((entry) => [entry.state.conceptStableId, entry.state]),
   );
   const cooldown = new Set(input.recentlyAttemptedSourceEvidenceIds ?? []);
+  const supported = input.supportedConceptStableIds ?? SUPPORTED_TRAINING_CONCEPT_IDS;
   const decisions: Array<TrainingCandidateDecision & { posterior: number; evidenceDate: string }> =
     [];
 
@@ -323,7 +369,7 @@ export function selectTrainingCandidates(
         ? 'SUFFICIENT_NEGATIVE_MASTERY_EVIDENCE'
         : 'NEEDS_MORE_DIRECT_EVIDENCE';
 
-    if (!isSupportedConcept(detail.stableId)) {
+    if (!isSupportedConcept(detail.stableId, supported)) {
       disposition = 'UNSUPPORTED_CONCEPT_V1';
       reasonCode = 'UNSUPPORTED_ITEM_TYPE';
     } else if (!trainingPolicy) {

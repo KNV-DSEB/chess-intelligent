@@ -2,6 +2,14 @@
 
 import { type FormEvent, useCallback, useEffect, useState } from 'react';
 import { useParams } from 'next/navigation';
+import {
+  GroundedBriefPanel,
+  LearningIntelligencePanel,
+  type ConceptEvidenceDetail,
+  type CoverageReport,
+  type GroundedBriefArtifact,
+  type SkillGraph,
+} from '../../../components/learning-intelligence';
 
 const apiUrl = process.env.NEXT_PUBLIC_API_URL ?? '/api';
 
@@ -145,6 +153,11 @@ export default function StudentIntelligencePage() {
   const [selectedPlanId, setSelectedPlanId] = useState('');
   const [selectedItemIds, setSelectedItemIds] = useState<string[]>([]);
   const [progress, setProgress] = useState<ProgressResponse | null>(null);
+  const [skillGraph, setSkillGraph] = useState<SkillGraph | null>(null);
+  const [coverageReport, setCoverageReport] = useState<CoverageReport | null>(null);
+  const [brief, setBrief] = useState<GroundedBriefArtifact | null>(null);
+  const [briefUnavailable, setBriefUnavailable] = useState<string | null>(null);
+  const [briefBusy, setBriefBusy] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [notice, setNotice] = useState<string | null>(null);
@@ -169,6 +182,27 @@ export default function StudentIntelligencePage() {
           ),
         );
         setData(result);
+        if (result.skillGraph) {
+          const [graph, coverage] = await Promise.all([
+            responseBody<SkillGraph>(
+              await fetch(
+                `${apiUrl}/academies/${academy}/students/${studentId}/skill-graph/${result.skillGraph.run.id}`,
+                { credentials: 'include' },
+              ),
+            ),
+            responseBody<CoverageReport>(
+              await fetch(
+                `${apiUrl}/intelligence/concept-coverage?ontologyVersion=${encodeURIComponent(result.profile.ontologyVersion)}`,
+                { credentials: 'include' },
+              ),
+            ),
+          ]);
+          setSkillGraph(graph);
+          setCoverageReport(coverage);
+        } else {
+          setSkillGraph(null);
+          setCoverageReport(null);
+        }
         setSelectedPlanId((current) =>
           result.trainingPlans.some((plan) => plan.id === current)
             ? current
@@ -279,6 +313,44 @@ export default function StudentIntelligencePage() {
     }
   }
 
+  async function inspectConcept(stableId: string): Promise<ConceptEvidenceDetail> {
+    if (!skillGraph) throw new Error('No compatible Skill Graph is available.');
+    return responseBody<ConceptEvidenceDetail>(
+      await fetch(
+        `${apiUrl}/academies/${academyId}/students/${studentId}/skill-graph/${skillGraph.run.id}/concepts/${encodeURIComponent(stableId)}`,
+        { credentials: 'include' },
+      ),
+    );
+  }
+
+  async function generateBrief(): Promise<void> {
+    if (!skillGraph) return;
+    setBriefBusy(true);
+    setBriefUnavailable(null);
+    try {
+      const artifact = await responseBody<GroundedBriefArtifact>(
+        await fetch(`${apiUrl}/academies/${academyId}/students/${studentId}/ai-briefs`, {
+          method: 'POST',
+          credentials: 'include',
+          headers: { 'content-type': 'application/json' },
+          body: JSON.stringify({
+            skillGraphRunId: skillGraph.run.id,
+            trainingPlanRunId: data?.trainingPlans[0]?.id ?? null,
+          }),
+        }),
+      );
+      setBrief(artifact);
+    } catch (caught) {
+      setBriefUnavailable(
+        caught instanceof Error
+          ? caught.message
+          : 'AI briefing is unavailable. Structured intelligence remains available.',
+      );
+    } finally {
+      setBriefBusy(false);
+    }
+  }
+
   return (
     <section className="panel wide academy-page">
       <a href={`/academy?academyId=${academyId}`}>← Academy roster</a>
@@ -309,7 +381,7 @@ export default function StudentIntelligencePage() {
             <span>StudentProfile and Player remain separate identities.</span>
           </aside>
 
-          <section className="academy-section">
+          <section className="academy-section" id="compatible-skill-graph">
             <div className="section-heading">
               <div>
                 <h2>Compatible Skill Graph</h2>
@@ -365,7 +437,61 @@ export default function StudentIntelligencePage() {
             )}
           </section>
 
-          <section className="academy-section">
+          {skillGraph && coverageReport ? (
+            <>
+              <div className="pilot-intelligence-layout">
+                <LearningIntelligencePanel
+                  graph={skillGraph}
+                  coverage={coverageReport}
+                  audience="COACH"
+                  onInspect={inspectConcept}
+                />
+                <div className="pilot-side-rail">
+                  <GroundedBriefPanel
+                    artifact={brief}
+                    unavailable={briefUnavailable}
+                    busy={briefBusy}
+                    onGenerate={() => void generateBrief()}
+                    onInspectConcept={inspectConcept}
+                  />
+                  <section className="next-actions">
+                    <div className="section-kicker">Next actions</div>
+                    <h2>Move from evidence to practice</h2>
+                    <ol>
+                      <li>Inspect the exact game or training lineage.</li>
+                      <li>Choose items from an immutable TrainingPlan below.</li>
+                      <li>Refresh the Skill Graph only after new evidence exists.</li>
+                    </ol>
+                  </section>
+                  <section className="opening-context">
+                    <span>Opening context</span>
+                    <p>
+                      Historical repertoire stays available as supporting context, not learning
+                      truth.
+                    </p>
+                    <a href="/preparation">Open repertoire intelligence</a>
+                  </section>
+                </div>
+              </div>
+              <section className="recent-change" aria-labelledby="recent-change-title">
+                <div>
+                  <div className="section-kicker">Recent change</div>
+                  <h2 id="recent-change-title">
+                    {data.freshness.status === 'REFRESH_AVAILABLE'
+                      ? 'New evidence is waiting for an explicit graph refresh'
+                      : 'Current graph matches the selected evidence snapshot'}
+                  </h2>
+                </div>
+                <p>
+                  {data.freshness.newTrainingEvidenceCount} new training unit
+                  {data.freshness.newTrainingEvidenceCount === 1 ? '' : 's'} · comparison is only
+                  shown when run identities remain compatible.
+                </p>
+              </section>
+            </>
+          ) : null}
+
+          <section className="academy-section" id="training-history">
             <h2>Training history</h2>
             <div className="academy-coverage-grid">
               <span>

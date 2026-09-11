@@ -10,6 +10,9 @@ coverage/
 npm-debug.log*
 pnpm-debug.log*
 .tmp-task*/
+.impeccable/review/
+.agents/
+**/__pycache__/
 .backups/
 *.dump
 *.dump.manifest.json

@@ -1,12 +1,15 @@
 'use client';
 
-import { type FormEvent, useState } from 'react';
+import { type FormEvent, useEffect, useState } from 'react';
 
 const apiUrl = process.env.NEXT_PUBLIC_API_URL ?? '/api';
 
 export default function LoginPage() {
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
+  const [hydrated, setHydrated] = useState(false);
+
+  useEffect(() => setHydrated(true), []);
 
   async function submit(event: FormEvent<HTMLFormElement>): Promise<void> {
     event.preventDefault();
@@ -33,7 +36,12 @@ export default function LoginPage() {
       <p className="eyebrow">Secure Academy access</p>
       <h1>Sign in</h1>
       <p>Use the account created through your Academy invitation.</p>
-      <form className="stacked-form" onSubmit={(event) => void submit(event)}>
+      <form
+        className="stacked-form"
+        method="post"
+        data-hydrated={hydrated ? 'true' : 'false'}
+        onSubmit={(event) => void submit(event)}
+      >
         <label>
           Email
           <input name="email" type="email" autoComplete="email" required />
@@ -42,7 +50,9 @@ export default function LoginPage() {
           Password
           <input name="password" type="password" autoComplete="current-password" required />
         </label>
-        <button disabled={loading}>{loading ? 'Signing in…' : 'Sign in'}</button>
+        <button disabled={loading || !hydrated}>
+          {!hydrated ? 'Preparing secure sign-in…' : loading ? 'Signing in…' : 'Sign in'}
+        </button>
       </form>
       {error ? <p className="error">{error}</p> : null}
       <p>

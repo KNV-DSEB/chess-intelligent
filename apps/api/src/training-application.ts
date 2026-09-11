@@ -10,9 +10,7 @@ import type {
   TrainingSourceMaterial,
 } from '@chess-intelligent/db';
 import {
-  TRAINING_CANDIDATE_POLICY_VERSION,
   TRAINING_COOLDOWN_VERSION,
-  TRAINING_ITEM_GENERATOR_VERSION,
   TRAINING_ITEM_SOURCE_POLICY_VERSION,
   TRAINING_REVEAL_POLICY_V1,
   TRAINING_REVEAL_POLICY_VERSION,
@@ -21,6 +19,7 @@ import {
   selectTrainingCandidates,
   trainingCandidatePolicyConfigSha256,
   trainingItemGeneratorConfigSha256,
+  trainingPolicyForClassifierBundle,
   type OntologyConceptDetail,
   type OntologySnapshot,
   type TrainingCandidateDecision,
@@ -156,12 +155,14 @@ export class TrainingApplicationService {
       }),
       this.training.getRecentlyAttemptedSourceEvidenceIds(graph.playerId),
     ]);
+    const trainingPolicy = trainingPolicyForClassifierBundle(graph.classifierBundleVersion);
     const candidates = selectTrainingCandidates({
       playerId: graph.playerId,
       asOfDate: graph.asOfDate,
       concepts: states.map((state) => ({ detail: details.get(state.conceptStableId)!, state })),
       sources,
       recentlyAttemptedSourceEvidenceIds: recentSourceIds,
+      supportedConceptStableIds: trainingPolicy.supportedConceptStableIds,
     });
     const sourceById = new Map(sources.map((source) => [source.evidenceInstanceId, source]));
     const items = candidates
@@ -178,11 +179,13 @@ export class TrainingApplicationService {
       playerId: graph.playerId,
       skillGraphRunId: graph.id,
       ontologyVersion: graph.ontologyVersion,
-      trainingCandidatePolicyVersion: TRAINING_CANDIDATE_POLICY_VERSION,
-      candidatePolicyConfigSha256: trainingCandidatePolicyConfigSha256(),
+      trainingCandidatePolicyVersion: trainingPolicy.candidatePolicyVersion,
+      candidatePolicyConfigSha256: trainingCandidatePolicyConfigSha256(
+        graph.classifierBundleVersion,
+      ),
       trainingItemSourcePolicyVersion: TRAINING_ITEM_SOURCE_POLICY_VERSION,
-      trainingItemGeneratorVersion: TRAINING_ITEM_GENERATOR_VERSION,
-      itemGeneratorConfigSha256: trainingItemGeneratorConfigSha256(),
+      trainingItemGeneratorVersion: trainingPolicy.generatorVersion,
+      itemGeneratorConfigSha256: trainingItemGeneratorConfigSha256(graph.classifierBundleVersion),
       revealPolicyVersion: TRAINING_REVEAL_POLICY_VERSION,
       cooldownPolicyVersion: TRAINING_COOLDOWN_VERSION,
       maxItems: input.maxItems,
@@ -352,7 +355,11 @@ export class TrainingApplicationService {
       candidate.candidateType === 'REMEDIATION'
         ? source.facts.bestMoveUci
         : source.facts.playedMoveUci;
-    const validMotif = detectTacticalMoveFacts(positionFen, acceptedMoveUci).some(
+    const classifierBundle =
+      graph.classifierBundleVersion === 'CONCEPT_CLASSIFIER_BUNDLE_V1'
+        ? 'CONCEPT_CLASSIFIER_BUNDLE_V1'
+        : 'CONCEPT_CLASSIFIER_BUNDLE_V2';
+    const validMotif = detectTacticalMoveFacts(positionFen, acceptedMoveUci, classifierBundle).some(
       (fact) => fact.conceptStableId === candidate.conceptStableId,
     );
     if (factMove !== acceptedMoveUci || !validMotif) {

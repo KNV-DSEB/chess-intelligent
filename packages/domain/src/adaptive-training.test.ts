@@ -255,6 +255,36 @@ describe('Task 010 training candidate policy', () => {
       reasonCode: 'SOURCE_IN_COOLDOWN',
     });
   });
+
+  it('expands V2 training support without changing an explicitly pinned V1 policy', () => {
+    const overload = {
+      detail: detail('tactics.overload'),
+      state: state('tactics.overload'),
+    };
+    const sourceEvidence = source('tactics.overload', 'POSITIVE');
+    expect(
+      selectTrainingCandidates({
+        playerId,
+        asOfDate: '2026-08-27',
+        concepts: [overload],
+        sources: [sourceEvidence],
+      })[0],
+    ).toMatchObject({ disposition: 'ELIGIBLE', candidateType: 'DIAGNOSTIC' });
+    expect(
+      selectTrainingCandidates({
+        playerId,
+        asOfDate: '2026-08-27',
+        concepts: [overload],
+        sources: [sourceEvidence],
+        supportedConceptStableIds: [
+          'tactics.discovered_attack',
+          'tactics.fork',
+          'tactics.pin',
+          'tactics.skewer',
+        ],
+      })[0],
+    ).toMatchObject({ disposition: 'UNSUPPORTED_CONCEPT_V1' });
+  });
 });
 
 function gameEvidence(): SkillGraphEvidenceInput {

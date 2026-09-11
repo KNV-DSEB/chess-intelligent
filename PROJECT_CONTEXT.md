@@ -121,6 +121,7 @@ Task 012 — Academy Production Foundation V1
 Task 013 — Production Verification & Deployment Gate V1 (implementation complete)
 Task 014 — Production Gate Execution & Blocker Remediation V1 (execution complete)
 Task 015 — Production Topology & Four-Role Browser Gate Closure V1
+Task 016 — Learning Intelligence Expansion, Grounded AI Briefing & Pilot Experience V1
 ```
 
 Current production gate:
@@ -147,9 +148,8 @@ Non-blocking risks:
 Expected future direction:
 
 ```text
-Next — Task 016: broader deterministic concept/training coverage
-Then — private academy pilot
-Future — Grounded AI Coach after security and evidence coverage are trustworthy
+Next — private academy pilot
+Then — Task 017 driven by pilot evidence
 ```
 
 Do not implement future milestones inside the current task unless explicitly requested.
@@ -181,7 +181,7 @@ The current system can be understood as these layers:
       ↓
 10. Secure Production Access
       ↓
-11. AI Coach              ← future
+11. Grounded AI Briefing  ← optional explanation layer
 ```
 
 Each layer should depend on trusted structured outputs from earlier layers.
@@ -552,6 +552,11 @@ Classifier output is versioned.
 
 Ontology version is always preserved.
 
+Task 016 adds `CONCEPT_CLASSIFIER_BUNDLE_V2` without editing ontology `1.0.0`. New runs can
+observe 13 concepts: eight tactical decision concepts that are also trainable and five neutral
+structural concepts. `CONCEPT_COVERAGE_REPORT_V1` assigns every one of the 64 ontology concepts
+exactly one support status. V1 remains explicitly selectable and reproducible.
+
 ---
 
 # 15. Critical evidence invariant
@@ -901,6 +906,12 @@ LLMs must NOT become authoritative for:
 - mastery mathematics.
 
 Structured systems remain authoritative.
+
+Task 016 introduces an optional Grounded AI Briefing boundary. It receives one compact,
+Academy-scoped, explicit Skill Graph/TrainingPlan/coverage/evidence snapshot. Every output claim
+must cite a permitted reference and pass server validation; provider failures and invalid output
+persist nothing. Successful artifacts are append-only explanation provenance. The product remains
+fully operational when no provider is configured.
 
 ---
 

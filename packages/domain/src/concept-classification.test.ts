@@ -126,7 +126,9 @@ describe('Task 008 ontology enforcement', () => {
 
 describe('Task 008 tactical decision evidence policy', () => {
   it('emits no positive decision evidence without compatible engine evidence', () => {
-    expect(tacticalDecisionEvidenceCandidates(context(), [forkFact], [])).toEqual([]);
+    expect(
+      tacticalDecisionEvidenceCandidates(context(), [forkFact], [], 'CONCEPT_CLASSIFIER_BUNDLE_V1'),
+    ).toEqual([]);
   });
 
   it('emits positive evidence for a geometrically detected low-loss played motif', () => {
@@ -141,6 +143,7 @@ describe('Task 008 tactical decision evidence policy', () => {
       }),
       [forkFact],
       [forkFact],
+      'CONCEPT_CLASSIFIER_BUNDLE_V1',
     );
     expect(candidates).toEqual([
       expect.objectContaining({
@@ -164,6 +167,7 @@ describe('Task 008 tactical decision evidence policy', () => {
       }),
       [],
       [forkFact],
+      'CONCEPT_CLASSIFIER_BUNDLE_V1',
     );
     expect(missed).toEqual([
       expect.objectContaining({
@@ -184,6 +188,7 @@ describe('Task 008 tactical decision evidence policy', () => {
       }),
       [],
       [forkFact],
+      'CONCEPT_CLASSIFIER_BUNDLE_V1',
     );
     expect(trivial).toEqual([]);
   });
@@ -201,6 +206,7 @@ describe('Task 008 tactical decision evidence policy', () => {
         }),
         [],
         [],
+        'CONCEPT_CLASSIFIER_BUNDLE_V1',
       ),
     ).toEqual([]);
   });

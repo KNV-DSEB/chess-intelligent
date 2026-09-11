@@ -113,6 +113,8 @@ export * from './preparation';
 export * from './player-intelligence';
 export * from './ontology';
 export * from './concept-classification';
+export * from './concept-coverage';
+export * from './grounded-ai';
 export * from './player-skill-graph';
 export * from './adaptive-training';
 export * from './coach-student-intelligence';

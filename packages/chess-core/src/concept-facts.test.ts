@@ -58,6 +58,46 @@ describe('TACTICAL_MOTIF_CLASSIFIER_V1 geometry', () => {
   });
 });
 
+describe('TACTICAL_MOTIF_CLASSIFIER_V2 conservative expansion', () => {
+  it('detects removal of a sole defender and rejects a multiply defended target', () => {
+    expect(concepts('k7/3r3q/2B5/8/8/8/8/K6R w - - 0 1', 'c6d7')).toContain(
+      'tactics.removal_of_defender',
+    );
+    expect(concepts('k5b1/3r3q/2B5/8/8/8/8/K6R w - - 0 1', 'c6d7')).not.toContain(
+      'tactics.removal_of_defender',
+    );
+  });
+
+  it('detects interference only when the move cuts the sole slider defence', () => {
+    expect(concepts('1k6/r6q/2B5/8/8/8/1K6/7R w - - 0 1', 'c6d7')).toContain(
+      'tactics.interference',
+    );
+    expect(concepts('1k4b1/r6q/2B5/8/8/8/1K6/7R w - - 0 1', 'c6d7')).not.toContain(
+      'tactics.interference',
+    );
+  });
+
+  it('detects a defender overloaded across two attacked meaningful targets', () => {
+    expect(concepts('k7/3r3q/8/3b4/8/8/1K6/R6R w - - 0 1', 'a1d1')).toContain('tactics.overload');
+    expect(concepts('k7/3r3q/8/8/8/8/1K6/R6R w - - 0 1', 'a1d1')).not.toContain('tactics.overload');
+  });
+
+  it('detects a rook-line back-rank mate and rejects a non-mating check', () => {
+    expect(concepts('6k1/5ppp/8/8/8/8/8/R6K w - - 0 1', 'a1a8')).toContain('tactics.back_rank');
+    expect(concepts('6k1/5p1p/8/8/8/8/8/R6K w - - 0 1', 'a1a8')).not.toContain('tactics.back_rank');
+  });
+
+  it('keeps the V1 bundle reproducible', () => {
+    expect(
+      detectTacticalMoveFacts(
+        '6k1/5ppp/8/8/8/8/8/R6K w - - 0 1',
+        'a1a8',
+        'CONCEPT_CLASSIFIER_BUNDLE_V1',
+      ).map((fact) => fact.conceptStableId),
+    ).not.toContain('tactics.back_rank');
+  });
+});
+
 describe('POSITION_STRUCTURE_CLASSIFIER_V1 geometry', () => {
   it('detects White and Black isolated queen pawns symmetrically', () => {
     expect(
@@ -125,6 +165,16 @@ describe('POSITION_STRUCTURE_CLASSIFIER_V1 geometry', () => {
     );
     expect(detectFileStructureFacts('7k/8/8/8/8/8/3P4/K7 w - - 0 1').semiOpenFiles.BLACK).toContain(
       'd',
+    );
+  });
+
+  it('adds hanging c/d pawns in V2 without changing the V1 result', () => {
+    const fen = '7k/8/8/8/2PP4/8/8/K7 w - - 0 1';
+    expect(structure(fen, 'WHITE', 'pawn_structure.hanging_pawns')).toBeDefined();
+    expect(detectPositionStructureFacts(fen, 'CONCEPT_CLASSIFIER_BUNDLE_V1')).not.toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({ conceptStableId: 'pawn_structure.hanging_pawns' }),
+      ]),
     );
   });
 });

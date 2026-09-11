@@ -65,6 +65,10 @@ describe('Task 002 through 013 migration compatibility', () => {
         new URL('../migrations/014_production_verification_foundation.sql', import.meta.url),
         'utf8',
       );
+      const migration015 = await readFile(
+        new URL('../migrations/015_grounded_ai_briefing.sql', import.meta.url),
+        'utf8',
+      );
       const initialFen = 'rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1';
       const samePositionDifferentClocks =
         'rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 7 42';
@@ -136,6 +140,7 @@ describe('Task 002 through 013 migration compatibility', () => {
       await database.execute(migration012);
       await database.execute(migration013);
       await database.execute(migration014);
+      await database.execute(migration015);
       const games = await database.query<{
         id: string;
         content_status: string;

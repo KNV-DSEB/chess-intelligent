@@ -4,7 +4,7 @@ import { fileURLToPath } from 'node:url';
 import type { Database } from './database';
 
 const DEFAULT_MIGRATIONS_DIRECTORY = fileURLToPath(new URL('../migrations/', import.meta.url));
-export const LATEST_MIGRATION_NAME = '014_production_verification_foundation.sql';
+export const LATEST_MIGRATION_NAME = '015_grounded_ai_briefing.sql';
 
 interface AppliedMigrationRow {
   name: string;

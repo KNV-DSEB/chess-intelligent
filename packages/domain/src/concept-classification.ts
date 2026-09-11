@@ -15,13 +15,19 @@ export type ClassificationRunStatus = (typeof CLASSIFICATION_RUN_STATUSES)[numbe
 export const EVIDENCE_SUBJECT_KINDS = ['POSITION', 'DECISION'] as const;
 export type EvidenceSubjectKind = (typeof EVIDENCE_SUBJECT_KINDS)[number];
 
-export const CONCEPT_CLASSIFIER_BUNDLE_VERSION = 'CONCEPT_CLASSIFIER_BUNDLE_V1';
+export const CONCEPT_CLASSIFIER_BUNDLE_VERSIONS = [
+  'CONCEPT_CLASSIFIER_BUNDLE_V1',
+  'CONCEPT_CLASSIFIER_BUNDLE_V2',
+] as const;
+export type ConceptClassifierBundleVersion = (typeof CONCEPT_CLASSIFIER_BUNDLE_VERSIONS)[number];
+export const CONCEPT_CLASSIFIER_BUNDLE_VERSION: ConceptClassifierBundleVersion =
+  'CONCEPT_CLASSIFIER_BUNDLE_V2';
 export const POSITION_STRUCTURE_CLASSIFIER_ID = 'POSITION_STRUCTURE_CLASSIFIER';
-export const POSITION_STRUCTURE_CLASSIFIER_VERSION = 'V1';
+export const POSITION_STRUCTURE_CLASSIFIER_VERSION = 'V2';
 export const TACTICAL_MOTIF_CLASSIFIER_ID = 'TACTICAL_MOTIF_CLASSIFIER';
-export const TACTICAL_MOTIF_CLASSIFIER_VERSION = 'V1';
+export const TACTICAL_MOTIF_CLASSIFIER_VERSION = 'V2';
 export const TACTICAL_DECISION_CLASSIFIER_ID = 'TACTICAL_DECISION_CLASSIFIER';
-export const TACTICAL_DECISION_CLASSIFIER_VERSION = 'V1';
+export const TACTICAL_DECISION_CLASSIFIER_VERSION = 'V2';
 
 export const CONCEPT_CLASSIFIER_V1_CONFIGURATION = {
   engineSelection: { profile: 'QUICK_V1', profileVersion: 1 },
@@ -46,9 +52,69 @@ export const CONCEPT_CLASSIFIER_V1_CONFIGURATION = {
   },
 } as const;
 
-export function conceptClassifierConfigurationSha256(): string {
+export const CONCEPT_CLASSIFIER_V2_CONFIGURATION = {
+  ...CONCEPT_CLASSIFIER_V1_CONFIGURATION,
+  version: 'V2',
+  tacticalConcepts: [
+    'tactics.fork',
+    'tactics.pin',
+    'tactics.skewer',
+    'tactics.discovered_attack',
+    'tactics.overload',
+    'tactics.interference',
+    'tactics.removal_of_defender',
+    'tactics.back_rank',
+  ],
+  structuralConcepts: [
+    'pawn_structure.isolated_queen_pawn',
+    'pawn_structure.doubled_pawns',
+    'pawn_structure.passed_pawn',
+    'pawn_structure.pawn_majority',
+    'pawn_structure.hanging_pawns',
+  ],
+  conservativeRules: {
+    overloadRequiresTwoSoleDefendedMeaningfulTargets: true,
+    interferenceRequiresLostSliderDefenceAndExistingAttack: true,
+    removalRequiresCapturedSoleDefenderAndExistingAttack: true,
+    backRankRequiresCheckmateAndRookLineCheck: true,
+    hangingPawnsFiles: ['c-d'],
+  },
+} as const;
+
+export interface ConceptClassifierBundleDefinition {
+  bundleVersion: ConceptClassifierBundleVersion;
+  positionClassifierVersion: 'V1' | 'V2';
+  tacticalMotifClassifierVersion: 'V1' | 'V2';
+  tacticalDecisionClassifierVersion: 'V1' | 'V2';
+  configuration:
+    typeof CONCEPT_CLASSIFIER_V1_CONFIGURATION | typeof CONCEPT_CLASSIFIER_V2_CONFIGURATION;
+}
+
+export function conceptClassifierBundleDefinition(
+  bundleVersion: ConceptClassifierBundleVersion = CONCEPT_CLASSIFIER_BUNDLE_VERSION,
+): ConceptClassifierBundleDefinition {
+  return bundleVersion === 'CONCEPT_CLASSIFIER_BUNDLE_V1'
+    ? {
+        bundleVersion,
+        positionClassifierVersion: 'V1',
+        tacticalMotifClassifierVersion: 'V1',
+        tacticalDecisionClassifierVersion: 'V1',
+        configuration: CONCEPT_CLASSIFIER_V1_CONFIGURATION,
+      }
+    : {
+        bundleVersion,
+        positionClassifierVersion: 'V2',
+        tacticalMotifClassifierVersion: 'V2',
+        tacticalDecisionClassifierVersion: 'V2',
+        configuration: CONCEPT_CLASSIFIER_V2_CONFIGURATION,
+      };
+}
+
+export function conceptClassifierConfigurationSha256(
+  bundleVersion: ConceptClassifierBundleVersion = CONCEPT_CLASSIFIER_BUNDLE_VERSION,
+): string {
   return createHash('sha256')
-    .update(JSON.stringify(CONCEPT_CLASSIFIER_V1_CONFIGURATION), 'utf8')
+    .update(JSON.stringify(conceptClassifierBundleDefinition(bundleVersion).configuration), 'utf8')
     .digest('hex');
 }
 
@@ -217,17 +283,19 @@ export function tacticalDecisionEvidenceCandidates(
   context: ClassificationContext,
   playedMotifs: readonly DetectedConceptFact[],
   bestMoveMotifs: readonly DetectedConceptFact[],
+  bundleVersion: ConceptClassifierBundleVersion = CONCEPT_CLASSIFIER_BUNDLE_VERSION,
 ): ConceptEvidenceCandidate[] {
   if (!context.engine) return [];
   const result: ConceptEvidenceCandidate[] = [];
   const playedByConcept = new Map(playedMotifs.map((motif) => [motif.conceptStableId, motif]));
   const bestByConcept = new Map(bestMoveMotifs.map((motif) => [motif.conceptStableId, motif]));
   const engine = context.engine;
+  const definition = conceptClassifierBundleDefinition(bundleVersion);
   const soundPlayedMove =
     engine.playedMoveUci === engine.bestMoveUci ||
     (engine.centipawnLoss !== null &&
       engine.centipawnLoss <=
-        CONCEPT_CLASSIFIER_V1_CONFIGURATION.decisionEvidence.positiveDecisionMaximumLossCp);
+        definition.configuration.decisionEvidence.positiveDecisionMaximumLossCp);
   if (soundPlayedMove) {
     for (const motif of playedByConcept.values()) {
       result.push({
@@ -235,8 +303,8 @@ export function tacticalDecisionEvidenceCandidates(
         evidenceTypeStableId: 'decision.classification',
         polarity: 'POSITIVE',
         classifierId: TACTICAL_DECISION_CLASSIFIER_ID,
-        classifierVersion: TACTICAL_DECISION_CLASSIFIER_VERSION,
-        ruleId: 'TACTICAL_DECISION_SOUND_APPLICATION_V1',
+        classifierVersion: definition.tacticalDecisionClassifierVersion,
+        ruleId: `TACTICAL_DECISION_SOUND_APPLICATION_${definition.tacticalDecisionClassifierVersion}`,
         facts: {
           motifRuleId: motif.ruleId,
           playedMoveUci: engine.playedMoveUci,
@@ -252,8 +320,8 @@ export function tacticalDecisionEvidenceCandidates(
   const consequentialMiss =
     (engine.centipawnLoss !== null &&
       engine.centipawnLoss >=
-        CONCEPT_CLASSIFIER_V1_CONFIGURATION.decisionEvidence.negativeDecisionMinimumLossCp) ||
-    CONCEPT_CLASSIFIER_V1_CONFIGURATION.decisionEvidence.negativeMateOutcomes.includes(
+        definition.configuration.decisionEvidence.negativeDecisionMinimumLossCp) ||
+    definition.configuration.decisionEvidence.negativeMateOutcomes.includes(
       engine.mateOutcome as 'MATE_MISSED' | 'MATE_ALLOWED',
     );
   if (consequentialMiss) {
@@ -264,8 +332,8 @@ export function tacticalDecisionEvidenceCandidates(
         evidenceTypeStableId: 'decision.classification',
         polarity: 'NEGATIVE',
         classifierId: TACTICAL_DECISION_CLASSIFIER_ID,
-        classifierVersion: TACTICAL_DECISION_CLASSIFIER_VERSION,
-        ruleId: 'MISSED_TACTICAL_MOTIF_V1',
+        classifierVersion: definition.tacticalDecisionClassifierVersion,
+        ruleId: `MISSED_TACTICAL_MOTIF_${definition.tacticalDecisionClassifierVersion}`,
         facts: {
           motifRuleId: motif.ruleId,
           bestMoveUci: engine.bestMoveUci,

@@ -30,6 +30,7 @@ import {
   SecurityAuditRepository,
   TrainingRepository,
   TrainingRepositoryError,
+  GroundedAiRepository,
   type Database,
   isSchemaCurrent,
 } from '@chess-intelligent/db';
@@ -42,6 +43,7 @@ import {
   IDENTITY_PROVIDERS,
   TIME_CATEGORIES,
   ACADEMY_MEMBERSHIP_ROLES,
+  CONCEPT_CLASSIFIER_BUNDLE_VERSIONS,
 } from '@chess-intelligent/domain';
 
 import {
@@ -81,6 +83,15 @@ import {
   PasswordResetApplicationError,
   PasswordResetApplicationService,
 } from './password-reset-application';
+import {
+  ConceptCoverageApplicationError,
+  ConceptCoverageApplicationService,
+} from './concept-coverage-application';
+import {
+  GroundedAiApplicationError,
+  GroundedAiApplicationService,
+  type GroundedLanguageModel,
+} from './grounded-ai-application';
 
 const importBodySchema = z.object({
   pgn: z.string().min(1, 'pgn is required').max(2_000_000, 'pgn must not exceed 2 MB'),
@@ -97,6 +108,7 @@ const analysisParametersSchema = z.object({ id: z.uuid() });
 const classificationBodySchema = z.object({
   ontologyVersion: z.string().regex(/^(0|[1-9]\d*)\.(0|[1-9]\d*)\.(0|[1-9]\d*)$/u),
   analysisRunId: z.uuid().optional(),
+  classifierBundleVersion: z.enum(CONCEPT_CLASSIFIER_BUNDLE_VERSIONS).optional(),
 });
 const classificationParametersSchema = z.object({ id: z.uuid() });
 const conceptStableIdSchema = z
@@ -276,6 +288,9 @@ const ontologyConceptParametersSchema = ontologyVersionParametersSchema.extend({
     .regex(/^[a-z][a-z0-9]*(?:_[a-z0-9]+)*(?:\.[a-z][a-z0-9]*(?:_[a-z0-9]+)*)+$/u),
 });
 const ontologyQuerySchema = z.object({ domain: z.string().trim().min(1).max(100).optional() });
+const conceptCoverageQuerySchema = z.object({
+  ontologyVersion: z.string().regex(/^(0|[1-9]\d*)\.(0|[1-9]\d*)\.(0|[1-9]\d*)$/u),
+});
 
 const preparationFiltersSchema = z
   .object({
@@ -374,6 +389,7 @@ const playerSkillGraphBodySchema = z
     asOfDate: z.string().refine(isValidIsoDate, 'asOfDate must be a real YYYY-MM-DD date'),
     scope: playerSkillGraphScopeSchema.optional(),
     skillGraphPolicyVersion: z.enum(['SKILL_GRAPH_POLICY_V1', 'SKILL_GRAPH_POLICY_V2']).optional(),
+    classifierBundleVersion: z.enum(CONCEPT_CLASSIFIER_BUNDLE_VERSIONS).optional(),
   })
   .superRefine((value, context) => {
     if (Boolean(value.playerId) === Boolean(value.externalIdentity)) {
@@ -395,6 +411,7 @@ const academySkillGraphBodySchema = z.object({
   asOfDate: z.string().refine(isValidIsoDate, 'asOfDate must be a real YYYY-MM-DD date'),
   scope: playerSkillGraphScopeSchema.optional(),
   skillGraphPolicyVersion: z.enum(['SKILL_GRAPH_POLICY_V1', 'SKILL_GRAPH_POLICY_V2']).optional(),
+  classifierBundleVersion: z.enum(CONCEPT_CLASSIFIER_BUNDLE_VERSIONS).optional(),
 });
 const trainingPlanBodySchema = z.object({
   playerId: z.uuid(),
@@ -417,6 +434,23 @@ const trainingAttemptBodySchema = z.object({
 
 const academyParametersSchema = z.object({ academyId: z.uuid() });
 const academyStudentParametersSchema = academyParametersSchema.extend({ studentId: z.uuid() });
+const academyStudentSkillGraphParametersSchema = academyStudentParametersSchema.extend({
+  runId: z.uuid(),
+});
+const academyStudentSkillGraphConceptParametersSchema =
+  academyStudentSkillGraphParametersSchema.extend({ stableId: conceptStableIdSchema });
+const academySkillGraphRunParametersSchema = academyParametersSchema.extend({ runId: z.uuid() });
+const academySkillGraphConceptParametersSchema = academySkillGraphRunParametersSchema.extend({
+  stableId: conceptStableIdSchema,
+});
+const academyStudentArtifactParametersSchema = academyStudentParametersSchema.extend({
+  artifactId: z.uuid(),
+});
+const academyArtifactParametersSchema = academyParametersSchema.extend({ artifactId: z.uuid() });
+const groundedBriefBodySchema = z.object({
+  skillGraphRunId: z.uuid(),
+  trainingPlanRunId: z.uuid().nullable().optional(),
+});
 const academyAssignmentParametersSchema = academyParametersSchema.extend({
   assignmentId: z.uuid(),
 });
@@ -527,6 +561,7 @@ export interface AppOptions {
   internalDevRoutes?: boolean;
   trustProxy?: boolean;
   emailDelivery?: EmailDeliveryProvider;
+  groundedLanguageModel?: GroundedLanguageModel;
 }
 
 export function redactSensitiveRequestUrl(url: string): string {
@@ -599,6 +634,7 @@ export async function buildApp(options: AppOptions): Promise<FastifyInstance> {
   );
   const ontologyRepository = new OntologyRepository(options.database);
   const ontology = new OntologyApplicationService(ontologyRepository);
+  const conceptCoverage = new ConceptCoverageApplicationService(ontologyRepository);
   const conceptClassification = new ConceptClassificationApplicationService(
     new ClassificationRepository(options.database),
     ontologyRepository,
@@ -621,6 +657,15 @@ export async function buildApp(options: AppOptions): Promise<FastifyInstance> {
     academyRepository,
     playerSkillGraphRepository,
     ontologyRepository,
+    now,
+  );
+  const groundedAi = new GroundedAiApplicationService(
+    new GroundedAiRepository(options.database),
+    academyRepository,
+    playerSkillGraph,
+    trainingRepository,
+    conceptCoverage,
+    options.groundedLanguageModel ?? null,
     now,
   );
   const authRepository = new AuthRepository(options.database);
@@ -929,6 +974,7 @@ export async function buildApp(options: AppOptions): Promise<FastifyInstance> {
         gameId: parameters.data.id,
         ontologyVersion: body.data.ontologyVersion,
         analysisRunId: body.data.analysisRunId,
+        classifierBundleVersion: body.data.classifierBundleVersion,
       });
       request.log.info(
         {
@@ -1093,6 +1139,26 @@ export async function buildApp(options: AppOptions): Promise<FastifyInstance> {
       return reply.send(dossier);
     } catch (error) {
       if (error instanceof PlayerDossierError) {
+        return reply.code(404).send({ error: { code: error.code, message: error.message } });
+      }
+      throw error;
+    }
+  });
+
+  app.get('/intelligence/concept-coverage', async (request, reply) => {
+    const query = conceptCoverageQuerySchema.safeParse(request.query);
+    if (!query.success) {
+      return reply.code(400).send({
+        error: {
+          code: 'EXPLICIT_ONTOLOGY_VERSION_REQUIRED',
+          message: 'A valid explicit ontologyVersion is required.',
+        },
+      });
+    }
+    try {
+      return reply.send(await conceptCoverage.getReport(query.data.ontologyVersion));
+    } catch (error) {
+      if (error instanceof ConceptCoverageApplicationError) {
         return reply.code(404).send({ error: { code: error.code, message: error.message } });
       }
       throw error;
@@ -1587,6 +1653,166 @@ export async function buildApp(options: AppOptions): Promise<FastifyInstance> {
     });
   });
 
+  app.post('/academies/:academyId/students/:studentId/ai-briefs', async (request, reply) => {
+    const parameters = academyStudentParametersSchema.safeParse(request.params);
+    const body = groundedBriefBodySchema.safeParse(request.body);
+    if (!parameters.success || !body.success) {
+      return reply.code(400).send({
+        error: {
+          code: 'INVALID_GROUNDED_BRIEF_REQUEST',
+          message: 'Invalid grounded brief request.',
+        },
+      });
+    }
+    await authorizeAcademy(request, parameters.data.academyId, 'STUDENT_INTELLIGENCE_READ');
+    try {
+      const artifact = await groundedAi.generate({
+        academyId: parameters.data.academyId,
+        studentProfileId: parameters.data.studentId,
+        skillGraphRunId: body.data.skillGraphRunId,
+        trainingPlanRunId: body.data.trainingPlanRunId,
+        audience: 'COACH',
+      });
+      request.log.info(
+        {
+          artifactId: artifact.id,
+          academyId: artifact.academyId,
+          studentProfileId: artifact.studentProfileId,
+        },
+        'grounded coach brief validated and persisted',
+      );
+      return reply.code(201).send(artifact);
+    } catch (error) {
+      if (error instanceof GroundedAiApplicationError) {
+        const status =
+          error.code === 'AI_UNAVAILABLE'
+            ? 503
+            : error.code === 'AI_PROVIDER_FAILED' || error.code === 'AI_OUTPUT_INVALID'
+              ? 502
+              : error.code.endsWith('NOT_FOUND')
+                ? 404
+                : 409;
+        return reply.code(status).send({ error: { code: error.code, message: error.message } });
+      }
+      throw error;
+    }
+  });
+
+  app.get(
+    '/academies/:academyId/students/:studentId/ai-briefs/:artifactId',
+    async (request, reply) => {
+      const parameters = academyStudentArtifactParametersSchema.safeParse(request.params);
+      if (!parameters.success) {
+        return reply.code(400).send({
+          error: { code: 'INVALID_GROUNDED_BRIEF_ID', message: 'Invalid grounded brief path.' },
+        });
+      }
+      await authorizeAcademy(request, parameters.data.academyId, 'STUDENT_INTELLIGENCE_READ');
+      try {
+        return reply.send(
+          await groundedAi.get(
+            parameters.data.academyId,
+            parameters.data.studentId,
+            parameters.data.artifactId,
+          ),
+        );
+      } catch (error) {
+        if (error instanceof GroundedAiApplicationError) {
+          return reply.code(404).send({ error: { code: error.code, message: error.message } });
+        }
+        throw error;
+      }
+    },
+  );
+
+  app.post('/academies/:academyId/me/ai-briefs', async (request, reply) => {
+    const parameters = academyParametersSchema.safeParse(request.params);
+    const body = groundedBriefBodySchema.safeParse(request.body);
+    if (!parameters.success || !body.success) {
+      return reply.code(400).send({
+        error: {
+          code: 'INVALID_GROUNDED_BRIEF_REQUEST',
+          message: 'Invalid grounded brief request.',
+        },
+      });
+    }
+    const principal = await requireRequestPrincipal(request, auth, secureCookies);
+    const student = await academySecurity.requireStudentSelf({
+      principal,
+      academyId: parameters.data.academyId,
+      requestId: request.id,
+    });
+    if (student.consentStatus === 'PENDING' || student.consentStatus === 'REVOKED') {
+      throw new AcademySecurityApplicationError(
+        'GUARDIAN_CONSENT_REQUIRED',
+        'Academy-recorded guardian consent is required for Student AI briefing.',
+      );
+    }
+    try {
+      return reply.code(201).send(
+        await groundedAi.generate({
+          academyId: parameters.data.academyId,
+          studentProfileId: student.studentProfileId,
+          skillGraphRunId: body.data.skillGraphRunId,
+          trainingPlanRunId: body.data.trainingPlanRunId,
+          audience: 'STUDENT',
+        }),
+      );
+    } catch (error) {
+      if (error instanceof GroundedAiApplicationError) {
+        const status =
+          error.code === 'AI_UNAVAILABLE'
+            ? 503
+            : error.code === 'AI_PROVIDER_FAILED' || error.code === 'AI_OUTPUT_INVALID'
+              ? 502
+              : error.code.endsWith('NOT_FOUND')
+                ? 404
+                : 409;
+        return reply.code(status).send({ error: { code: error.code, message: error.message } });
+      }
+      throw error;
+    }
+  });
+
+  app.get('/academies/:academyId/me/ai-briefs/:artifactId', async (request, reply) => {
+    const parameters = academyArtifactParametersSchema.safeParse(request.params);
+    if (!parameters.success) {
+      return reply.code(400).send({
+        error: { code: 'INVALID_GROUNDED_BRIEF_ID', message: 'Invalid grounded brief path.' },
+      });
+    }
+    const principal = await requireRequestPrincipal(request, auth, secureCookies);
+    const student = await academySecurity.requireStudentSelf({
+      principal,
+      academyId: parameters.data.academyId,
+      requestId: request.id,
+    });
+    if (student.consentStatus === 'PENDING' || student.consentStatus === 'REVOKED') {
+      throw new AcademySecurityApplicationError(
+        'GUARDIAN_CONSENT_REQUIRED',
+        'Academy-recorded guardian consent is required for Student AI briefing.',
+      );
+    }
+    try {
+      const artifact = await groundedAi.get(
+        parameters.data.academyId,
+        student.studentProfileId,
+        parameters.data.artifactId,
+      );
+      if (artifact.audience !== 'STUDENT') {
+        return reply.code(404).send({
+          error: { code: 'AI_ARTIFACT_NOT_FOUND', message: 'No Student brief exists at that ID.' },
+        });
+      }
+      return reply.send(artifact);
+    } catch (error) {
+      if (error instanceof GroundedAiApplicationError) {
+        return reply.code(404).send({ error: { code: error.code, message: error.message } });
+      }
+      throw error;
+    }
+  });
+
   app.post('/academies/:academyId/students/:studentId/skill-graph', async (request, reply) => {
     const parameters = academyStudentParametersSchema.safeParse(request.params);
     const body = academySkillGraphBodySchema.safeParse(request.body);
@@ -1614,6 +1840,147 @@ export async function buildApp(options: AppOptions): Promise<FastifyInstance> {
     const graph = await playerSkillGraph.generate({ playerId: student.playerId, ...body.data });
     return reply.code(graph.run.deduplicated ? 200 : 201).send(graph);
   });
+
+  app.get(
+    '/academies/:academyId/students/:studentId/skill-graph/:runId',
+    async (request, reply) => {
+      const parameters = academyStudentSkillGraphParametersSchema.safeParse(request.params);
+      if (!parameters.success) {
+        return reply.code(400).send({
+          error: {
+            code: 'INVALID_ACADEMY_SKILL_GRAPH_REQUEST',
+            message: 'Invalid Skill Graph path.',
+          },
+        });
+      }
+      await authorizeAcademy(request, parameters.data.academyId, 'STUDENT_INTELLIGENCE_READ');
+      const student = await academyRepository.getStudentProfile(
+        parameters.data.academyId,
+        parameters.data.studentId,
+      );
+      if (!student) {
+        return reply.code(404).send({
+          error: { code: 'STUDENT_PROFILE_NOT_FOUND', message: 'StudentProfile not found.' },
+        });
+      }
+      const graph = await playerSkillGraph.getRun(parameters.data.runId);
+      if (graph.run.playerId !== student.playerId) {
+        return reply.code(404).send({
+          error: {
+            code: 'SKILL_GRAPH_RUN_NOT_FOUND',
+            message: 'Skill Graph not found in Student scope.',
+          },
+        });
+      }
+      return reply.send(graph);
+    },
+  );
+
+  app.get(
+    '/academies/:academyId/students/:studentId/skill-graph/:runId/concepts/:stableId',
+    async (request, reply) => {
+      const parameters = academyStudentSkillGraphConceptParametersSchema.safeParse(request.params);
+      if (!parameters.success) {
+        return reply.code(400).send({
+          error: { code: 'INVALID_ACADEMY_SKILL_GRAPH_CONCEPT', message: 'Invalid concept path.' },
+        });
+      }
+      await authorizeAcademy(request, parameters.data.academyId, 'STUDENT_INTELLIGENCE_READ');
+      const student = await academyRepository.getStudentProfile(
+        parameters.data.academyId,
+        parameters.data.studentId,
+      );
+      if (!student) {
+        return reply.code(404).send({
+          error: { code: 'STUDENT_PROFILE_NOT_FOUND', message: 'StudentProfile not found.' },
+        });
+      }
+      const detail = await playerSkillGraph.getConcept(
+        parameters.data.runId,
+        parameters.data.stableId,
+      );
+      if (detail.run.playerId !== student.playerId) {
+        return reply.code(404).send({
+          error: {
+            code: 'CONCEPT_NOT_FOUND',
+            message: 'Concept evidence not found in Student scope.',
+          },
+        });
+      }
+      return reply.send(detail);
+    },
+  );
+
+  app.get('/academies/:academyId/me/skill-graph/:runId', async (request, reply) => {
+    const parameters = academySkillGraphRunParametersSchema.safeParse(request.params);
+    if (!parameters.success) {
+      return reply.code(400).send({
+        error: {
+          code: 'INVALID_ACADEMY_SKILL_GRAPH_REQUEST',
+          message: 'Invalid Skill Graph path.',
+        },
+      });
+    }
+    const principal = await requireRequestPrincipal(request, auth, secureCookies);
+    const student = await academySecurity.requireStudentSelf({
+      principal,
+      academyId: parameters.data.academyId,
+      requestId: request.id,
+    });
+    if (student.consentStatus === 'PENDING' || student.consentStatus === 'REVOKED') {
+      throw new AcademySecurityApplicationError(
+        'GUARDIAN_CONSENT_REQUIRED',
+        'Academy-recorded guardian consent is required for Student intelligence.',
+      );
+    }
+    const graph = await playerSkillGraph.getRun(parameters.data.runId);
+    if (graph.run.playerId !== student.playerId) {
+      return reply.code(404).send({
+        error: {
+          code: 'SKILL_GRAPH_RUN_NOT_FOUND',
+          message: 'Skill Graph not found in Student scope.',
+        },
+      });
+    }
+    return reply.send(graph);
+  });
+
+  app.get(
+    '/academies/:academyId/me/skill-graph/:runId/concepts/:stableId',
+    async (request, reply) => {
+      const parameters = academySkillGraphConceptParametersSchema.safeParse(request.params);
+      if (!parameters.success) {
+        return reply.code(400).send({
+          error: { code: 'INVALID_ACADEMY_SKILL_GRAPH_CONCEPT', message: 'Invalid concept path.' },
+        });
+      }
+      const principal = await requireRequestPrincipal(request, auth, secureCookies);
+      const student = await academySecurity.requireStudentSelf({
+        principal,
+        academyId: parameters.data.academyId,
+        requestId: request.id,
+      });
+      if (student.consentStatus === 'PENDING' || student.consentStatus === 'REVOKED') {
+        throw new AcademySecurityApplicationError(
+          'GUARDIAN_CONSENT_REQUIRED',
+          'Academy-recorded guardian consent is required for Student intelligence.',
+        );
+      }
+      const detail = await playerSkillGraph.getConcept(
+        parameters.data.runId,
+        parameters.data.stableId,
+      );
+      if (detail.run.playerId !== student.playerId) {
+        return reply.code(404).send({
+          error: {
+            code: 'CONCEPT_NOT_FOUND',
+            message: 'Concept evidence not found in Student scope.',
+          },
+        });
+      }
+      return reply.send(detail);
+    },
+  );
 
   app.get('/academies/:academyId/students/:studentId/assignments', async (request, reply) => {
     const [parameters, query] = [

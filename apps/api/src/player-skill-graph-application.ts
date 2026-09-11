@@ -24,6 +24,7 @@ import {
   skillGraphV2EvidenceSnapshotSha256,
   skillGraphV2PolicyConfigSha256,
   type ExactExternalIdentityInput,
+  type ConceptClassifierBundleVersion,
   type OntologyConceptDetail,
   type OntologySnapshot,
   type PlayerSkillGraphScopeInput,
@@ -59,6 +60,7 @@ export interface GeneratePlayerSkillGraphInput {
   scope?: PlayerSkillGraphScopeInput | undefined;
   skillGraphPolicyVersion?:
     typeof SKILL_GRAPH_POLICY_VERSION | typeof SKILL_GRAPH_POLICY_V2_VERSION | undefined;
+  classifierBundleVersion?: ConceptClassifierBundleVersion | undefined;
 }
 
 export interface PlayerSkillGraphConceptView extends TrainingAugmentedConceptState {
@@ -134,11 +136,13 @@ export class PlayerSkillGraphApplicationService {
     const snapshot = await this.requireOntology(input.ontologyVersion);
     const registry = new OntologyRegistry(snapshot.source);
     const scope = normalizeSkillGraphScope(input.scope);
-    const classifierConfigSha256 = conceptClassifierConfigurationSha256();
+    const classifierBundleVersion =
+      input.classifierBundleVersion ?? CONCEPT_CLASSIFIER_BUNDLE_VERSION;
+    const classifierConfigSha256 = conceptClassifierConfigurationSha256(classifierBundleVersion);
     const projection = await this.repository.loadEvidenceProjection({
       playerId: player.playerId,
       ontologyVersion: snapshot.version,
-      classifierBundleVersion: CONCEPT_CLASSIFIER_BUNDLE_VERSION,
+      classifierBundleVersion,
       classifierConfigSha256,
       scope,
     });
@@ -168,7 +172,7 @@ export class PlayerSkillGraphApplicationService {
     const aggregation = trainingAggregation ?? aggregatePlayerSkillGraph(aggregationInput);
     const policyIdentity = {
       ontologyVersion: snapshot.version,
-      classifierBundleVersion: CONCEPT_CLASSIFIER_BUNDLE_VERSION,
+      classifierBundleVersion,
       classifierConfigSha256,
       classificationSelectionPolicyVersion: CLASSIFICATION_SELECTION_VERSION,
     };
@@ -194,7 +198,7 @@ export class PlayerSkillGraphApplicationService {
     const persisted = await this.repository.persistSuccessfulRun({
       playerId: player.playerId,
       ontologyVersion: snapshot.version,
-      classifierBundleVersion: CONCEPT_CLASSIFIER_BUNDLE_VERSION,
+      classifierBundleVersion,
       classifierConfigSha256,
       classificationSelectionPolicyVersion: CLASSIFICATION_SELECTION_VERSION,
       skillGraphPolicyVersion: requestedPolicy,

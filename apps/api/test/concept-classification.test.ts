@@ -126,9 +126,30 @@ describe('Task 008 concept evidence classification', () => {
     return app.inject({
       method: 'POST',
       url: `/classification/games/${gameId}`,
-      payload: { ontologyVersion: '1.0.0', ...(analysisRunId ? { analysisRunId } : {}) },
+      payload: {
+        ontologyVersion: '1.0.0',
+        classifierBundleVersion: 'CONCEPT_CLASSIFIER_BUNDLE_V1',
+        ...(analysisRunId ? { analysisRunId } : {}),
+      },
     });
   }
+
+  it('exposes complete coverage only for an explicit ontology version', async () => {
+    const implicit = await app.inject({ method: 'GET', url: '/intelligence/concept-coverage' });
+    expect(implicit.statusCode).toBe(400);
+    expect(implicit.json()).toMatchObject({
+      error: { code: 'EXPLICIT_ONTOLOGY_VERSION_REQUIRED' },
+    });
+    const explicit = await app.inject({
+      method: 'GET',
+      url: '/intelligence/concept-coverage?ontologyVersion=1.0.0',
+    });
+    expect(explicit.statusCode).toBe(200);
+    expect(explicit.json()).toMatchObject({
+      version: 'CONCEPT_COVERAGE_REPORT_V1',
+      counts: { total: 64, classifierSupported: 13, trainable: 8, contextOnly: 5 },
+    });
+  });
 
   it('classifies deterministic structural and tactical facts without engine implications', async () => {
     const gameId = await importFixture();
@@ -211,6 +232,55 @@ describe('Task 008 concept evidence classification', () => {
         .json<EvidenceResponse>()
         .evidence.every((entry) => entry.conceptStableId === 'tactics.fork'),
     ).toBe(true);
+  });
+
+  it('runs the V2 bundle explicitly and persists the new back-rank motif identity', async () => {
+    const imported = await app.inject({
+      method: 'POST',
+      url: '/games/import-pgn',
+      payload: {
+        sourceType: 'USER_UPLOAD',
+        pgn: `[Event "Task 016 back-rank fixture"]
+[Site "Local"]
+[Date "2026.09.06"]
+[Round "1"]
+[White "V2 White"]
+[Black "V2 Black"]
+[Result "1-0"]
+[SetUp "1"]
+[FEN "6k1/5ppp/8/8/8/8/8/R6K w - - 0 1"]
+
+1. Ra8# 1-0`,
+      },
+    });
+    expect(imported.statusCode).toBe(201);
+    const gameId = imported.json<{ gameId: string }>().gameId;
+    const classified = await app.inject({
+      method: 'POST',
+      url: `/classification/games/${gameId}`,
+      payload: {
+        ontologyVersion: '1.0.0',
+        classifierBundleVersion: 'CONCEPT_CLASSIFIER_BUNDLE_V2',
+      },
+    });
+    expect(classified.statusCode).toBe(201);
+    expect(classified.json()).toMatchObject({
+      classifierBundleVersion: 'CONCEPT_CLASSIFIER_BUNDLE_V2',
+    });
+    const evidence = await app.inject({
+      method: 'GET',
+      url: `/games/${gameId}/concept-evidence`,
+    });
+    expect(evidence.statusCode).toBe(200);
+    expect(
+      evidence.json<{ evidence: Array<{ concept: { stableId: string } }> }>().evidence,
+    ).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({
+          concept: expect.objectContaining({ stableId: 'tactics.back_rank' }),
+        }),
+      ]),
+    );
   });
 
   it('adds conservative positive and negative decisions from one compatible exact engine run', async () => {

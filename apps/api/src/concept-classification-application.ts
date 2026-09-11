@@ -21,6 +21,7 @@ import {
   type ClassificationRunView,
   type ConceptEvidenceCandidate,
   type ConceptEvidenceProjection,
+  type ConceptClassifierBundleVersion,
 } from '@chess-intelligent/domain';
 
 export type ConceptClassificationApplicationErrorCode =
@@ -40,6 +41,7 @@ export interface ClassifyGameRequest {
   gameId: string;
   ontologyVersion: string;
   analysisRunId?: string | undefined;
+  classifierBundleVersion?: ConceptClassifierBundleVersion | undefined;
 }
 
 export interface ClassifyGameResult {
@@ -100,15 +102,16 @@ function verifyEngineContext(
 }
 
 export class ConceptClassificationApplicationService {
-  private readonly positionClassifier = new PositionStructureClassifier();
-  private readonly tacticalClassifier = new TacticalMotifClassifier();
-
   constructor(
     private readonly classifications: ClassificationRepository,
     private readonly ontologies: OntologyRepository,
   ) {}
 
   async classifyGame(request: ClassifyGameRequest): Promise<ClassifyGameResult> {
+    const classifierBundleVersion =
+      request.classifierBundleVersion ?? CONCEPT_CLASSIFIER_BUNDLE_VERSION;
+    const positionClassifier = new PositionStructureClassifier(classifierBundleVersion);
+    const tacticalClassifier = new TacticalMotifClassifier(classifierBundleVersion);
     const snapshot = await this.ontologies.getPublishedVersion(request.ontologyVersion);
     if (!snapshot) {
       throw new ConceptClassificationApplicationError(
@@ -160,14 +163,27 @@ export class ConceptClassificationApplicationService {
         engine,
       };
 
-      candidates.push(...this.positionClassifier.classify(context));
-      const neutralTactical = this.tacticalClassifier.classify(context);
+      candidates.push(...positionClassifier.classify(context));
+      const neutralTactical = tacticalClassifier.classify(context);
       candidates.push(...neutralTactical);
       if (engine) {
-        const playedMotifs = detectTacticalMoveFacts(position.fen, occurrence.playedMoveUci);
-        const bestMoveMotifs = detectTacticalMoveFacts(position.fen, engine.bestMoveUci);
+        const playedMotifs = detectTacticalMoveFacts(
+          position.fen,
+          occurrence.playedMoveUci,
+          classifierBundleVersion,
+        );
+        const bestMoveMotifs = detectTacticalMoveFacts(
+          position.fen,
+          engine.bestMoveUci,
+          classifierBundleVersion,
+        );
         candidates.push(
-          ...tacticalDecisionEvidenceCandidates(context, playedMotifs, bestMoveMotifs),
+          ...tacticalDecisionEvidenceCandidates(
+            context,
+            playedMotifs,
+            bestMoveMotifs,
+            classifierBundleVersion,
+          ),
         );
       }
 
@@ -183,8 +199,8 @@ export class ConceptClassificationApplicationService {
     const persisted = await this.classifications.persistSuccessfulRun({
       gameId: game.gameId,
       ontologyVersion: snapshot.version,
-      classifierBundleVersion: CONCEPT_CLASSIFIER_BUNDLE_VERSION,
-      classifierConfigSha256: conceptClassifierConfigurationSha256(),
+      classifierBundleVersion,
+      classifierConfigSha256: conceptClassifierConfigurationSha256(classifierBundleVersion),
       selectedAnalysisRunId: game.selectedAnalysisRunId,
       evidence,
     });
