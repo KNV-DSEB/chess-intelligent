@@ -55,6 +55,7 @@ it('manually exercises import and retrieval over a real HTTP listener', async ()
         '013_academy_production_foundation.sql',
         '014_production_verification_foundation.sql',
         '015_grounded_ai_briefing.sql',
+        '016_private_academy_pilot.sql',
       ],
       importHttpStatus: 201,
       importStatus: 'created',

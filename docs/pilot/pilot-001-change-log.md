@@ -1,0 +1,9 @@
+# Pilot 001 change log
+
+| Date       | Release         | Issue                  | Severity     | Fix                                                                                                   | Why allowed during freeze                                                                               | Owner         | Status                  |
+| ---------- | --------------- | ---------------------- | ------------ | ----------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------- | ------------- | ----------------------- |
+| 2026-09-11 | `pilot-001-rc1` | `PILOT-001-FOUNDATION` | RELEASE_GATE | Provider adapter, append-only instrumentation, readiness, feedback, aggregate export, and launch pack | Required to make the Pilot observable, safe, reproducible, and operable; no speculative product feature | release owner | pending deployment gate |
+
+Allowed during freeze: production blocker, tenant/auth/security correction, evidence-lineage or
+measurement correction, core Coach/Student workflow breakage, and operational documentation fix.
+Feature expansion waits for the Pilot review.

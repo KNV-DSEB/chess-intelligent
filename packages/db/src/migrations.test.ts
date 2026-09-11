@@ -5,7 +5,7 @@ import { describe, expect, it } from 'vitest';
 
 import { PGliteDatabase } from './testing';
 
-describe('Task 002 through 013 migration compatibility', () => {
+describe('Task 002 through Pilot 001 migration compatibility', () => {
   it('upgrades Task 001 rows and backfills position occurrences without changing lifecycle meaning', async () => {
     const database = await PGliteDatabase.create();
     try {
@@ -67,6 +67,10 @@ describe('Task 002 through 013 migration compatibility', () => {
       );
       const migration015 = await readFile(
         new URL('../migrations/015_grounded_ai_briefing.sql', import.meta.url),
+        'utf8',
+      );
+      const migration016 = await readFile(
+        new URL('../migrations/016_private_academy_pilot.sql', import.meta.url),
         'utf8',
       );
       const initialFen = 'rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1';
@@ -141,6 +145,7 @@ describe('Task 002 through 013 migration compatibility', () => {
       await database.execute(migration013);
       await database.execute(migration014);
       await database.execute(migration015);
+      await database.execute(migration016);
       const games = await database.query<{
         id: string;
         content_status: string;
@@ -344,6 +349,30 @@ describe('Task 002 through 013 migration compatibility', () => {
         'status',
         'updated_at',
         'user_id',
+      ]);
+      const pilotTables = await database.query<{ table_name: string }>(
+        `SELECT table_name FROM information_schema.tables
+         WHERE table_schema = 'public' AND table_name IN (
+           'pilot_events', 'coach_review_feedback', 'ai_claim_feedback'
+         ) ORDER BY table_name`,
+      );
+      expect(pilotTables.rows.map((row) => row.table_name)).toEqual([
+        'ai_claim_feedback',
+        'coach_review_feedback',
+        'pilot_events',
+      ]);
+      const pilotTriggers = await database.query<{ tgname: string }>(
+        `SELECT tgname FROM pg_trigger
+         WHERE NOT tgisinternal AND tgname IN (
+           'pilot_events_append_only',
+           'coach_review_feedback_append_only',
+           'ai_claim_feedback_append_only'
+         ) ORDER BY tgname`,
+      );
+      expect(pilotTriggers.rows.map((row) => row.tgname)).toEqual([
+        'ai_claim_feedback_append_only',
+        'coach_review_feedback_append_only',
+        'pilot_events_append_only',
       ]);
     } finally {
       await database.close();

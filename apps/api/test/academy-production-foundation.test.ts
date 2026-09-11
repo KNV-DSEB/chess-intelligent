@@ -241,6 +241,67 @@ describe('Task 012 Academy Production Foundation', () => {
     expect(claimed.rows[0]!.user_id).toBeTruthy();
 
     const studentLogin = await login('student@example.test', 'student passphrase 123');
+    const interactionId = randomUUID();
+    const openedStudent = await app.inject({
+      method: 'POST',
+      url: `/academies/${owner.academyId}/pilot/events`,
+      headers: { cookie: ownerLogin.cookie, origin: ORIGIN },
+      payload: {
+        eventType: 'COACH_OPENED_STUDENT_INTELLIGENCE',
+        studentProfileId,
+        interactionId,
+      },
+    });
+    expect(openedStudent.statusCode, openedStudent.body).toBe(201);
+    const deduplicatedOpen = await app.inject({
+      method: 'POST',
+      url: `/academies/${owner.academyId}/pilot/events`,
+      headers: { cookie: ownerLogin.cookie, origin: ORIGIN },
+      payload: {
+        eventType: 'COACH_OPENED_STUDENT_INTELLIGENCE',
+        studentProfileId,
+        interactionId,
+      },
+    });
+    expect(deduplicatedOpen.statusCode).toBe(200);
+    expect(deduplicatedOpen.json()).toMatchObject({ deduplicated: true });
+    const spoofedServerAction = await app.inject({
+      method: 'POST',
+      url: `/academies/${owner.academyId}/pilot/events`,
+      headers: { cookie: ownerLogin.cookie, origin: ORIGIN },
+      payload: {
+        eventType: 'COACH_CREATED_ASSIGNMENT',
+        studentProfileId,
+        interactionId: randomUUID(),
+      },
+    });
+    expect(spoofedServerAction.statusCode).toBe(403);
+    const studentSpoofedCoach = await app.inject({
+      method: 'POST',
+      url: `/academies/${owner.academyId}/pilot/events`,
+      headers: { cookie: studentLogin.cookie, origin: ORIGIN },
+      payload: {
+        eventType: 'COACH_OPENED_STUDENT_INTELLIGENCE',
+        studentProfileId,
+        interactionId: randomUUID(),
+      },
+    });
+    expect(studentSpoofedCoach.statusCode).toBe(403);
+    const pilotEventCounts = await database.query<{
+      pilot_events: number;
+      concept_evidence: number;
+      training_evidence: number;
+    }>(
+      `SELECT
+         (SELECT count(*)::int FROM pilot_events) AS pilot_events,
+         (SELECT count(*)::int FROM concept_evidence_instances) AS concept_evidence,
+         (SELECT count(*)::int FROM training_evidence_instances) AS training_evidence`,
+    );
+    expect(pilotEventCounts.rows[0]).toEqual({
+      pilot_events: 1,
+      concept_evidence: 0,
+      training_evidence: 0,
+    });
     const pending = await app.inject({
       method: 'GET',
       url: `/academies/${owner.academyId}/me/assignments`,

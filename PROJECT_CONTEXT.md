@@ -122,6 +122,7 @@ Task 013 — Production Verification & Deployment Gate V1 (implementation comple
 Task 014 — Production Gate Execution & Blocker Remediation V1 (execution complete)
 Task 015 — Production Topology & Four-Role Browser Gate Closure V1
 Task 016 — Learning Intelligence Expansion, Grounded AI Briefing & Pilot Experience V1
+Pilot 001 — Private Academy Pilot Readiness & Launch V1 (implementation complete; launch blocked)
 ```
 
 Current production gate:
@@ -129,18 +130,22 @@ Current production gate:
 ```text
 PRODUCTION_GATE_PASSED_WITH_NON_BLOCKING_RISKS
 
-The eight-service production Compose topology, migrations, explicit ontology
-publication, HTTPS proxy, SMTP failure/recovery, real Stockfish 18 Worker job,
-four-role browser UI matrix, session/password/consent lifecycle, tenant attacks,
-exact training lineage, persistence recreation, repository checks, and build passed.
+Task 015 verified the then-current eight-service acceptance topology, migrations,
+explicit ontology publication, HTTPS proxy, SMTP failure/recovery, real Stockfish
+18 Worker job, four-role browser UI matrix, session/password/consent lifecycle,
+tenant attacks, exact training lineage, persistence recreation, repository checks,
+and build. Pilot 001 now separates those local acceptance dependencies from the
+public launch profile: automatic public ACME TLS and external transactional SMTP
+are required, while the local internal-CA/Mailpit topology remains test-only.
 
 Non-blocking risks:
 - a fresh dependency audit remains NOT_RUN because external manifest disclosure
   was not authorized;
 - the Windows Docker Desktop acceptance host has a recurring optional-component
   stale AF_UNIX listener defect; non-destructive recovery preserved all data;
-- internal Caddy TLS and Mailpit prove protocol behavior, not public certificate
-  issuance or real-provider deliverability;
+- the historical internal Caddy TLS and Mailpit evidence proves protocol behavior,
+  not public certificate issuance or real-provider deliverability; Pilot launch
+  remains blocked until the external services are exercised;
 - production operators must supply a Worker-compatible Stockfish binary and
   retain its exact hash/version provenance.
 ```
@@ -148,8 +153,20 @@ Non-blocking risks:
 Expected future direction:
 
 ```text
-Next — private academy pilot
-Then — Task 017 driven by pilot evidence
+Next — close Pilot 001 environment/operations blockers and run the private academy pilot
+Then — define Task 017 only from reviewed pilot evidence
+```
+
+Current Pilot gate:
+
+```text
+PILOT_BLOCKED
+
+Source-level release boundary, real-provider adapter, append-only instrumentation,
+readiness projection, feedback controls, metric export, and launch pack exist.
+Launch still requires release image digests, the real Pilot hostname with trusted TLS,
+transactional email, provider smoke or an explicit AI-disabled decision, provisioned
+Pilot identities/consent, deployed Coach+Student dry run, and separate backup restore proof.
 ```
 
 Do not implement future milestones inside the current task unless explicitly requested.
@@ -182,6 +199,7 @@ The current system can be understood as these layers:
 10. Secure Production Access
       ↓
 11. Grounded AI Briefing  ← optional explanation layer
+12. Pilot Observation      ← operational measurement, never learning evidence
 ```
 
 Each layer should depend on trusted structured outputs from earlier layers.
@@ -1047,6 +1065,12 @@ Do not violate these without explicit architectural review:
 26. Deployment, recovery, and benchmark commands require explicit acknowledged targets.
 27. Release status is evidence-based and blockers are never relabeled as warnings for milestone completion.
 28. The Task 015 production report supersedes the Task 014 blocked decision with `PRODUCTION_GATE_PASSED_WITH_NON_BLOCKING_RISKS`; the remaining dependency-audit, public TLS, transactional-email, Docker Desktop host, and operator Stockfish concerns stay explicit non-blocking risks.
+29. Pilot events and human feedback are append-only Academy-scoped operational observations; they never update chess truth, concept/training evidence, mastery, assignments, identity, consent, or security provenance.
+30. Pilot usage metrics always expose denominators and never claim learning effectiveness.
+31. Pilot Student readiness is an operational prerequisite projection; missing games, analysis, graph, or coverage is unknown availability, never negative mastery.
+32. Browser telemetry may report only approved open/navigation observations. Successful state-changing workflow events are recorded by authenticated server handlers.
+33. Pilot AI smoke uses synthetic contexts only. AI remains optional and can be disabled without blocking the structured Coach/Student workflow.
+34. `PILOT_READY` requires deployed-environment proof; source checks cannot substitute for public TLS, transactional email, real-provider smoke when enabled, tenant browser verification, or a separate backup restore.
 
 ---
 

@@ -31,6 +31,8 @@ import {
   TrainingRepository,
   TrainingRepositoryError,
   GroundedAiRepository,
+  PilotRepository,
+  type AppendPilotEventInput,
   type Database,
   isSchemaCurrent,
 } from '@chess-intelligent/db';
@@ -44,6 +46,10 @@ import {
   TIME_CATEGORIES,
   ACADEMY_MEMBERSHIP_ROLES,
   CONCEPT_CLASSIFIER_BUNDLE_VERSIONS,
+  AI_CLAIM_FEEDBACK_VALUES,
+  AI_NOT_USEFUL_REASONS,
+  COACH_REVIEW_FEEDBACK_VALUES,
+  PILOT_EVENT_TYPES,
 } from '@chess-intelligent/domain';
 
 import {
@@ -92,6 +98,7 @@ import {
   GroundedAiApplicationService,
   type GroundedLanguageModel,
 } from './grounded-ai-application';
+import { PilotApplicationError, PilotApplicationService, pilotActor } from './pilot-application';
 
 const importBodySchema = z.object({
   pgn: z.string().min(1, 'pgn is required').max(2_000_000, 'pgn must not exceed 2 MB'),
@@ -451,6 +458,51 @@ const groundedBriefBodySchema = z.object({
   skillGraphRunId: z.uuid(),
   trainingPlanRunId: z.uuid().nullable().optional(),
 });
+const pilotClientEventBodySchema = z.object({
+  eventType: z.enum(PILOT_EVENT_TYPES),
+  studentProfileId: z.uuid(),
+  skillGraphRunId: z.uuid().nullable().optional(),
+  conceptStableId: conceptStableIdSchema.nullable().optional(),
+  groundedAiArtifactId: z.uuid().nullable().optional(),
+  groundedAiClaimId: z.string().trim().min(1).max(100).nullable().optional(),
+  evidenceReference: z.string().trim().min(1).max(300).nullable().optional(),
+  assignmentId: z.uuid().nullable().optional(),
+  interactionId: z.uuid(),
+});
+const coachReviewFeedbackBodySchema = z.object({
+  skillGraphRunId: z.uuid(),
+  conceptStableId: conceptStableIdSchema,
+  feedbackValue: z.enum(COACH_REVIEW_FEEDBACK_VALUES),
+  interactionId: z.uuid(),
+});
+const aiClaimFeedbackParametersSchema = academyStudentArtifactParametersSchema.extend({
+  claimId: z.string().trim().min(1).max(100),
+});
+const selfAiClaimFeedbackParametersSchema = academyArtifactParametersSchema.extend({
+  claimId: z.string().trim().min(1).max(100),
+});
+const aiClaimFeedbackBodySchema = z
+  .object({
+    feedbackValue: z.enum(AI_CLAIM_FEEDBACK_VALUES),
+    notUsefulReason: z.enum(AI_NOT_USEFUL_REASONS).nullable().optional().default(null),
+    interactionId: z.uuid(),
+  })
+  .superRefine((value, context) => {
+    if (
+      (value.feedbackValue === 'USEFUL' && value.notUsefulReason !== null) ||
+      (value.feedbackValue === 'NOT_USEFUL' && value.notUsefulReason === null)
+    ) {
+      context.addIssue({
+        code: 'custom',
+        path: ['notUsefulReason'],
+        message: 'NOT_USEFUL requires one controlled reason; USEFUL must not include one.',
+      });
+    }
+  });
+const academyTrainingPlanBodySchema = z.object({
+  skillGraphRunId: z.uuid(),
+  maxItems: z.number().int().min(1).max(100).default(10),
+});
 const academyAssignmentParametersSchema = academyParametersSchema.extend({
   assignmentId: z.uuid(),
 });
@@ -659,14 +711,22 @@ export async function buildApp(options: AppOptions): Promise<FastifyInstance> {
     ontologyRepository,
     now,
   );
+  const groundedAiRepository = new GroundedAiRepository(options.database);
   const groundedAi = new GroundedAiApplicationService(
-    new GroundedAiRepository(options.database),
+    groundedAiRepository,
     academyRepository,
     playerSkillGraph,
     trainingRepository,
     conceptCoverage,
     options.groundedLanguageModel ?? null,
     now,
+  );
+  const pilotRepository = new PilotRepository(options.database);
+  const pilot = new PilotApplicationService(
+    pilotRepository,
+    academyRepository,
+    playerSkillGraphRepository,
+    groundedAiRepository,
   );
   const authRepository = new AuthRepository(options.database);
   const auditRepository = new SecurityAuditRepository(options.database);
@@ -775,6 +835,30 @@ export async function buildApp(options: AppOptions): Promise<FastifyInstance> {
     return { principal, actor };
   };
 
+  const recordPilotServerEvent = async (
+    request: Parameters<typeof requireRequestPrincipal>[0],
+    principal: Parameters<typeof pilotActor>[0],
+    actor: Parameters<typeof pilotActor>[1],
+    event: Omit<AppendPilotEventInput, 'actor' | 'eventSource'>,
+  ): Promise<void> => {
+    try {
+      await pilotRepository.appendEvent({
+        ...event,
+        actor: pilotActor(principal, actor),
+        eventSource: 'SERVER',
+      });
+    } catch (error) {
+      request.log.warn(
+        {
+          eventType: event.eventType,
+          academyId: event.academyId,
+          errorName: error instanceof Error ? error.name : 'UnknownError',
+        },
+        'pilot event append failed without changing the completed domain action',
+      );
+    }
+  };
+
   if (options.manageDatabaseLifecycle ?? false) {
     app.addHook('onClose', async () => options.database.close());
   }
@@ -793,6 +877,7 @@ export async function buildApp(options: AppOptions): Promise<FastifyInstance> {
         database: 'ok',
         schema: 'current',
         email: emailDelivery.configured ? 'configured' : 'disabled',
+        groundedAi: options.groundedLanguageModel ? 'configured' : 'disabled',
       });
     } catch {
       return reply.code(503).send({ status: 'not_ready', database: 'unavailable' });
@@ -1332,16 +1417,37 @@ export async function buildApp(options: AppOptions): Promise<FastifyInstance> {
       });
     }
     try {
+      let authorizedStudent:
+        | {
+            principal: Parameters<typeof pilotActor>[0];
+            actor: Awaited<ReturnType<typeof academySecurity.requireTrainingItemStudent>>;
+          }
+        | undefined;
       if (!internalDevRoutes) {
         const principal = await requireRequestPrincipal(request, auth, secureCookies);
-        await academySecurity.requireTrainingItemStudent({
+        const student = await academySecurity.requireTrainingItemStudent({
           principal,
           trainingItemId: validated.data.id,
           requireConsent: false,
           requestId: request.id,
         });
+        authorizedStudent = { principal, actor: student };
       }
-      return reply.send(await training.getItem(validated.data.id));
+      const item = await training.getItem(validated.data.id);
+      if (authorizedStudent) {
+        const { principal, actor } = authorizedStudent;
+        await recordPilotServerEvent(request, principal, actor, {
+          academyId: actor.academyId,
+          eventType: 'STUDENT_STARTED_TRAINING_ITEM',
+          studentProfileId: actor.studentProfileId,
+          playerId: actor.playerId,
+          assignmentId: actor.assignmentId,
+          trainingItemId: validated.data.id,
+          requestId: request.id,
+          deduplicationKey: `session:${principal.sessionId}:item:${validated.data.id}`,
+        });
+      }
+      return reply.send(item);
     } catch (error) {
       if (error instanceof TrainingApplicationError) {
         return reply.code(404).send({ error: { code: error.code, message: error.message } });
@@ -1366,6 +1472,12 @@ export async function buildApp(options: AppOptions): Promise<FastifyInstance> {
     }
     try {
       let playerId = body.data.playerId;
+      let authorizedStudent:
+        | {
+            principal: Parameters<typeof pilotActor>[0];
+            actor: Awaited<ReturnType<typeof academySecurity.requireTrainingItemStudent>>;
+          }
+        | undefined;
       if (!internalDevRoutes) {
         const principal = await requireRequestPrincipal(request, auth, secureCookies);
         const student = await academySecurity.requireTrainingItemStudent({
@@ -1375,6 +1487,7 @@ export async function buildApp(options: AppOptions): Promise<FastifyInstance> {
           requestId: request.id,
         });
         playerId = student.playerId;
+        authorizedStudent = { principal, actor: student };
       }
       if (!playerId) {
         return reply.code(400).send({
@@ -1384,15 +1497,57 @@ export async function buildApp(options: AppOptions): Promise<FastifyInstance> {
           },
         });
       }
-      return reply.code(201).send(
-        await training.submitAttempt({
-          itemId: parameters.data.id,
-          playerId,
-          moveUci: body.data.moveUci,
-          startedAt: body.data.startedAt,
-          durationMs: body.data.durationMs,
-        }),
-      );
+      const completed = await training.submitAttempt({
+        itemId: parameters.data.id,
+        playerId,
+        moveUci: body.data.moveUci,
+        startedAt: body.data.startedAt,
+        durationMs: body.data.durationMs,
+      });
+      if (authorizedStudent) {
+        const { principal, actor } = authorizedStudent;
+        const state = await pilotRepository.getAssignmentAttemptState({
+          assignmentId: actor.assignmentId,
+          trainingItemId: parameters.data.id,
+          attemptId: completed.attempt.id,
+        });
+        if (state?.firstPostAssignment) {
+          await recordPilotServerEvent(request, principal, actor, {
+            academyId: actor.academyId,
+            eventType: 'STUDENT_SUBMITTED_FIRST_ATTEMPT',
+            studentProfileId: actor.studentProfileId,
+            playerId: actor.playerId,
+            assignmentId: actor.assignmentId,
+            trainingItemId: parameters.data.id,
+            attemptResult: completed.attempt.result,
+            requestId: request.id,
+            deduplicationKey: `attempt:${completed.attempt.id}`,
+          });
+          await recordPilotServerEvent(request, principal, actor, {
+            academyId: actor.academyId,
+            eventType: 'STUDENT_COMPLETED_TRAINING_ITEM',
+            studentProfileId: actor.studentProfileId,
+            playerId: actor.playerId,
+            assignmentId: actor.assignmentId,
+            trainingItemId: parameters.data.id,
+            attemptResult: completed.attempt.result,
+            requestId: request.id,
+            deduplicationKey: `assignment:${actor.assignmentId}:item:${parameters.data.id}`,
+          });
+        }
+        if (state?.assignmentComplete) {
+          await recordPilotServerEvent(request, principal, actor, {
+            academyId: actor.academyId,
+            eventType: 'STUDENT_COMPLETED_ASSIGNMENT',
+            studentProfileId: actor.studentProfileId,
+            playerId: actor.playerId,
+            assignmentId: actor.assignmentId,
+            requestId: request.id,
+            deduplicationKey: `assignment:${actor.assignmentId}:completed`,
+          });
+        }
+      }
+      return reply.code(201).send(completed);
     } catch (error) {
       if (error instanceof TrainingApplicationError) {
         const status = error.code === 'ILLEGAL_TRAINING_MOVE' ? 422 : 409;
@@ -1601,14 +1756,20 @@ export async function buildApp(options: AppOptions): Promise<FastifyInstance> {
           error: { code: 'INTERNAL_COACH_ID_REQUIRED', message: 'coachMembershipId is required.' },
         });
       }
-      return reply.send(
-        await academyIntelligence.getStudentIntelligence({
+      const intelligence = await academyIntelligence.getStudentIntelligence({
+        academyId: parameters.data.academyId,
+        studentProfileId: parameters.data.studentId,
+        coachMembershipId: actor.membershipId,
+        profile: academyProfile(query.data),
+      });
+      return reply.send({
+        ...intelligence,
+        pilotReadiness: await pilot.studentReadiness({
           academyId: parameters.data.academyId,
           studentProfileId: parameters.data.studentId,
-          coachMembershipId: actor.membershipId,
-          profile: academyProfile(query.data),
+          compatibleSkillGraphRunId: intelligence.skillGraph?.run.id ?? null,
         }),
-      );
+      });
     } catch (error) {
       if (error instanceof AcademyApplicationError || error instanceof AcademyRepositoryError) {
         return reply
@@ -1644,14 +1805,147 @@ export async function buildApp(options: AppOptions): Promise<FastifyInstance> {
         'Academy-recorded guardian consent is required for Student self-service.',
       );
     }
-    return academyIntelligence.getStudentIntelligence({
+    const intelligence = await academyIntelligence.getStudentIntelligence({
       academyId: parameters.data.academyId,
       studentProfileId: student.studentProfileId,
       coachMembershipId: student.membershipId,
       profile: academyProfile(query.data),
       authorizationAlreadyEnforced: true,
     });
+    return {
+      ...intelligence,
+      pilotReadiness: await pilot.studentReadiness({
+        academyId: parameters.data.academyId,
+        studentProfileId: student.studentProfileId,
+        compatibleSkillGraphRunId: intelligence.skillGraph?.run.id ?? null,
+      }),
+    };
   });
+
+  app.post('/academies/:academyId/pilot/events', async (request, reply) => {
+    const parameters = academyParametersSchema.safeParse(request.params);
+    const body = pilotClientEventBodySchema.safeParse(request.body);
+    if (!parameters.success || !body.success) {
+      return reply.code(400).send({
+        error: { code: 'INVALID_PILOT_EVENT', message: 'The Pilot event is invalid.' },
+      });
+    }
+    const principal = await requireRequestPrincipal(request, auth, secureCookies);
+    try {
+      let actor;
+      let studentProfileId = body.data.studentProfileId;
+      if (body.data.eventType === 'STUDENT_OPENED_ASSIGNMENT') {
+        const student = await academySecurity.requireStudentSelf({
+          principal,
+          academyId: parameters.data.academyId,
+          requestId: request.id,
+        });
+        actor = student;
+        studentProfileId = student.studentProfileId;
+        if (body.data.studentProfileId !== student.studentProfileId) {
+          throw new PilotApplicationError(
+            'PILOT_EVENT_SCOPE_INVALID',
+            'A Student may record events only for their own StudentProfile.',
+          );
+        }
+      } else {
+        actor = await academySecurity.requireCapability({
+          principal,
+          academyId: parameters.data.academyId,
+          capability: 'STUDENT_INTELLIGENCE_READ',
+          requestId: request.id,
+        });
+      }
+      const event = await pilot.recordClientEvent({
+        academyId: parameters.data.academyId,
+        actor: pilotActor(principal, actor),
+        eventType: body.data.eventType,
+        studentProfileId,
+        skillGraphRunId: body.data.skillGraphRunId,
+        conceptStableId: body.data.conceptStableId,
+        groundedAiArtifactId: body.data.groundedAiArtifactId,
+        groundedAiClaimId: body.data.groundedAiClaimId,
+        evidenceReference: body.data.evidenceReference,
+        assignmentId: body.data.assignmentId,
+        deduplicationKey: body.data.interactionId,
+        requestId: request.id,
+      });
+      return reply.code(event.deduplicated ? 200 : 201).send(event);
+    } catch (error) {
+      if (error instanceof PilotApplicationError) {
+        return reply.code(403).send({ error: { code: error.code, message: error.message } });
+      }
+      throw error;
+    }
+  });
+
+  app.post(
+    '/academies/:academyId/students/:studentId/pilot/coach-feedback',
+    async (request, reply) => {
+      const parameters = academyStudentParametersSchema.safeParse(request.params);
+      const body = coachReviewFeedbackBodySchema.safeParse(request.body);
+      if (!parameters.success || !body.success) {
+        return reply.code(400).send({
+          error: { code: 'INVALID_COACH_FEEDBACK', message: 'Coach feedback is invalid.' },
+        });
+      }
+      const { principal, actor } = await authorizeAcademy(
+        request,
+        parameters.data.academyId,
+        'STUDENT_INTELLIGENCE_READ',
+      );
+      try {
+        const feedback = await pilot.recordCoachFeedback({
+          academyId: parameters.data.academyId,
+          actor: pilotActor(principal, actor),
+          studentProfileId: parameters.data.studentId,
+          ...body.data,
+          requestId: request.id,
+        });
+        return reply.code(feedback.deduplicated ? 200 : 201).send(feedback);
+      } catch (error) {
+        if (error instanceof PilotApplicationError) {
+          return reply.code(404).send({ error: { code: error.code, message: error.message } });
+        }
+        throw error;
+      }
+    },
+  );
+
+  app.post(
+    '/academies/:academyId/students/:studentId/ai-briefs/:artifactId/claims/:claimId/feedback',
+    async (request, reply) => {
+      const parameters = aiClaimFeedbackParametersSchema.safeParse(request.params);
+      const body = aiClaimFeedbackBodySchema.safeParse(request.body);
+      if (!parameters.success || !body.success) {
+        return reply.code(400).send({
+          error: { code: 'INVALID_AI_FEEDBACK', message: 'AI claim feedback is invalid.' },
+        });
+      }
+      const { principal, actor } = await authorizeAcademy(
+        request,
+        parameters.data.academyId,
+        'STUDENT_INTELLIGENCE_READ',
+      );
+      try {
+        const feedback = await pilot.recordAiFeedback({
+          academyId: parameters.data.academyId,
+          actor: pilotActor(principal, actor),
+          studentProfileId: parameters.data.studentId,
+          artifactId: parameters.data.artifactId,
+          claimId: parameters.data.claimId,
+          ...body.data,
+          requestId: request.id,
+        });
+        return reply.code(feedback.deduplicated ? 200 : 201).send(feedback);
+      } catch (error) {
+        if (error instanceof PilotApplicationError) {
+          return reply.code(404).send({ error: { code: error.code, message: error.message } });
+        }
+        throw error;
+      }
+    },
+  );
 
   app.post('/academies/:academyId/students/:studentId/ai-briefs', async (request, reply) => {
     const parameters = academyStudentParametersSchema.safeParse(request.params);
@@ -1664,7 +1958,20 @@ export async function buildApp(options: AppOptions): Promise<FastifyInstance> {
         },
       });
     }
-    await authorizeAcademy(request, parameters.data.academyId, 'STUDENT_INTELLIGENCE_READ');
+    const { principal, actor } = await authorizeAcademy(
+      request,
+      parameters.data.academyId,
+      'STUDENT_INTELLIGENCE_READ',
+    );
+    const student = await academyRepository.getStudentProfile(
+      parameters.data.academyId,
+      parameters.data.studentId,
+    );
+    if (!student) {
+      return reply.code(404).send({
+        error: { code: 'STUDENT_PROFILE_NOT_FOUND', message: 'StudentProfile not found.' },
+      });
+    }
     try {
       const artifact = await groundedAi.generate({
         academyId: parameters.data.academyId,
@@ -1681,9 +1988,35 @@ export async function buildApp(options: AppOptions): Promise<FastifyInstance> {
         },
         'grounded coach brief validated and persisted',
       );
+      await recordPilotServerEvent(request, principal, actor, {
+        academyId: parameters.data.academyId,
+        eventType: 'COACH_GENERATED_AI_BRIEF',
+        studentProfileId: student.id,
+        playerId: student.playerId,
+        skillGraphRunId: body.data.skillGraphRunId,
+        groundedAiArtifactId: artifact.id,
+        requestId: request.id,
+        deduplicationKey: `ai-brief:${request.id}`,
+      });
       return reply.code(201).send(artifact);
     } catch (error) {
       if (error instanceof GroundedAiApplicationError) {
+        if (
+          error.code === 'AI_UNAVAILABLE' ||
+          error.code === 'AI_PROVIDER_FAILED' ||
+          error.code === 'AI_OUTPUT_INVALID'
+        ) {
+          await recordPilotServerEvent(request, principal, actor, {
+            academyId: parameters.data.academyId,
+            eventType: 'COACH_GENERATED_AI_BRIEF',
+            outcome: error.code,
+            studentProfileId: student.id,
+            playerId: student.playerId,
+            skillGraphRunId: body.data.skillGraphRunId,
+            requestId: request.id,
+            deduplicationKey: `ai-brief:${request.id}`,
+          });
+        }
         const status =
           error.code === 'AI_UNAVAILABLE'
             ? 503
@@ -1813,6 +2146,48 @@ export async function buildApp(options: AppOptions): Promise<FastifyInstance> {
     }
   });
 
+  app.post(
+    '/academies/:academyId/me/ai-briefs/:artifactId/claims/:claimId/feedback',
+    async (request, reply) => {
+      const parameters = selfAiClaimFeedbackParametersSchema.safeParse(request.params);
+      const body = aiClaimFeedbackBodySchema.safeParse(request.body);
+      if (!parameters.success || !body.success) {
+        return reply.code(400).send({
+          error: { code: 'INVALID_AI_FEEDBACK', message: 'AI claim feedback is invalid.' },
+        });
+      }
+      const principal = await requireRequestPrincipal(request, auth, secureCookies);
+      const student = await academySecurity.requireStudentSelf({
+        principal,
+        academyId: parameters.data.academyId,
+        requestId: request.id,
+      });
+      if (student.consentStatus === 'PENDING' || student.consentStatus === 'REVOKED') {
+        throw new AcademySecurityApplicationError(
+          'GUARDIAN_CONSENT_REQUIRED',
+          'Academy-recorded guardian consent is required for AI feedback.',
+        );
+      }
+      try {
+        const feedback = await pilot.recordAiFeedback({
+          academyId: parameters.data.academyId,
+          actor: pilotActor(principal, student),
+          studentProfileId: student.studentProfileId,
+          artifactId: parameters.data.artifactId,
+          claimId: parameters.data.claimId,
+          ...body.data,
+          requestId: request.id,
+        });
+        return reply.code(feedback.deduplicated ? 200 : 201).send(feedback);
+      } catch (error) {
+        if (error instanceof PilotApplicationError) {
+          return reply.code(404).send({ error: { code: error.code, message: error.message } });
+        }
+        throw error;
+      }
+    },
+  );
+
   app.post('/academies/:academyId/students/:studentId/skill-graph', async (request, reply) => {
     const parameters = academyStudentParametersSchema.safeParse(request.params);
     const body = academySkillGraphBodySchema.safeParse(request.body);
@@ -1824,7 +2199,11 @@ export async function buildApp(options: AppOptions): Promise<FastifyInstance> {
         },
       });
     }
-    await authorizeAcademy(request, parameters.data.academyId, 'STUDENT_INTELLIGENCE_READ');
+    const { principal, actor } = await authorizeAcademy(
+      request,
+      parameters.data.academyId,
+      'STUDENT_INTELLIGENCE_READ',
+    );
     const student = await academyRepository.getStudentProfile(
       parameters.data.academyId,
       parameters.data.studentId,
@@ -1838,6 +2217,15 @@ export async function buildApp(options: AppOptions): Promise<FastifyInstance> {
       });
     }
     const graph = await playerSkillGraph.generate({ playerId: student.playerId, ...body.data });
+    await recordPilotServerEvent(request, principal, actor, {
+      academyId: parameters.data.academyId,
+      eventType: 'SKILL_GRAPH_REFRESHED',
+      studentProfileId: student.id,
+      playerId: student.playerId,
+      skillGraphRunId: graph.run.id,
+      requestId: request.id,
+      deduplicationKey: `skill-graph:${graph.run.id}`,
+    });
     return reply.code(graph.run.deduplicated ? 200 : 201).send(graph);
   });
 
@@ -1982,6 +2370,57 @@ export async function buildApp(options: AppOptions): Promise<FastifyInstance> {
     },
   );
 
+  app.post('/academies/:academyId/students/:studentId/training-plans', async (request, reply) => {
+    const parameters = academyStudentParametersSchema.safeParse(request.params);
+    const body = academyTrainingPlanBodySchema.safeParse(request.body);
+    if (!parameters.success || !body.success) {
+      return reply.code(400).send({
+        error: {
+          code: 'INVALID_ACADEMY_TRAINING_PLAN_REQUEST',
+          message: 'An explicit Skill Graph run and valid item limit are required.',
+        },
+      });
+    }
+    const { principal, actor } = await authorizeAcademy(
+      request,
+      parameters.data.academyId,
+      'ASSIGNMENT_WRITE',
+    );
+    const student = await academyRepository.getStudentProfile(
+      parameters.data.academyId,
+      parameters.data.studentId,
+    );
+    if (!student) {
+      return reply.code(404).send({
+        error: { code: 'STUDENT_PROFILE_NOT_FOUND', message: 'StudentProfile not found.' },
+      });
+    }
+    try {
+      const plan = await training.createPlan({
+        playerId: student.playerId,
+        skillGraphRunId: body.data.skillGraphRunId,
+        maxItems: body.data.maxItems,
+      });
+      await recordPilotServerEvent(request, principal, actor, {
+        academyId: parameters.data.academyId,
+        eventType: 'COACH_CREATED_TRAINING_PLAN',
+        studentProfileId: student.id,
+        playerId: student.playerId,
+        skillGraphRunId: body.data.skillGraphRunId,
+        trainingPlanRunId: plan.run.id,
+        requestId: request.id,
+        deduplicationKey: `training-plan:${plan.run.id}`,
+      });
+      return reply.code(plan.run.deduplicated ? 200 : 201).send(plan);
+    } catch (error) {
+      if (error instanceof TrainingApplicationError) {
+        const status = error.code === 'PLAYER_SKILL_GRAPH_MISMATCH' ? 409 : 404;
+        return reply.code(status).send({ error: { code: error.code, message: error.message } });
+      }
+      throw error;
+    }
+  });
+
   app.get('/academies/:academyId/students/:studentId/assignments', async (request, reply) => {
     const [parameters, query] = [
       academyStudentParametersSchema.safeParse(request.params),
@@ -2095,6 +2534,17 @@ export async function buildApp(options: AppOptions): Promise<FastifyInstance> {
           assignmentId: assignment.assignment.id,
           action: 'ASSIGNMENT_CREATED',
           requestId: request.id,
+        });
+        await recordPilotServerEvent(request, authorized.principal, authorized.actor, {
+          academyId: parameters.data.academyId,
+          eventType: 'COACH_CREATED_ASSIGNMENT',
+          studentProfileId: assignment.assignment.studentProfileId,
+          playerId: assignment.assignment.playerId,
+          skillGraphRunId: assignment.assignment.baselineSkillGraphRunId,
+          trainingPlanRunId: assignment.assignment.trainingPlanRunId,
+          assignmentId: assignment.assignment.id,
+          requestId: request.id,
+          deduplicationKey: `assignment:${assignment.assignment.id}`,
         });
       }
       return reply.code(201).send(assignment);
@@ -2216,24 +2666,42 @@ export async function buildApp(options: AppOptions): Promise<FastifyInstance> {
       });
     }
     try {
-      const actor = internalDevRoutes
+      const authorized = internalDevRoutes
         ? {
-            membershipId: (validated.data as unknown as { coachMembershipId: string })
-              .coachMembershipId,
+            principal: null,
+            actor: {
+              membershipId: (validated.data as unknown as { coachMembershipId: string })
+                .coachMembershipId,
+            },
           }
-        : (await authorizeAcademy(request, validated.data.academyId, 'STUDENT_INTELLIGENCE_READ'))
-            .actor;
-      if (!actor.membershipId) {
+        : await authorizeAcademy(request, validated.data.academyId, 'STUDENT_INTELLIGENCE_READ');
+      if (!authorized.actor.membershipId) {
         return reply.code(400).send({
           error: { code: 'INTERNAL_COACH_ID_REQUIRED', message: 'coachMembershipId is required.' },
         });
       }
-      return reply.send(
-        await academyIntelligence.compareProgress({
-          ...validated.data,
-          coachMembershipId: actor.membershipId,
-        }),
-      );
+      const comparison = await academyIntelligence.compareProgress({
+        ...validated.data,
+        coachMembershipId: authorized.actor.membershipId,
+      });
+      if (authorized.principal) {
+        const student = await academyRepository.getStudentProfile(
+          validated.data.academyId,
+          validated.data.studentProfileId,
+        );
+        if (student) {
+          await recordPilotServerEvent(request, authorized.principal, authorized.actor, {
+            academyId: validated.data.academyId,
+            eventType: 'COACH_OPENED_PROGRESS_REVIEW',
+            studentProfileId: student.id,
+            playerId: student.playerId,
+            skillGraphRunId: validated.data.toSkillGraphRunId,
+            requestId: request.id,
+            deduplicationKey: `progress:${validated.data.fromSkillGraphRunId}:${validated.data.toSkillGraphRunId}`,
+          });
+        }
+      }
+      return reply.send(comparison);
     } catch (error) {
       if (error instanceof AcademyApplicationError || error instanceof AcademyRepositoryError) {
         return reply

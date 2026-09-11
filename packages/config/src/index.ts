@@ -15,6 +15,9 @@ const enabledByDefaultEnvironment = () =>
     .default('true')
     .transform((value) => value === 'true');
 
+const optionalEnvironment = () =>
+  z.preprocess((value) => (value === '' ? undefined : value), z.string().min(1).optional());
+
 const apiEnvironmentSchema = z
   .object({
     DATABASE_URL: z.string().min(1),
@@ -36,6 +39,13 @@ const apiEnvironmentSchema = z
     SMTP_SECURE: booleanEnvironment(),
     SMTP_REQUIRE_TLS: booleanEnvironment(),
     EMAIL_FROM: z.string().min(3).max(320).optional(),
+    GROUNDED_AI_PROVIDER: z.enum(['DISABLED', 'OPENAI']).default('DISABLED'),
+    GROUNDED_AI_API_KEY: optionalEnvironment(),
+    GROUNDED_AI_BASE_URL: z.string().url().default('https://api.openai.com/v1'),
+    GROUNDED_AI_MODEL: z.string().min(1).max(200).default('gpt-5.6-terra'),
+    GROUNDED_AI_TIMEOUT_MS: z.coerce.number().int().min(1_000).max(120_000).default(30_000),
+    GROUNDED_AI_INPUT_USD_PER_MILLION: z.coerce.number().nonnegative().default(2),
+    GROUNDED_AI_OUTPUT_USD_PER_MILLION: z.coerce.number().nonnegative().default(12),
     DB_POOL_MAX: z.coerce.number().int().min(1).max(100).default(10),
     DB_CONNECTION_TIMEOUT_MS: z.coerce.number().int().min(100).max(60_000).default(5_000),
     DB_STATEMENT_TIMEOUT_MS: z.coerce.number().int().min(1_000).max(300_000).default(30_000),
@@ -111,6 +121,13 @@ const apiEnvironmentSchema = z
           message: 'SMTP_USERNAME and SMTP_PASSWORD must be configured together.',
         });
       }
+    }
+    if (value.GROUNDED_AI_PROVIDER === 'OPENAI' && !value.GROUNDED_AI_API_KEY) {
+      context.addIssue({
+        code: 'custom',
+        path: ['GROUNDED_AI_API_KEY'],
+        message: 'GROUNDED_AI_API_KEY is required when the OpenAI provider is enabled.',
+      });
     }
   })
   .transform((value) => ({

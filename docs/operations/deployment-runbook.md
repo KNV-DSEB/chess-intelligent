@@ -11,7 +11,9 @@ Browser
                          API → SMTP provider
 ```
 
-`docker-compose.production.yml` is the V1 staging/production-like profile. PostgreSQL and Worker have no public port. Mailpit is bound to loopback for local acceptance only. Only Caddy exposes public HTTP/HTTPS ports.
+`docker-compose.production.yml` is the Pilot production profile. PostgreSQL, API, Web, and Worker
+remain on private Compose networks; only Caddy publishes HTTP/HTTPS. SMTP is an explicit external
+transactional provider and is not represented by a production Mailpit container.
 
 The Node containers run as the image's unprivileged `node` user. The official PostgreSQL image owns its data process. Caddy requires its image-default privileges to bind low ports; deployment operators must verify the actual runtime user/capability policy on their host.
 
@@ -21,7 +23,9 @@ The Node containers run as the image's unprivileged `node` user. The official Po
 2. Replace every placeholder. Use a URL-safe/percent-encoded application database password.
 3. Production requires Secure cookies, exact `ALLOWED_ORIGINS`, `PUBLIC_WEB_BASE_URL`, SMTP delivery, `AUTO_MIGRATE=false`, and internal routes disabled.
 4. Provide a real executable Stockfish file at `STOCKFISH_HOST_PATH`. The repository does not bundle it.
-5. For public deployment, replace Caddy's local `tls internal` acceptance configuration with the operator's trusted public certificate/ACME policy. Internal-CA success is not public TLS proof.
+5. `docker/Caddyfile` uses the required public hostname and Caddy's public ACME flow. Port 80/443 and
+   public DNS must reach the host. `docker/Caddyfile.local-acceptance` is the explicit internal-CA
+   alternative for local protocol testing only and must not be used as Pilot TLS proof.
 
 Never commit `.env`, TLS private keys, SMTP credentials, database URLs, dumps, or restore manifests.
 
@@ -32,7 +36,7 @@ pnpm install --frozen-lockfile
 pnpm check
 pnpm build
 docker compose --env-file <operator env> -f docker-compose.production.yml build
-docker compose --env-file <operator env> -f docker-compose.production.yml up -d postgres mailpit
+docker compose --env-file <operator env> -f docker-compose.production.yml up -d postgres
 docker compose --env-file <operator env> -f docker-compose.production.yml run --rm migrate
 docker compose --env-file <operator env> -f docker-compose.production.yml up -d api worker web proxy
 ```

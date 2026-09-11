@@ -13,7 +13,27 @@ describe('Task 012 API production security configuration', () => {
       TRUST_PROXY: false,
       AUTO_MIGRATE: true,
       SMTP_ENABLED: false,
+      GROUNDED_AI_PROVIDER: 'DISABLED',
       WEB_ORIGINS: ['http://localhost:3000'],
+    });
+  });
+
+  it('requires a credential only when the real grounded AI provider is enabled', () => {
+    expect(() =>
+      readApiEnvironment({
+        DATABASE_URL: 'postgresql://example',
+        GROUNDED_AI_PROVIDER: 'OPENAI',
+      } as NodeJS.ProcessEnv),
+    ).toThrow(/GROUNDED_AI_API_KEY/u);
+    expect(
+      readApiEnvironment({
+        DATABASE_URL: 'postgresql://example',
+        GROUNDED_AI_PROVIDER: 'OPENAI',
+        GROUNDED_AI_API_KEY: 'test-only-key',
+      } as NodeJS.ProcessEnv),
+    ).toMatchObject({
+      GROUNDED_AI_PROVIDER: 'OPENAI',
+      GROUNDED_AI_MODEL: 'gpt-5.6-terra',
     });
   });
 

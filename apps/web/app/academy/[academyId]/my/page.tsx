@@ -10,6 +10,7 @@ import {
   type GroundedBriefArtifact,
   type SkillGraph,
 } from '../../../components/learning-intelligence';
+import { recordPilotClientEvent } from '../../../components/pilot-client';
 
 const apiUrl = process.env.NEXT_PUBLIC_API_URL ?? '/api';
 
@@ -33,12 +34,20 @@ interface AssignmentsResponse {
 }
 
 interface IntelligenceResponse {
-  student: { displayName: string };
+  student: { id: string; displayName: string };
   player: { displayName: string };
   freshness: { status: string; newTrainingEvidenceCount: number };
   attentionSignals: string[];
   skillGraph: null | { run: { id: string } };
   trainingPlans: Array<{ id: string }>;
+  pilotReadiness: {
+    state:
+      | 'READY'
+      | 'READY_WITH_LOW_COVERAGE'
+      | 'NOT_READY_NO_GAMES'
+      | 'NOT_READY_NO_ANALYSIS'
+      | 'NOT_READY_NO_SKILL_GRAPH';
+  };
 }
 
 type LearningLoadState = 'LOADING' | 'READY' | 'UNKNOWN' | 'ERROR';
@@ -200,6 +209,29 @@ export default function StudentHomePage() {
     }
   }
 
+  async function submitAiFeedback(
+    claimId: string,
+    feedbackValue: 'USEFUL' | 'NOT_USEFUL',
+    notUsefulReason:
+      'INCORRECT' | 'TOO_VAGUE' | 'NOT_ACTIONABLE' | 'ALREADY_KNOWN' | 'OTHER' | null,
+  ): Promise<void> {
+    if (!brief) return;
+    const response = await fetch(
+      `${apiUrl}/academies/${academyId}/me/ai-briefs/${brief.id}/claims/${encodeURIComponent(claimId)}/feedback`,
+      {
+        method: 'POST',
+        credentials: 'include',
+        headers: { 'content-type': 'application/json' },
+        body: JSON.stringify({
+          feedbackValue,
+          notUsefulReason,
+          interactionId: crypto.randomUUID(),
+        }),
+      },
+    );
+    if (!response.ok) throw new Error('AI feedback could not be recorded.');
+  }
+
   return (
     <section className="panel wide academy-page student-pilot-page">
       <p className="eyebrow">Student self-service</p>
@@ -210,7 +242,8 @@ export default function StudentHomePage() {
       {error ? <p className="error">{error}</p> : null}
       {intelligence ? (
         <aside className="academy-security-note">
-          <b>{intelligence.freshness.status}</b>
+          <b>{label(intelligence.pilotReadiness.state)}</b>
+          <span>{label(intelligence.freshness.status)}</span>
           <span>{intelligence.freshness.newTrainingEvidenceCount} new training evidence units</span>
         </aside>
       ) : null}
@@ -237,7 +270,20 @@ export default function StudentHomePage() {
                   const action = detail?.trainingMode === 'DIAGNOSTIC' ? 'Measure' : 'Practice';
                   const concept = label(detail?.conceptStableId ?? `training item ${index + 1}`);
                   return (
-                    <a className="button-link" href={item.href} key={item.trainingItemId}>
+                    <a
+                      className="button-link"
+                      href={item.href}
+                      key={item.trainingItemId}
+                      onClick={() => {
+                        if (intelligence) {
+                          void recordPilotClientEvent(apiUrl, academyId, {
+                            eventType: 'STUDENT_OPENED_ASSIGNMENT',
+                            studentProfileId: intelligence.student.id,
+                            assignmentId: view.assignment.id,
+                          });
+                        }
+                      }}
+                    >
                       {action}: {concept}
                     </a>
                   );
@@ -264,6 +310,7 @@ export default function StudentHomePage() {
             busy={briefBusy}
             onGenerate={() => void generateBrief()}
             onInspectConcept={inspectConcept}
+            onClaimFeedback={submitAiFeedback}
           />
         </div>
       ) : learningLoadState === 'LOADING' ? (

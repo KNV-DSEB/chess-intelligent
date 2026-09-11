@@ -125,6 +125,23 @@
   truth, concept evidence, mastery, training, assignments, identity, consent, or security state.
 - Coach and Student AI routes remain Academy-scoped; Student scope is derived from the authenticated
   membership and consent gate. AI is optional and the platform must operate without a provider.
+- `PILOT_EVENT_V1` events and Pilot feedback are append-only Academy-scoped operational
+  observations. They must never enter chess truth, concept/training evidence, mastery, identity,
+  consent, assignments, or security-audit state.
+- Browsers may record only approved open/navigation Pilot events. Successful state-changing Pilot
+  workflow events must come from the authenticated server boundary and preserve exact artifact IDs.
+- Pilot metrics must expose explicit numerators and denominators. Usage, assignment completion, and
+  first-attempt correctness must never be presented as learning effectiveness.
+- Pilot Student readiness is operational only. Missing games, engine analysis, compatible Skill
+  Graph, or mastery-eligible coverage is an availability/unknown state, never negative mastery.
+- Real-provider Pilot smoke tests use synthetic non-PII contexts. Provider output remains subject to
+  the same server grounding validator, and `store: false` is required where supported.
+- A private Pilot launch requires evidence from the actual tagged deployment: public trusted HTTPS,
+  transactional email, four-role tenant boundaries, full Coach/Student loop, and a separate verified
+  database restore. Source checks or internal TLS/Mailpit do not satisfy those gates.
+- During the Pilot release freeze, permit only production blockers, tenant/auth/security fixes,
+  evidence or measurement corrections, core workflow breakage, and operational-documentation fixes.
+  Do not start Task 017 before real Pilot evidence is reviewed.
 
 ## External data rule
 

@@ -10,6 +10,7 @@ import {
   type GroundedBriefArtifact,
   type SkillGraph,
 } from '../../../components/learning-intelligence';
+import { recordPilotClientEvent } from '../../../components/pilot-client';
 
 const apiUrl = process.env.NEXT_PUBLIC_API_URL ?? '/api';
 
@@ -113,6 +114,15 @@ interface StudentIntelligence {
   trainingPlans: TrainingPlan[];
   assignments: AssignmentView[];
   attentionSignals: string[];
+  pilotReadiness: {
+    state:
+      | 'READY'
+      | 'READY_WITH_LOW_COVERAGE'
+      | 'NOT_READY_NO_GAMES'
+      | 'NOT_READY_NO_ANALYSIS'
+      | 'NOT_READY_NO_SKILL_GRAPH';
+    reason: string;
+  };
 }
 
 interface ProgressResponse {
@@ -153,6 +163,7 @@ export default function StudentIntelligencePage() {
   const [selectedPlanId, setSelectedPlanId] = useState('');
   const [selectedItemIds, setSelectedItemIds] = useState<string[]>([]);
   const [progress, setProgress] = useState<ProgressResponse | null>(null);
+  const [pageOpenInteractionId] = useState(() => crypto.randomUUID());
   const [skillGraph, setSkillGraph] = useState<SkillGraph | null>(null);
   const [coverageReport, setCoverageReport] = useState<CoverageReport | null>(null);
   const [brief, setBrief] = useState<GroundedBriefArtifact | null>(null);
@@ -182,6 +193,12 @@ export default function StudentIntelligencePage() {
           ),
         );
         setData(result);
+        void recordPilotClientEvent(apiUrl, academy, {
+          eventType: 'COACH_OPENED_STUDENT_INTELLIGENCE',
+          studentProfileId: studentId,
+          ...(result.skillGraph ? { skillGraphRunId: result.skillGraph.run.id } : {}),
+          interactionId: pageOpenInteractionId,
+        });
         if (result.skillGraph) {
           const [graph, coverage] = await Promise.all([
             responseBody<SkillGraph>(
@@ -214,7 +231,7 @@ export default function StudentIntelligencePage() {
         setLoading(false);
       }
     },
-    [studentId],
+    [pageOpenInteractionId, studentId],
   );
 
   useEffect(() => {
@@ -315,10 +332,82 @@ export default function StudentIntelligencePage() {
 
   async function inspectConcept(stableId: string): Promise<ConceptEvidenceDetail> {
     if (!skillGraph) throw new Error('No compatible Skill Graph is available.');
+    void recordPilotClientEvent(apiUrl, academyId, {
+      eventType: 'COACH_OPENED_CONCEPT_EVIDENCE',
+      studentProfileId: studentId,
+      skillGraphRunId: skillGraph.run.id,
+      conceptStableId: stableId,
+    });
     return responseBody<ConceptEvidenceDetail>(
       await fetch(
         `${apiUrl}/academies/${academyId}/students/${studentId}/skill-graph/${skillGraph.run.id}/concepts/${encodeURIComponent(stableId)}`,
         { credentials: 'include' },
+      ),
+    );
+  }
+
+  async function createTrainingPlan(): Promise<void> {
+    if (!skillGraph) return;
+    setLoading(true);
+    setError(null);
+    try {
+      const created = await responseBody<{ run: { id: string } }>(
+        await fetch(`${apiUrl}/academies/${academyId}/students/${studentId}/training-plans`, {
+          method: 'POST',
+          credentials: 'include',
+          headers: { 'content-type': 'application/json' },
+          body: JSON.stringify({ skillGraphRunId: skillGraph.run.id, maxItems: 10 }),
+        }),
+      );
+      setNotice(`TrainingPlan ${created.run.id.slice(0, 8)} is ready for assignment.`);
+      await load(academyId);
+    } catch (caught) {
+      setError(caught instanceof Error ? caught.message : 'Could not create the TrainingPlan.');
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  async function submitCoachFeedback(
+    stableId: string,
+    feedbackValue: 'AGREE' | 'UNSURE' | 'DISAGREE',
+  ): Promise<void> {
+    if (!skillGraph) return;
+    await responseBody(
+      await fetch(`${apiUrl}/academies/${academyId}/students/${studentId}/pilot/coach-feedback`, {
+        method: 'POST',
+        credentials: 'include',
+        headers: { 'content-type': 'application/json' },
+        body: JSON.stringify({
+          skillGraphRunId: skillGraph.run.id,
+          conceptStableId: stableId,
+          feedbackValue,
+          interactionId: crypto.randomUUID(),
+        }),
+      }),
+    );
+  }
+
+  async function submitAiFeedback(
+    claimId: string,
+    feedbackValue: 'USEFUL' | 'NOT_USEFUL',
+    notUsefulReason:
+      'INCORRECT' | 'TOO_VAGUE' | 'NOT_ACTIONABLE' | 'ALREADY_KNOWN' | 'OTHER' | null,
+  ): Promise<void> {
+    if (!brief) return;
+    await responseBody(
+      await fetch(
+        `${apiUrl}/academies/${academyId}/students/${studentId}/ai-briefs/${brief.id}/claims/${encodeURIComponent(claimId)}/feedback`,
+        {
+          method: 'POST',
+          credentials: 'include',
+          headers: { 'content-type': 'application/json' },
+          body: JSON.stringify({
+            feedbackValue,
+            notUsefulReason,
+            interactionId: crypto.randomUUID(),
+          }),
+        },
       ),
     );
   }
@@ -352,7 +441,7 @@ export default function StudentIntelligencePage() {
   }
 
   return (
-    <section className="panel wide academy-page">
+    <section className="panel wide academy-page" id="student-intelligence-top">
       <a href={`/academy?academyId=${academyId}`}>← Academy roster</a>
       {loading && !data ? <p>Loading Student Intelligence…</p> : null}
       {error ? <p className="error">{error}</p> : null}
@@ -370,6 +459,7 @@ export default function StudentIntelligencePage() {
               </p>
             </div>
             <div className="academy-signals">
+              <span className="pilot-readiness">{label(data.pilotReadiness.state)}</span>
               {data.attentionSignals.map((signal) => (
                 <span key={signal}>{label(signal)}</span>
               ))}
@@ -445,6 +535,7 @@ export default function StudentIntelligencePage() {
                   coverage={coverageReport}
                   audience="COACH"
                   onInspect={inspectConcept}
+                  onCoachFeedback={submitCoachFeedback}
                 />
                 <div className="pilot-side-rail">
                   <GroundedBriefPanel
@@ -453,6 +544,19 @@ export default function StudentIntelligencePage() {
                     busy={briefBusy}
                     onGenerate={() => void generateBrief()}
                     onInspectConcept={inspectConcept}
+                    onEvidenceOpen={(claimId, stableId, evidenceRef) => {
+                      if (!brief) return;
+                      void recordPilotClientEvent(apiUrl, academyId, {
+                        eventType: 'COACH_OPENED_AI_CLAIM_EVIDENCE',
+                        studentProfileId: studentId,
+                        skillGraphRunId: skillGraph.run.id,
+                        groundedAiArtifactId: brief.id,
+                        groundedAiClaimId: claimId,
+                        evidenceReference: evidenceRef,
+                        ...(stableId ? { conceptStableId: stableId } : {}),
+                      });
+                    }}
+                    onClaimFeedback={submitAiFeedback}
                   />
                   <section className="next-actions">
                     <div className="section-kicker">Next actions</div>
@@ -514,7 +618,15 @@ export default function StudentIntelligencePage() {
           </section>
 
           <section className="academy-section">
-            <h2>Create assignment from an immutable TrainingPlan</h2>
+            <div className="section-heading">
+              <div>
+                <h2>Create assignment from an immutable TrainingPlan</h2>
+                <p>Plan generation is explicit and pinned to the current Skill Graph.</p>
+              </div>
+              <button disabled={loading || !skillGraph} onClick={() => void createTrainingPlan()}>
+                Create plan from current graph
+              </button>
+            </div>
             {data.trainingPlans.length ? (
               <form className="academy-assignment-form" onSubmit={createAssignment}>
                 <label>
@@ -573,7 +685,7 @@ export default function StudentIntelligencePage() {
               </form>
             ) : (
               <p className="academy-empty">
-                No existing TrainingPlan is available. Plans are never generated by this read page.
+                No existing TrainingPlan is available. Create one explicitly from the current graph.
               </p>
             )}
           </section>
@@ -614,7 +726,22 @@ export default function StudentIntelligencePage() {
 
           {progress ? (
             <section className="academy-section academy-progress">
-              <h2>Comparable progress review</h2>
+              <div className="section-heading">
+                <h2>Comparable progress review</h2>
+                <a
+                  href="#student-intelligence-top"
+                  onClick={() => {
+                    if (!data.skillGraph) return;
+                    void recordPilotClientEvent(apiUrl, academyId, {
+                      eventType: 'COACH_RETURNED_TO_STUDENT',
+                      studentProfileId: studentId,
+                      skillGraphRunId: data.skillGraph.run.id,
+                    });
+                  }}
+                >
+                  Return to Student overview
+                </a>
+              </div>
               <p>
                 Status: <b>{label(progress.comparisonStatus)}</b>
               </p>

@@ -115,6 +115,7 @@ export * from './ontology';
 export * from './concept-classification';
 export * from './concept-coverage';
 export * from './grounded-ai';
+export * from './pilot';
 export * from './player-skill-graph';
 export * from './adaptive-training';
 export * from './coach-student-intelligence';

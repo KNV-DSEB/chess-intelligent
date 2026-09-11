@@ -3,6 +3,7 @@ import { PgDatabase, runMigrations } from '@chess-intelligent/db';
 
 import { buildApp } from './app';
 import { DisabledEmailDeliveryProvider, SmtpEmailDeliveryProvider } from './email-delivery';
+import { OpenAiGroundedLanguageModel } from './openai-grounded-language-model';
 
 loadRootEnvironment();
 const environment = readApiEnvironment();
@@ -31,6 +32,17 @@ const emailDelivery = environment.SMTP_ENABLED
       publicWebBaseUrl: environment.PUBLIC_WEB_BASE_URL,
     })
   : new DisabledEmailDeliveryProvider();
+const groundedLanguageModel =
+  environment.GROUNDED_AI_PROVIDER === 'OPENAI'
+    ? new OpenAiGroundedLanguageModel({
+        apiKey: environment.GROUNDED_AI_API_KEY!,
+        baseUrl: environment.GROUNDED_AI_BASE_URL,
+        model: environment.GROUNDED_AI_MODEL,
+        timeoutMs: environment.GROUNDED_AI_TIMEOUT_MS,
+        inputUsdPerMillion: environment.GROUNDED_AI_INPUT_USD_PER_MILLION,
+        outputUsdPerMillion: environment.GROUNDED_AI_OUTPUT_USD_PER_MILLION,
+      })
+    : undefined;
 
 try {
   if (environment.AUTO_MIGRATE) await runMigrations(database);
@@ -43,6 +55,7 @@ try {
     internalDevRoutes: environment.INTERNAL_DEV_ROUTES,
     trustProxy: environment.TRUST_PROXY,
     emailDelivery,
+    ...(groundedLanguageModel ? { groundedLanguageModel } : {}),
   });
   await app.listen({ host: environment.API_HOST, port: environment.API_PORT });
 } catch (error) {

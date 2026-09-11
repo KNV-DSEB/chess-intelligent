@@ -25,6 +25,8 @@
     "verify:production:database": "tsx packages/db/src/production-verification-cli.ts",
     "test:postgres": "vitest run packages/db/src/postgres-verification.test.ts",
     "verify:production": "pnpm check && pnpm build && pnpm verify:production:database",
+    "pilot:ai-smoke": "tsx scripts/acceptance/pilot-grounded-ai-smoke.ts",
+    "pilot:metrics": "tsx packages/db/src/pilot-export-cli.ts",
     "audit:dependencies": "pnpm audit --prod --audit-level high --registry https://registry.npmjs.org",
     "format": "prettier --write .",
     "format:check": "prettier --check .",

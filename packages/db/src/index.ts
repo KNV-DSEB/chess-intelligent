@@ -124,3 +124,11 @@ export type {
   GroundedAiArtifactRecord,
 } from './grounded-ai-repository';
 export { GroundedAiRepository } from './grounded-ai-repository';
+export type {
+  AppendPilotEventInput,
+  PilotActorInput,
+  PilotEventRecord,
+  PilotMetricsExport,
+  PilotReadinessSignals,
+} from './pilot-repository';
+export { PilotRepository } from './pilot-repository';

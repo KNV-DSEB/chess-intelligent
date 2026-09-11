@@ -229,14 +229,18 @@ export function LearningIntelligencePanel({
   coverage,
   audience,
   onInspect,
+  onCoachFeedback,
 }: {
   graph: SkillGraph;
   coverage: CoverageReport;
   audience: 'COACH' | 'STUDENT';
   onInspect?: ((stableId: string) => Promise<ConceptEvidenceDetail>) | undefined;
+  onCoachFeedback?:
+    ((stableId: string, value: 'AGREE' | 'UNSURE' | 'DISAGREE') => Promise<void>) | undefined;
 }) {
   const [selected, setSelected] = useState<ConceptEvidenceDetail | null>(null);
   const [detailError, setDetailError] = useState<string | null>(null);
+  const [feedbackByConcept, setFeedbackByConcept] = useState<Record<string, string>>({});
   const conceptById = useMemo(
     () => new Map(graph.concepts.map((entry) => [entry.conceptStableId, entry])),
     [graph],
@@ -301,13 +305,51 @@ export function LearningIntelligencePanel({
                   </p>
                 </div>
                 {onInspect && concept ? (
-                  <button
-                    className="quiet-button"
-                    type="button"
-                    onClick={() => void inspect(entry.stableId)}
-                  >
-                    Inspect evidence
-                  </button>
+                  <div className="priority-actions">
+                    <button
+                      className="quiet-button"
+                      type="button"
+                      onClick={() => void inspect(entry.stableId)}
+                    >
+                      Inspect evidence
+                    </button>
+                    {audience === 'COACH' && onCoachFeedback ? (
+                      <div className="pilot-feedback" aria-label={`Review ${entry.displayName}`}>
+                        {(['AGREE', 'UNSURE', 'DISAGREE'] as const).map((value) => (
+                          <button
+                            className={
+                              feedbackByConcept[entry.stableId] === value ? 'selected' : ''
+                            }
+                            type="button"
+                            key={value}
+                            disabled={Boolean(feedbackByConcept[entry.stableId])}
+                            onClick={() => {
+                              setFeedbackByConcept((current) => ({
+                                ...current,
+                                [entry.stableId]: value,
+                              }));
+                              void onCoachFeedback(entry.stableId, value).catch(
+                                (error: unknown) => {
+                                  setFeedbackByConcept((current) => {
+                                    const next = { ...current };
+                                    delete next[entry.stableId];
+                                    return next;
+                                  });
+                                  setDetailError(
+                                    error instanceof Error
+                                      ? error.message
+                                      : 'Coach feedback could not be recorded.',
+                                  );
+                                },
+                              );
+                            }}
+                          >
+                            {words(value)}
+                          </button>
+                        ))}
+                      </div>
+                    ) : null}
+                  </div>
                 ) : (
                   <span className="practice-label">
                     {entry.trainingSupported ? 'Trainable' : 'Context'}
@@ -396,21 +438,36 @@ export function GroundedBriefPanel({
   busy,
   onGenerate,
   onInspectConcept,
+  onEvidenceOpen,
+  onClaimFeedback,
 }: {
   artifact: GroundedBriefArtifact | null;
   unavailable: string | null;
   busy: boolean;
   onGenerate: () => void;
   onInspectConcept?: ((stableId: string) => Promise<ConceptEvidenceDetail>) | undefined;
+  onEvidenceOpen?:
+    ((claimId: string, stableId: string | null, evidenceRef: string) => void) | undefined;
+  onClaimFeedback?:
+    | ((
+        claimId: string,
+        value: 'USEFUL' | 'NOT_USEFUL',
+        reason: 'INCORRECT' | 'TOO_VAGUE' | 'NOT_ACTIONABLE' | 'ALREADY_KNOWN' | 'OTHER' | null,
+      ) => Promise<void>)
+    | undefined;
 }) {
   const [citationDetail, setCitationDetail] = useState<ConceptEvidenceDetail | null>(null);
   const [citationError, setCitationError] = useState<string | null>(null);
   const [citationBusy, setCitationBusy] = useState<string | null>(null);
+  const [claimFeedback, setClaimFeedback] = useState<Record<string, string>>({});
+  const [reasonByClaim, setReasonByClaim] = useState<Record<string, string>>({});
 
   useEffect(() => {
     setCitationDetail(null);
     setCitationError(null);
     setCitationBusy(null);
+    setClaimFeedback({});
+    setReasonByClaim({});
   }, [artifact?.id]);
 
   async function inspectCitation(stableId: string): Promise<void> {
@@ -469,12 +526,21 @@ export function GroundedBriefPanel({
                             type="button"
                             data-evidence-ref={reference}
                             disabled={citationBusy === claim.conceptStableId}
-                            onClick={() => void inspectCitation(claim.conceptStableId!)}
+                            onClick={() => {
+                              onEvidenceOpen?.(claim.id, claim.conceptStableId, reference);
+                              void inspectCitation(claim.conceptStableId!);
+                            }}
                           >
                             Inspect <code>{reference}</code>
                           </button>
                         ) : href ? (
-                          <a href={href} data-evidence-ref={reference}>
+                          <a
+                            href={href}
+                            data-evidence-ref={reference}
+                            onClick={() =>
+                              onEvidenceOpen?.(claim.id, claim.conceptStableId, reference)
+                            }
+                          >
                             <code>{reference}</code>
                           </a>
                         ) : (
@@ -484,6 +550,71 @@ export function GroundedBriefPanel({
                     );
                   })}
                 </ul>
+                {onClaimFeedback ? (
+                  <div className="ai-claim-feedback" aria-label={`Feedback for ${claim.id}`}>
+                    <span>Useful?</span>
+                    <button
+                      type="button"
+                      className={claimFeedback[claim.id] === 'USEFUL' ? 'selected' : ''}
+                      disabled={Boolean(claimFeedback[claim.id])}
+                      onClick={() => {
+                        setClaimFeedback((current) => ({ ...current, [claim.id]: 'USEFUL' }));
+                        void onClaimFeedback(claim.id, 'USEFUL', null).catch((error: unknown) => {
+                          setClaimFeedback((current) => {
+                            const next = { ...current };
+                            delete next[claim.id];
+                            return next;
+                          });
+                          setCitationError(
+                            error instanceof Error
+                              ? error.message
+                              : 'AI feedback could not be recorded.',
+                          );
+                        });
+                      }}
+                    >
+                      Yes
+                    </button>
+                    <select
+                      aria-label={`Why ${claim.id} was not useful`}
+                      disabled={Boolean(claimFeedback[claim.id])}
+                      value={reasonByClaim[claim.id] ?? ''}
+                      onChange={(event) => {
+                        if (!event.target.value) return;
+                        const reason = event.target.value as
+                          'INCORRECT' | 'TOO_VAGUE' | 'NOT_ACTIONABLE' | 'ALREADY_KNOWN' | 'OTHER';
+                        setReasonByClaim((current) => ({ ...current, [claim.id]: reason }));
+                        setClaimFeedback((current) => ({ ...current, [claim.id]: 'NOT_USEFUL' }));
+                        void onClaimFeedback(claim.id, 'NOT_USEFUL', reason).catch(
+                          (error: unknown) => {
+                            setClaimFeedback((current) => {
+                              const next = { ...current };
+                              delete next[claim.id];
+                              return next;
+                            });
+                            setReasonByClaim((current) => {
+                              const next = { ...current };
+                              delete next[claim.id];
+                              return next;
+                            });
+                            setCitationError(
+                              error instanceof Error
+                                ? error.message
+                                : 'AI feedback could not be recorded.',
+                            );
+                          },
+                        );
+                      }}
+                    >
+                      <option value="">No — select reason</option>
+                      <option value="INCORRECT">Incorrect</option>
+                      <option value="TOO_VAGUE">Too vague</option>
+                      <option value="NOT_ACTIONABLE">Not actionable</option>
+                      <option value="ALREADY_KNOWN">Already known</option>
+                      <option value="OTHER">Other</option>
+                    </select>
+                  </div>
+                ) : null}
               </li>
             ))}
           </ol>

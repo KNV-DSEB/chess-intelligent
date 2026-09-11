@@ -46,17 +46,6 @@ services:
         condition: service_completed_successfully
     networks: [backend]
 
-  mailpit:
-    image: axllent/mailpit:v1.27
-    restart: unless-stopped
-    expose: ['1025', '8025']
-    healthcheck:
-      test: ['CMD', '/mailpit', 'readyz']
-      interval: 5s
-      timeout: 5s
-      retries: 10
-    networks: [backend]
-
   api:
     build:
       context: .
@@ -72,23 +61,30 @@ services:
       INTERNAL_DEV_ROUTES: 'false'
       AUTO_MIGRATE: 'false'
       TRUST_PROXY: 'true'
-      ALLOWED_ORIGINS: https://${PUBLIC_HOST:-localhost}
-      PUBLIC_WEB_BASE_URL: https://${PUBLIC_HOST:-localhost}
+      ALLOWED_ORIGINS: https://${PUBLIC_HOST:?PUBLIC_HOST is required}
+      PUBLIC_WEB_BASE_URL: https://${PUBLIC_HOST:?PUBLIC_HOST is required}
       SMTP_ENABLED: 'true'
-      SMTP_HOST: mailpit
-      SMTP_PORT: 1025
-      SMTP_SECURE: 'false'
-      SMTP_REQUIRE_TLS: 'false'
+      SMTP_HOST: ${SMTP_HOST:?SMTP_HOST is required}
+      SMTP_PORT: ${SMTP_PORT:?SMTP_PORT is required}
+      SMTP_SECURE: ${SMTP_SECURE:?SMTP_SECURE is required}
+      SMTP_REQUIRE_TLS: ${SMTP_REQUIRE_TLS:?SMTP_REQUIRE_TLS is required}
+      SMTP_USERNAME: ${SMTP_USERNAME:?SMTP_USERNAME is required}
+      SMTP_PASSWORD: ${SMTP_PASSWORD:?SMTP_PASSWORD is required}
       EMAIL_FROM: ${EMAIL_FROM:?EMAIL_FROM is required}
       DB_POOL_MAX: ${API_DB_POOL_MAX:-10}
       DB_CONNECTION_TIMEOUT_MS: 5000
       DB_STATEMENT_TIMEOUT_MS: 30000
+      GROUNDED_AI_PROVIDER: ${GROUNDED_AI_PROVIDER:-DISABLED}
+      GROUNDED_AI_API_KEY: ${GROUNDED_AI_API_KEY:-}
+      GROUNDED_AI_BASE_URL: ${GROUNDED_AI_BASE_URL:-https://api.openai.com/v1}
+      GROUNDED_AI_MODEL: ${GROUNDED_AI_MODEL:-gpt-5.6-terra}
+      GROUNDED_AI_TIMEOUT_MS: ${GROUNDED_AI_TIMEOUT_MS:-30000}
+      GROUNDED_AI_INPUT_USD_PER_MILLION: ${GROUNDED_AI_INPUT_USD_PER_MILLION:-2}
+      GROUNDED_AI_OUTPUT_USD_PER_MILLION: ${GROUNDED_AI_OUTPUT_USD_PER_MILLION:-12}
     expose: ['4000']
     depends_on:
       ontology:
         condition: service_completed_successfully
-      mailpit:
-        condition: service_healthy
     healthcheck:
       test:
         [
@@ -158,7 +154,7 @@ services:
     image: caddy:2.10-alpine
     restart: unless-stopped
     environment:
-      PUBLIC_HOST: ${PUBLIC_HOST:-localhost}
+      PUBLIC_HOST: ${PUBLIC_HOST:?PUBLIC_HOST is required}
     ports:
       - '80:80'
       - '443:443'

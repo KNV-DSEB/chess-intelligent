@@ -35,4 +35,28 @@ describe('production artifact topology', () => {
     expect(webImage).toContain('CMD ["node", "apps/web/server.js"]');
     expect(`${apiImage}${workerImage}${webImage}`).not.toMatch(/CMD \[[^\]]*(tsx|pnpm dev)/u);
   });
+
+  it('requires a real external SMTP boundary for the Pilot topology', async () => {
+    const compose = await source('docker-compose.production.yml');
+
+    expect(compose).not.toContain('mailpit:');
+    expect(compose).toContain('SMTP_HOST: ${SMTP_HOST:?SMTP_HOST is required}');
+    expect(compose).toContain(
+      'SMTP_REQUIRE_TLS: ${SMTP_REQUIRE_TLS:?SMTP_REQUIRE_TLS is required}',
+    );
+    expect(compose).toContain('SMTP_PASSWORD: ${SMTP_PASSWORD:?SMTP_PASSWORD is required}');
+  });
+
+  it('uses public ACME TLS in production and isolates internal-CA acceptance', async () => {
+    const [compose, productionCaddy, localCaddy] = await Promise.all([
+      source('docker-compose.production.yml'),
+      source('docker/Caddyfile'),
+      source('docker/Caddyfile.local-acceptance'),
+    ]);
+
+    expect(compose).toContain('PUBLIC_HOST: ${PUBLIC_HOST:?PUBLIC_HOST is required}');
+    expect(productionCaddy).toContain('{$PUBLIC_HOST}');
+    expect(productionCaddy).not.toContain('tls internal');
+    expect(localCaddy).toContain('tls internal');
+  });
 });
