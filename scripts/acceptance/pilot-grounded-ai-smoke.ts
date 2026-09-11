@@ -3,11 +3,15 @@ import { dirname, extname } from 'node:path';
 
 import { OpenAiGroundedLanguageModel } from '../../apps/api/src/openai-grounded-language-model';
 import {
-  GROUNDED_BRIEF_CONTEXT_VERSION,
   GROUNDED_BRIEF_PROMPT_VERSION,
   validateGroundedBriefOutput,
-  type GroundedBriefContext,
-} from '@chess-intelligent/domain';
+  type GroundedBriefOutput,
+} from '../../packages/domain/src/index';
+import {
+  PILOT_AI_SMOKE_SCENARIOS,
+  buildPilotAiSmokeContext,
+  pilotAiSmokeSystemPrompt,
+} from './pilot-grounded-ai-smoke-corpus';
 
 function required(name: string): string {
   const value = process.env[name];
@@ -19,57 +23,6 @@ function percentile(values: number[], quantile: number): number | null {
   if (values.length === 0) return null;
   const sorted = [...values].sort((left, right) => left - right);
   return sorted[Math.min(sorted.length - 1, Math.ceil(sorted.length * quantile) - 1)]!;
-}
-
-function syntheticContext(index: number): GroundedBriefContext {
-  const lowCoverage = index % 3 === 0;
-  const stableId = index % 2 === 0 ? 'tactics.fork' : 'tactics.pin';
-  const evidenceRef = `concept-evidence:synthetic-${index}`;
-  return {
-    contextVersion: GROUNDED_BRIEF_CONTEXT_VERSION,
-    audience: index % 2 === 0 ? 'COACH' : 'STUDENT',
-    academyId: '00000000-0000-4000-8000-000000000001',
-    studentProfileId: `00000000-0000-4000-8000-${String(index + 100).padStart(12, '0')}`,
-    player: { id: `00000000-0000-4000-8000-${String(index + 200).padStart(12, '0')}` },
-    source: {
-      skillGraphRunId: `00000000-0000-4000-8000-${String(index + 300).padStart(12, '0')}`,
-      trainingPlanRunId: null,
-      ontologyVersion: '1.1.0',
-      classifierBundleVersion: 'CONCEPT_CLASSIFIER_BUNDLE_V2',
-      skillGraphPolicyVersion: 'SKILL_GRAPH_POLICY_V2',
-      asOfDate: '2026-09-11',
-    },
-    coverage: {
-      reportVersion: 'CONCEPT_COVERAGE_REPORT_V1',
-      classifierSupported: 13,
-      trainable: 8,
-      decisionOccurrences: 8 + index,
-      classifiedDecisions: lowCoverage ? 1 : 6 + index,
-      engineBackedDecisions: lowCoverage ? 1 : 5 + index,
-      masteryEligibleEvidence: lowCoverage ? 0 : 3 + (index % 5),
-    },
-    concepts: [
-      {
-        stableId,
-        displayName: stableId === 'tactics.fork' ? 'Fork' : 'Pin',
-        supportState: lowCoverage ? 'INSUFFICIENT_EVIDENCE' : 'ESTIMATED',
-        masteryBand: lowCoverage ? null : 'DEVELOPING',
-        evidenceConfidence: lowCoverage ? 'LOW' : 'MODERATE',
-        posteriorMean: lowCoverage ? null : 0.45 + (index % 5) / 20,
-        directEvidenceCount: lowCoverage ? 1 : 4 + (index % 4),
-        effectiveEvidenceMass: lowCoverage ? 0.4 : 2.5 + (index % 3),
-        evidenceRefs: [evidenceRef],
-        trainingSupported: true,
-      },
-    ],
-    permittedEvidenceRefs: [
-      { ref: evidenceRef, kind: 'CONCEPT_EVIDENCE' },
-      {
-        ref: `skill-graph:00000000-0000-4000-8000-${String(index + 300).padStart(12, '0')}`,
-        kind: 'SKILL_GRAPH_RUN',
-      },
-    ],
-  };
 }
 
 if (process.env.PILOT_AI_SMOKE_CONFIRM !== 'YES') {
@@ -103,16 +56,19 @@ const results: Array<{
   inputTokens: number;
   outputTokens: number;
   estimatedCostMicros: number;
+  scenarioId: string;
+  responseLanguage: 'EN' | 'VI';
+  validatedOutput: GroundedBriefOutput | null;
 }> = [];
 
 for (let index = 0; index < caseCount; index += 1) {
-  const context = syntheticContext(index);
+  const scenario = PILOT_AI_SMOKE_SCENARIOS[index % PILOT_AI_SMOKE_SCENARIOS.length]!;
+  const context = buildPilotAiSmokeContext(index, scenario);
   const started = performance.now();
   try {
     const response = await provider.generate({
       promptVersion: GROUNDED_BRIEF_PROMPT_VERSION,
-      systemPrompt:
-        'Use only the supplied structured facts. Cite permitted evidenceRefs. Missing evidence is uncertainty. Return the required JSON only.',
+      systemPrompt: pilotAiSmokeSystemPrompt(scenario),
       context,
     });
     try {
@@ -126,6 +82,9 @@ for (let index = 0; index < caseCount; index += 1) {
         inputTokens: response.usage?.inputTokens ?? 0,
         outputTokens: response.usage?.outputTokens ?? 0,
         estimatedCostMicros: response.usage?.estimatedCostMicros ?? 0,
+        scenarioId: scenario.id,
+        responseLanguage: scenario.responseLanguage,
+        validatedOutput: validated,
       });
     } catch {
       results.push({
@@ -137,6 +96,9 @@ for (let index = 0; index < caseCount; index += 1) {
         inputTokens: response.usage?.inputTokens ?? 0,
         outputTokens: response.usage?.outputTokens ?? 0,
         estimatedCostMicros: response.usage?.estimatedCostMicros ?? 0,
+        scenarioId: scenario.id,
+        responseLanguage: scenario.responseLanguage,
+        validatedOutput: null,
       });
     }
   } catch {
@@ -149,6 +111,9 @@ for (let index = 0; index < caseCount; index += 1) {
       inputTokens: 0,
       outputTokens: 0,
       estimatedCostMicros: 0,
+      scenarioId: scenario.id,
+      responseLanguage: scenario.responseLanguage,
+      validatedOutput: null,
     });
   }
 }
@@ -179,6 +144,14 @@ const report = {
     outputTokens: results.reduce((sum, result) => sum + result.outputTokens, 0),
     estimatedCostMicros: results.reduce((sum, result) => sum + result.estimatedCostMicros, 0),
     claims: results.reduce((sum, result) => sum + result.claimCount, 0),
+    vietnameseCases: results.filter((result) => result.responseLanguage === 'VI').length,
+    vietnameseValidated: successful.filter((result) => result.responseLanguage === 'VI').length,
+  },
+  qualityReview: {
+    vietnameseReadability: 'HUMAN_REVIEW_REQUIRED',
+    coachStudentAudienceDistinction: 'HUMAN_REVIEW_REQUIRED',
+    instruction:
+      'Review validatedOutput for every successful case; do not approve the Pilot AI capability from schema validation alone.',
   },
   results,
 };

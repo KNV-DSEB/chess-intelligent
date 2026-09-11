@@ -13,14 +13,20 @@ artifact; operators must record the exact returned identifier in the smoke artif
 
 ## Synthetic suite
 
-`pnpm pilot:ai-smoke` generates 24 synthetic, non-PII Coach/Student snapshots by default. It accepts
-20–50 cases and reports:
+`pnpm pilot:ai-smoke` generates 24 synthetic, non-PII Coach/Student snapshots by default. The
+12-scenario matrix repeats deterministically and covers high/moderate/insufficient/no evidence,
+single/multiple concepts, trainable/no-action contexts, present/absent TrainingPlans, recent
+compatible/no-comparable progress evidence, both audiences, and English/Vietnamese response
+instructions. It accepts 20–50 cases and reports:
 
 - generation success, provider failure, validation rejection, and retry counts;
 - p50/p95 latency;
 - input/output tokens and estimated micro-USD cost;
 - validated claim count;
-- per-case audience and outcome.
+- per-case scenario, audience, language, outcome, and validated output for human quality review.
+
+Schema validity is not a Vietnamese-quality verdict. Every successful Vietnamese output and the
+Coach/Student audience distinction remain `HUMAN_REVIEW_REQUIRED` in the generated report.
 
 Required variables: `PILOT_AI_SMOKE_CONFIRM=YES`, `PILOT_AI_SMOKE_OUTPUT`, and
 `GROUNDED_AI_API_KEY`. Provider/model/timeout/pricing variables use the production names.
@@ -36,5 +42,5 @@ Required variables: `PILOT_AI_SMOKE_CONFIRM=YES`, `PILOT_AI_SMOKE_OUTPUT`, and
 No live result is claimed in this document. A dated smoke JSON from the selected release and real
 provider is a hard launch prerequisite when AI is enabled.
 
-On 2026-09-11, `GROUNDED_AI_API_KEY` and provider selection were absent on the release host, so no
+On 2026-09-12, `GROUNDED_AI_API_KEY` and provider selection were absent on the release host, so no
 billable request was attempted and no synthetic result artifact was created.

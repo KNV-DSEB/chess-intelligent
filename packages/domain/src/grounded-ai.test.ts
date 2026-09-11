@@ -92,6 +92,16 @@ describe('GROUNDED_BRIEF_ARTIFACT_V1 validation', () => {
       { ...valid, claims: [{ ...valid.claims[0], statement: 'This is the best move.' }] },
       'PROHIBITED_INFERENCE',
     ],
+    [
+      'Vietnamese psychology',
+      { ...valid, claims: [{ ...valid.claims[0], statement: 'Kỳ thủ này thường lo lắng.' }] },
+      'PROHIBITED_INFERENCE',
+    ],
+    [
+      'Vietnamese move authority',
+      { ...valid, claims: [{ ...valid.claims[0], statement: 'Đây là nước đi tốt nhất.' }] },
+      'PROHIBITED_INFERENCE',
+    ],
   ] as const)('rejects %s', (_label, output, code) => {
     expect(() => validateGroundedBriefOutput(context, output)).toThrowError(
       expect.objectContaining<Partial<GroundedBriefValidationError>>({ code }),

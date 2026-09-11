@@ -8,7 +8,7 @@ Overall result: `PILOT_BLOCKED`
 | -------------------------------------------- | ------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
 | Release frozen                               | PASS    | Pilot change policy is documented; only readiness, security, measurement, workflow-blocker, and operations changes are in scope.                                                           |
 | Source control clean                         | PASS    | The release commit was created from the inspected staged set; no unintended release-eligible files remained after the final amend.                                                         |
-| Build                                        | PASS    | `pnpm build` passed on 2026-09-11.                                                                                                                                                         |
+| Build                                        | PASS    | `pnpm build` passed on 2026-09-12.                                                                                                                                                         |
 | Migration 016 source/deterministic apply     | PASS    | PGlite applied migrations 001–016; this is not production PostgreSQL proof.                                                                                                                |
 | Real PostgreSQL migration/query verification | NOT_RUN | No explicit disposable `TEST_DATABASE_URL`; the unknown native database was not touched.                                                                                                   |
 | Tagged-deployment Stockfish                  | NOT_RUN | Task 015 historical evidence is not evidence for the Pilot release deployment.                                                                                                             |
@@ -37,7 +37,7 @@ Overall result: `PILOT_BLOCKED`
 | Student guide                                | PASS    | `pilot-001-student-guide.md`.                                                                                                                                                              |
 | Authenticated browser smoke                  | NOT_RUN | Local Web shell rendered; four-role tagged HTTPS workflow remains required.                                                                                                                |
 | Authenticated mobile smoke                   | NOT_RUN | Mobile Web shell rendered; signed-in Pilot workflow remains required.                                                                                                                      |
-| Secret scan                                  | PASS    | 333 release-eligible files scanned. Four hits were one explicitly marked non-secret Task 015 placeholder and its three generated Graphify copies; local test private keys are Git-ignored. |
+| Secret scan                                  | PASS    | 335 release-eligible files scanned. Four hits were one explicitly marked non-secret Task 015 placeholder and its three generated Graphify copies; local test private keys are Git-ignored. |
 | Production dependency audit                  | NOT_RUN | Public npm-registry manifest disclosure was not specifically authorized; no workaround was attempted.                                                                                      |
 
 ## Verified in source
@@ -52,10 +52,10 @@ Overall result: `PILOT_BLOCKED`
 - [x] AI is optional; invalid/provider-failed output persists no artifact.
 - [x] local checks/build and migration verification are part of the release gate.
 
-## Local release-candidate evidence — 2026-09-11
+## Local release-candidate evidence — 2026-09-12
 
 - `pnpm format:check`, `pnpm lint`, and `pnpm typecheck`: passed.
-- `pnpm test -- --maxWorkers=4 --reporter=dot`: 44 files passed, 223 tests passed; 5 files
+- `pnpm test -- --maxWorkers=4 --reporter=dot`: 45 files passed, 227 tests passed; 5 files
   and 6 tests skipped behind explicit external/real-runtime prerequisites.
 - `pnpm build`: passed, including the production Next.js build and API/Worker type builds.
 - migration 016 applied in deterministic PGlite migration tests. This is source verification only.
@@ -66,7 +66,7 @@ Overall result: `PILOT_BLOCKED`
 - Impeccable detector found only the incumbent global font and pre-existing security-note border;
   headless Chrome produced desktop/mobile Web-shell screenshots. Authenticated Pilot browser
   workflow verification remains a deployment gate.
-- Graphify incremental update produced 3,237 nodes and 6,835 edges. Verified paths include
+- Graphify incremental update produced 3,243 nodes and 6,854 edges. Verified paths include
   `recordClientEvent → buildApp → PilotRepository`,
   `OpenAiGroundedLanguageModel → GroundedLanguageModel → app.ts → GroundedAiRepository`, and
   `buildApp → studentReadiness → derivePilotStudentReadiness` (undirected architecture view;

@@ -107,7 +107,7 @@ const CONFIDENCE_RANK: Readonly<Record<GroundedBriefConfidence, number>> = {
   HIGH: 3,
 };
 const PROHIBITED_LANGUAGE =
-  /\b(weakness|weak player|strength|lazy|afraid|nervous|psycholog(?:y|ical)|guarantee(?:d)?|always|never understands?|best move|winning move|objectively best|must play)\b/iu;
+  /(?:\b(?:weakness|weak player|strength|lazy|afraid|nervous|psycholog(?:y|ical)|guarantee(?:d)?|always|never understands?|best move|winning move|objectively best|must play)\b|điểm yếu|kỳ thủ yếu|người chơi yếu|lười|sợ hãi|lo lắng|tâm lý|đảm bảo|luôn luôn|không bao giờ hiểu|nước đi tốt nhất|nước thắng|khách quan tốt nhất|phải chơi)/iu;
 
 function strings(value: unknown): value is string[] {
   return Array.isArray(value) && value.every((entry) => typeof entry === 'string');

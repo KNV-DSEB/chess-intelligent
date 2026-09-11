@@ -1,67 +1,67 @@
-# Graph Report - chess-intelligent  (2026-09-11)
+# Graph Report - chess-intelligent  (2026-09-12)
 
 ## Corpus Check
-- 304 files · ~200,236 words
+- 306 files · ~201,082 words
 - Verdict: corpus is large enough that graph structure adds value.
 
 ## Summary
-- 3237 nodes · 6835 edges · 192 communities (167 shown, 25 thin omitted)
+- 3243 nodes · 6854 edges · 199 communities (173 shown, 26 thin omitted)
 - Extraction: 96% EXTRACTED · 4% INFERRED · 0% AMBIGUOUS · INFERRED: 303 edges (avg confidence: 0.81)
 - Token cost: 0 input · 0 output
 
 ## Community Hubs (Navigation)
 - player-intelligence.ts
-- .request
+- EmailDeliveryProvider
 - app.ts
 - ResolvedPlayerIdentity
 - AcademyMembershipRoleV1
-- AuthRepository
-- Database
+- appendSecurityAuditEvent
+- buildApp
 - pilot_events
 - games/[id]/page.tsx
 - opponent-preparation-repository.ts
-- adaptive-training.ts
-- pilot-application.ts
-- opponent-preparation.test.ts
+- game-repository.ts
+- PilotApplicationService
+- PreparationFixtureEngine
 - engine-analysis.ts
-- PlayerSkillGraphApplicationService
+- reconciliation.ts
 - coach-student-intelligence.ts
 - academy-security.ts
 - security-routes.ts
 - player-skill-graph-application.ts
 - scripts
 - concept-facts.ts
-- db/src/index.ts
-- analysis-worker.ts
+- AnalysisRepository
+- stockfish-uci-engine.ts
 - concept-classification.ts
 - production-operational-foundation.test.ts
 - classification-repository.ts
 - task015-browser-gate.mjs
 - .generate
-- grounded-ai-application.ts
+- grounded-ai-application.test.ts
 - chess-core/src/index.ts
-- database.ts
+- PgDatabase
 - ontology.ts
 - AcademySecurityApplicationService
 - concept-classification-application.ts
-- player-skill-graph.ts
+- adaptive-training.ts
 - test/adaptive-training.test.ts
 - AcademyRepository
 - player-skill-graph-repository.ts
 - task015-auth-boundary-gate.mjs
 - Coding Agent Guide
-- Color
+- DataSourceType
 - Player Intelligence Dossier
 - academy-administration.tsx
 - preparation.ts
-- dateOnly
+- Color
 - QueryClient
 - training-application.ts
 - test/coach-student-intelligence.test.ts
 - training/page.tsx
 - Position Corpus Explorer
-- academy-repository.ts
-- EvidenceRow
+- db/src/index.ts
+- server.ts
 - concept-coverage.ts
 - compilerOptions
 - dependencies
@@ -80,7 +80,7 @@
 - ontology/page.tsx
 - Task 007 Chess Concept Ontology
 - task015-runtime-fault-gate.mjs
-- buildApp
+- AcademyApplicationService
 - skills/page.tsx
 - PROJECT_CONTEXT.md
 - task015-evidence-audit.mjs
@@ -88,8 +88,8 @@
 - grounded-ai.ts
 - Q: Trace Task 016 SkillGraphRun through grounded AI context construction, provider validation, append-only artifact persistence, authorization, UI claim citations, and evidence drilldown.
 - security-audit-repository.ts
-- openai-grounded-language-model.ts
-- ChessEngine
+- grounded-ai-application.ts
+- analysis-worker.ts
 - OntologyValidator
 - students/[id]/page.tsx
 - worker/package.json
@@ -98,15 +98,18 @@
 - test/player-skill-graph.test.ts
 - Continuous Integration Pipeline
 - domain/src/index.ts
+- game-reconciliation-application.ts
 - pilot-grounded-ai-smoke.ts
 - db/package.json
 - domain/package.json
 - paths
+- metadata-game-repository.ts
 - api/tsconfig.json
 - explorer/page.tsx
 - OntologyGraph
+- AcademyAccessRepository
 - chess-core/package.json
-- worker-loop.ts
+- analysis-worker.test.ts
 - web/tsconfig.json
 - Task 005 Opponent Opening Intelligence
 - Pilot 001 — private Academy launch plan
@@ -114,12 +117,12 @@
 - layout.tsx
 - Pilot 001 operations
 - Task 014 production gate execution report
-- grounded-ai-repository.ts
+- academy-bootstrap-owner-cli.ts
 - ui/tsconfig.json
 - Pilot 001 release manifest
 - Pilot 001 weekly review template
 - worker/tsconfig.json
-- task016-api-server.ts
+- test/player-intelligence.test.ts
 - .prettierrc.json
 - build-node-artifacts.mjs
 - invitations/[token]/page.tsx
@@ -143,8 +146,12 @@
 - Task 015 production topology and browser gate report
 - pilot-001-student-interview.md
 - pilot-001-support-log-template.md
-- appendSecurityAuditEvent
+- RecordingEmailDeliveryProvider
+- AcademyInvitationRepository
 - pilot-repository.ts
+- pilot-export-cli.ts
+- game-phase.ts
+- MetadataGameRepository
 - Q: Pilot 001 architecture dependency paths
 - Task 013 production gate report
 - Task 015 production topology and four-role browser gate closure
@@ -211,12 +218,12 @@
   AGENTS.md → docs/architecture/opponent-opening-intelligence.md
 - `Database Migration and Quality Checks` --semantically_similar_to--> `Repository Quality Checks`  [INFERRED] [semantically similar]
   .github/workflows/ci.yml → README.md
+- `LoginResult` --references--> `CurrentUserRecord`  [EXTRACTED]
+  apps/api/src/auth-application.ts → packages/db/src/auth-repository.ts
 - `PreparationFilterInput` --references--> `OpponentPreparationFilters`  [EXTRACTED]
   apps/api/src/opponent-preparation-application.ts → packages/domain/src/preparation.ts
 - `STRONG_REFERENCE_V1` --shares_data_with--> `Position Corpus Workflow`  [INFERRED]
   docs/plans/005-opponent-opening-intelligence.md → README.md
-- `Opponent Preparation Workflow` --references--> `Opponent Opening Intelligence`  [EXTRACTED]
-  README.md → docs/architecture/opponent-opening-intelligence.md
 
 ## Import Cycles
 - None detected.
@@ -229,35 +236,35 @@
 - **Immutable Versioned Evidence System** — docs_architecture_chess_concept_ontology_canonical_publication, docs_architecture_engine_analysis_engine_run_lifecycle, docs_plans_008_concept_evidence_classification_immutable_classification_runs [INFERRED 0.85]
 - **Ontology and Evidence Governance** — docs_ontology_concept_authoring_guide_chess_concept_authoring_guide, docs_plans_007_chess_concept_ontology_task_007, docs_plans_008_concept_evidence_classification_task_008, docs_classifiers_v1_classifier_rules_v1 [INFERRED 0.95]
 
-## Communities (192 total, 25 thin omitted)
+## Communities (199 total, 26 thin omitted)
 
 ### Community 0 - "player-intelligence.ts"
-Cohesion: 0.06
-Nodes (58): GeneratePlayerDossierInput, PlayerDossierError, PlayerDossierErrorCode, ratio(), ExactExternalIdentityInput, CriticalPositionReason, ADVANTAGE_CONVERSION_VERSION, average() (+50 more)
+Cohesion: 0.05
+Nodes (59): GeneratePlayerDossierInput, PlayerDossierApplicationService, PlayerDossierError, PlayerDossierErrorCode, ratio(), ExactExternalIdentityInput, CriticalPositionReason, ADVANTAGE_CONVERSION_VERSION (+51 more)
 
-### Community 1 - ".request"
-Cohesion: 0.20
-Nodes (3): PasswordResetApplicationError, PasswordResetApplicationService, PasswordResetRepository
+### Community 1 - "EmailDeliveryProvider"
+Cohesion: 0.15
+Nodes (5): AppOptions, EmailDeliveryProvider, PasswordResetApplicationError, PasswordResetApplicationService, PasswordResetRepository
 
 ### Community 2 - "app.ts"
 Cohesion: 0.03
-Nodes (62): academyArtifactParametersSchema, academyAssignmentParametersSchema, academyBodySchema, academyCoachQuerySchema, academyErrorStatus(), academyIntelligenceQuerySchema, academyLegacyCoachQuerySchema, academyLegacyIntelligenceQuerySchema (+54 more)
+Nodes (63): academyArtifactParametersSchema, academyAssignmentParametersSchema, academyBodySchema, academyCoachQuerySchema, academyErrorStatus(), academyIntelligenceQuerySchema, academyLegacyCoachQuerySchema, academyLegacyIntelligenceQuerySchema (+55 more)
 
 ### Community 3 - "ResolvedPlayerIdentity"
 Cohesion: 0.11
-Nodes (19): ExplorePositionInput, PositionExplorerApplicationService, PositionExplorerError, PositionExplorerErrorCode, asCount(), identity(), PositionCorpusRepository, representative() (+11 more)
+Nodes (17): ExplorePositionInput, PositionExplorerApplicationService, PositionExplorerError, PositionExplorerErrorCode, asCount(), identity(), PositionCorpusRepository, calculateObservedMoveStatistics() (+9 more)
 
 ### Community 4 - "AcademyMembershipRoleV1"
-Cohesion: 0.22
-Nodes (16): LoginResult, ActorRow, AssignedStudentItemContext, ManagedMembershipRecord, MembershipRow, StudentActorContext, StudentActorRow, AccountRow (+8 more)
+Cohesion: 0.20
+Nodes (18): AcademyActorRecord, ActorRow, AssignedStudentItemContext, ManagedMembershipRecord, MembershipRow, StudentActorContext, StudentActorRow, AcademyInvitationRecord (+10 more)
 
-### Community 5 - "AuthRepository"
-Cohesion: 0.10
-Nodes (6): AuthApplicationError, AuthApplicationService, PasswordHasher, AuthRepository, AuthRepositoryError, iso()
+### Community 5 - "appendSecurityAuditEvent"
+Cohesion: 0.11
+Nodes (7): AuthApplicationError, AuthApplicationService, PasswordHasher, AuthRepository, AuthRepositoryError, iso(), appendSecurityAuditEvent()
 
-### Community 6 - "Database"
+### Community 6 - "buildApp"
 Cohesion: 0.05
-Nodes (22): CountRow, ErrorResponse, fixtureUrl, ImportResponse, ImportResponse, line(), ManualConceptEngine, shutdown() (+14 more)
+Nodes (25): buildApp(), login(), NOW, sessionCookie(), CORPUS_FIXTURE_GAMES, CorpusFixtureGame, FOCAL_FIDE_ID, CountRow (+17 more)
 
 ### Community 7 - "pilot_events"
 Cohesion: 0.07
@@ -268,36 +275,40 @@ Cohesion: 0.06
 Nodes (29): AttachPgnPage(), Candidate, ReconciliationReport, ClassificationResult, ConceptEvidencePanel(), EvidenceItem, EvidenceProjection, factsText() (+21 more)
 
 ### Community 9 - "opponent-preparation-repository.ts"
-Cohesion: 0.11
-Nodes (22): BlackResponseRow, BuiltCorpus, count(), CountRow, EvidenceAvailabilityRow, HotspotRow, iso(), jsonArray() (+14 more)
+Cohesion: 0.12
+Nodes (21): BlackResponseRow, BuiltCorpus, count(), CountRow, EvidenceAvailabilityRow, HotspotRow, iso(), jsonArray() (+13 more)
 
-### Community 10 - "adaptive-training.ts"
-Cohesion: 0.07
-Nodes (31): CONFIDENCE_RANK, diagnosticEligible(), isSupportedConcept(), PREREQUISITE_READINESS_STATES, PrerequisiteReadiness, remediationEligible(), selectTrainingCandidates(), SKILL_EVIDENCE_CONFIDENCE_V2_VERSION (+23 more)
-
-### Community 11 - "pilot-application.ts"
+### Community 10 - "game-repository.ts"
 Cohesion: 0.13
-Nodes (13): COACH_CLIENT_EVENTS, pilotActor(), PilotApplicationError, PilotApplicationErrorCode, PilotApplicationService, coach, harness(), digest() (+5 more)
+Nodes (13): GameDetails, GameRepository, GameRow, IdentityRow, IdRow, iso(), MoveRow, normalizedName() (+5 more)
+
+### Community 11 - "PilotApplicationService"
+Cohesion: 0.24
+Nodes (5): PilotApplicationError, PilotApplicationService, coach, harness(), PilotActorInput
 
 ### Community 13 - "engine-analysis.ts"
-Cohesion: 0.09
-Nodes (25): ANALYSIS_JOB_STATUSES, ANALYSIS_PROFILES, ANALYSIS_RUN_STATUSES, calculateCentipawnLoss(), classifyMateOutcome(), CRITICAL_DETECTOR_V1_CONFIGURATION, CRITICAL_DETECTOR_VERSION, CRITICAL_POSITION_REASONS (+17 more)
+Cohesion: 0.08
+Nodes (27): ANALYSIS_JOB_STATUSES, ANALYSIS_PROFILES, ANALYSIS_RUN_STATUSES, calculateCentipawnLoss(), classifyMateOutcome(), CRITICAL_DETECTOR_V1_CONFIGURATION, CRITICAL_POSITION_REASONS, CRITICAL_SEVERITIES (+19 more)
+
+### Community 14 - "reconciliation.ts"
+Cohesion: 0.19
+Nodes (11): ParsedGame, addComparison(), classificationRank(), metadataCandidateIdentity(), MetadataPlayerInput, normalized(), player(), RECONCILIATION_CLASSIFICATIONS (+3 more)
 
 ### Community 15 - "coach-student-intelligence.ts"
-Cohesion: 0.09
-Nodes (29): AssignmentItemProgressInput, AssignmentMeasurementRejection, checkSkillGraphComparability(), classifyAssignmentMeasurement(), classifyConceptTransition(), COACH_ATTENTION_SIGNAL_V1, COACH_ATTENTION_SIGNAL_VERSION, CoachAttentionSignal (+21 more)
+Cohesion: 0.08
+Nodes (31): PersistTrainingPlanInput, TrainingCandidateDecision, AssignmentItemProgressInput, AssignmentMeasurementRejection, checkSkillGraphComparability(), classifyAssignmentMeasurement(), classifyConceptTransition(), COACH_ATTENTION_SIGNAL_V1 (+23 more)
 
 ### Community 16 - "academy-security.ts"
-Cohesion: 0.10
-Nodes (31): AcademySecurityApplicationErrorCode, AuthApplicationErrorCode, CryptoOpaqueTokenFactory, OpaqueToken, OpaqueTokenFactory, AuthenticatedPrincipalRecord, ACADEMY_CAPABILITIES, ACADEMY_INVITATION_POLICY_V1 (+23 more)
+Cohesion: 0.08
+Nodes (36): AcademySecurityApplicationErrorCode, AuthApplicationErrorCode, CryptoOpaqueTokenFactory, LoginResult, OpaqueToken, OpaqueTokenFactory, AuthenticatedPrincipalRecord, ACADEMY_CAPABILITIES (+28 more)
 
 ### Community 17 - "security-routes.ts"
-Cohesion: 0.09
-Nodes (31): authErrorStatus(), AuthHttpOptions, clearSessionCookie(), registerCsrfOriginBoundary(), requestPrincipal(), requireRequestPrincipal(), sessionCookieName(), setSessionCookie() (+23 more)
+Cohesion: 0.10
+Nodes (28): authErrorStatus(), AuthHttpOptions, clearSessionCookie(), registerCsrfOriginBoundary(), requestPrincipal(), requireRequestPrincipal(), sessionCookieName(), setSessionCookie() (+20 more)
 
 ### Community 18 - "player-skill-graph-application.ts"
-Cohesion: 0.15
-Nodes (25): ACADEMY_AUTHORIZATION_STATUS, AcademyIntelligenceProfileInput, AcademyOntologyReader, GeneratePlayerSkillGraphInput, PlayerSkillGraphApplicationErrorCode, PlayerSkillGraphConceptDetailView, PlayerSkillGraphConceptView, PlayerSkillGraphView (+17 more)
+Cohesion: 0.17
+Nodes (23): ACADEMY_AUTHORIZATION_STATUS, AcademyIntelligenceProfileInput, GeneratePlayerSkillGraphInput, PlayerSkillGraphApplicationErrorCode, PlayerSkillGraphConceptDetailView, PlayerSkillGraphView, StudentProfileRecord, TrainingAssignmentRecord (+15 more)
 
 ### Community 19 - "scripts"
 Cohesion: 0.07
@@ -307,73 +318,73 @@ Nodes (27): scripts, academy:bootstrap-owner, academy:bootstrap-owner:production
 Cohesion: 0.16
 Nodes (37): ALL_DIRECTIONS, apply(), attackersOf(), attacksSquare(), backRankFact(), BoardPiece, chessColor(), coordinates() (+29 more)
 
-### Community 21 - "db/src/index.ts"
-Cohesion: 0.08
-Nodes (31): AnalysisEvaluationView, AnalysisGame, AnalysisGameOccurrence, AnalysisGameRow, AnalysisJobRow, AnalysisJobView, analysisProfileConfigurationHash(), AnalysisRepository (+23 more)
+### Community 21 - "AnalysisRepository"
+Cohesion: 0.13
+Nodes (9): analysisProfileConfigurationHash(), AnalysisRepository, AnalysisRepositoryError, iso(), json(), mapJob(), numberOrNull(), sanitizedMessage() (+1 more)
 
-### Community 22 - "analysis-worker.ts"
-Cohesion: 0.09
-Nodes (20): AnalysisWorker, ChessEngineFactory, sortedAndValidatedLines(), buildUciGoCommand(), buildUciPositionCommand(), EngineProcessError, Exchange, integerMetric() (+12 more)
+### Community 22 - "stockfish-uci-engine.ts"
+Cohesion: 0.11
+Nodes (20): ChessEngineFactory, sortedAndValidatedLines(), buildUciGoCommand(), buildUciPositionCommand(), EngineProcessError, Exchange, integerMetric(), parseUciInfoLine() (+12 more)
 
 ### Community 23 - "concept-classification.ts"
-Cohesion: 0.10
-Nodes (25): baseDecisionCandidate(), CLASSIFICATION_RUN_STATUSES, ClassificationEngineContext, ClassificationFactValue, ClassificationRunStatus, CONCEPT_CLASSIFIER_BUNDLE_VERSIONS, CONCEPT_CLASSIFIER_V1_CONFIGURATION, CONCEPT_CLASSIFIER_V2_CONFIGURATION (+17 more)
+Cohesion: 0.09
+Nodes (27): baseDecisionCandidate(), CLASSIFICATION_RUN_STATUSES, ClassificationEngineContext, ClassificationFactValue, ClassificationRunStatus, ClassificationSourceSnapshot, CONCEPT_CLASSIFIER_BUNDLE_VERSIONS, CONCEPT_CLASSIFIER_V1_CONFIGURATION (+19 more)
 
 ### Community 24 - "production-operational-foundation.test.ts"
-Cohesion: 0.06
-Nodes (21): redactSensitiveRequestUrl(), AcademyInvitationEmail, DisabledEmailDeliveryProvider, EmailDeliveryError, EmailDeliveryProvider, PasswordResetEmail, SmtpEmailDeliveryOptions, SmtpEmailDeliveryProvider (+13 more)
+Cohesion: 0.14
+Nodes (6): redactSensitiveRequestUrl(), bootstrap(), cookie(), FailingEmailProvider, NOW, owner()
 
 ### Community 25 - "classification-repository.ts"
-Cohesion: 0.09
-Nodes (25): ConceptClassificationApplicationService, AnalysisSelectionRow, ClassificationEngineOccurrenceInput, ClassificationGameInput, ClassificationGameOccurrenceInput, ClassificationRepository, ClassificationRepositoryError, ClassificationRepositoryErrorCode (+17 more)
+Cohesion: 0.11
+Nodes (21): ConceptClassificationApplicationService, AnalysisSelectionRow, ClassificationGameInput, ClassificationGameOccurrenceInput, ClassificationRepository, ClassificationRepositoryError, ClassificationRepositoryErrorCode, evidenceView() (+13 more)
 
 ### Community 26 - "task015-browser-gate.mjs"
 Cohesion: 0.18
 Nodes (25): acceptInvitation(), CdpClient, chrome, click(), createAssignment(), createInvitation(), createStudentMembership(), delay() (+17 more)
 
 ### Community 27 - ".generate"
-Cohesion: 0.28
-Nodes (4): GroundedAiApplicationError, artifact(), json(), groundedBriefContextSha256()
+Cohesion: 0.22
+Nodes (10): GroundedAiApplicationError, artifact(), ArtifactRow, CreateGroundedAiArtifactInput, GroundedAiArtifactRecord, GroundedAiRepository, json(), GroundedBriefAudience (+2 more)
 
-### Community 28 - "grounded-ai-application.ts"
-Cohesion: 0.21
-Nodes (8): ConceptCoverageApplicationService, GROUNDED_BRIEF_SYSTEM_PROMPT, GroundedAiApplicationErrorCode, GroundedAiApplicationService, harness(), validOutput, GroundedAiRepository, GROUNDED_BRIEF_ARTIFACT_VERSION
+### Community 28 - "grounded-ai-application.test.ts"
+Cohesion: 0.24
+Nodes (6): ConceptCoverageApplicationError, ConceptCoverageApplicationService, GroundedAiApplicationService, harness(), validOutput, ConceptCoverageReport
 
 ### Community 29 - "chess-core/src/index.ts"
-Cohesion: 0.14
-Nodes (24): DetectedFileStructureFacts, PgnParseError, PositionFenError, classifyGamePhase(), GAME_PHASE_VERSION, MATERIAL_VALUE, normalizeCastling(), normalizedPositionKey() (+16 more)
+Cohesion: 0.17
+Nodes (21): DetectedFileStructureFacts, PgnParseError, PositionFenError, normalizeCastling(), normalizedPositionKey(), positionIdentity(), sha256(), HEADER_ALIASES (+13 more)
 
-### Community 30 - "database.ts"
-Cohesion: 0.05
-Nodes (37): academyId, academyName, database, displayName, email, database, environment, database (+29 more)
+### Community 30 - "PgDatabase"
+Cohesion: 0.06
+Nodes (24): database, environment, ApiEnvironment, apiEnvironmentSchema, loadRootEnvironment(), readApiEnvironment(), readWorkerEnvironment(), requireDatabaseUrl() (+16 more)
 
 ### Community 31 - "ontology.ts"
 Cohesion: 0.12
 Nodes (20): canonicalizeOntology(), compareText(), CONCEPT_DIFFICULTIES, CONCEPT_KINDS, CONCEPT_STATUSES, ConceptEvidencePolicy, DIFFICULTY_RANK, EVIDENCE_POLARITIES (+12 more)
 
 ### Community 32 - "AcademySecurityApplicationService"
-Cohesion: 0.14
-Nodes (7): AcademySecurityApplicationError, AcademySecurityApplicationService, AuthenticatedPrincipal, AcademyAccessRepository, AcademyAccessRepositoryError, iso(), hasAcademyCapability()
+Cohesion: 0.30
+Nodes (3): AcademySecurityApplicationError, AcademySecurityApplicationService, AuthenticatedPrincipal
 
 ### Community 33 - "concept-classification-application.ts"
-Cohesion: 0.17
-Nodes (15): ClassifyGameRequest, ClassifyGameResult, ConceptClassificationApplicationError, ConceptClassificationApplicationErrorCode, exactHistoryMismatch(), historyMismatch(), verifyEngineContext(), PositionStructureClassifier (+7 more)
+Cohesion: 0.16
+Nodes (16): ClassifyGameRequest, ClassifyGameResult, ConceptClassificationApplicationError, ConceptClassificationApplicationErrorCode, exactHistoryMismatch(), historyMismatch(), verifyEngineContext(), PositionStructureClassifier (+8 more)
 
-### Community 34 - "player-skill-graph.ts"
-Cohesion: 0.08
-Nodes (32): aggregateTrainingAugmentedSkillGraph(), classifySkillEvidenceConfidenceV2(), selectFirstTrainingEvidencePerItem(), gameEvidence(), graphInput(), TrainingSourceCandidate, aggregatePlayerSkillGraph(), applyEvidenceRoleWeight() (+24 more)
+### Community 34 - "adaptive-training.ts"
+Cohesion: 0.05
+Nodes (62): aggregateTrainingAugmentedSkillGraph(), classifySkillEvidenceConfidenceV2(), CONFIDENCE_RANK, diagnosticEligible(), isSupportedConcept(), PREREQUISITE_READINESS_STATES, PrerequisiteReadiness, remediationEligible() (+54 more)
 
 ### Community 35 - "test/adaptive-training.test.ts"
 Cohesion: 0.10
 Nodes (14): analyze(), classify(), engineLine(), fixtureUrl, importFixture(), PlanResponse, prepare(), TrainingFixtureEngine (+6 more)
 
 ### Community 36 - "AcademyRepository"
-Cohesion: 0.14
-Nodes (4): AcademyRepository, AcademyRepositoryError, iso(), StudentIntelligenceProfile
+Cohesion: 0.17
+Nodes (3): AcademyRepository, AcademyRepositoryError, iso()
 
 ### Community 37 - "player-skill-graph-repository.ts"
-Cohesion: 0.09
-Nodes (31): EvidencePolicyRow, EvidenceTypeRow, BuiltScope, ConceptStateRow, ContributionLineageRow, DecisionRow, EvidenceRow, GameRow (+23 more)
+Cohesion: 0.12
+Nodes (23): BuiltScope, ConceptStateRow, DecisionRow, EvidenceRow, GameRow, LoadPlayerSkillEvidenceInput, OntologyVersionRow, PersistPlayerSkillGraphInput (+15 more)
 
 ### Community 38 - "task015-auth-boundary-gate.mjs"
 Cohesion: 0.17
@@ -383,9 +394,9 @@ Nodes (21): CdpClient, chrome, click(), compose(), composeArguments, delay(), ev
 Cohesion: 0.16
 Nodes (15): Chess Truth Boundary, Coding Agent Guide, Conservative Concept Classification, Historical and Engine Evidence Separation, External Data Authorization Rule, Mandatory Observation Provenance, Data Provenance and Provider Policy, External Identity Graph (+7 more)
 
-### Community 40 - "Color"
-Cohesion: 0.10
-Nodes (34): PlayerDossierFilterInput, GameDetails, GameRow, IdentityRow, IdRow, MoveRow, normalizedName(), PlayerRow (+26 more)
+### Community 40 - "DataSourceType"
+Cohesion: 0.11
+Nodes (31): PlayerDossierFilterInput, dateOnly(), BuiltFilteredGames, count(), GameFactRow, iso(), jsonObject(), jsonReasons() (+23 more)
 
 ### Community 41 - "Player Intelligence Dossier"
 Cohesion: 0.11
@@ -397,19 +408,15 @@ Nodes (19): AcademyAdministration(), createInvitation(), createMembership(), cre
 
 ### Community 43 - "preparation.ts"
 Cohesion: 0.07
-Nodes (45): OpponentPreparationApplicationService, OpponentPreparationError, OpponentPreparationErrorCode, PreparationFilterInput, PrepareOpponentInput, PrepareOpponentPositionInput, NormalizedChessPosition, RawOpponentMove (+37 more)
+Nodes (44): OpponentPreparationApplicationService, OpponentPreparationError, OpponentPreparationErrorCode, PreparationFilterInput, PrepareOpponentInput, PrepareOpponentPositionInput, NormalizedChessPosition, RawCompatibleEngineMove (+36 more)
 
-### Community 44 - "dateOnly"
-Cohesion: 0.11
-Nodes (19): PlayerDossierApplicationService, dateOnly(), iso(), EngineEvidenceRow, RawCompatibleEngineMove, BuiltFilteredGames, count(), EngineObservationRow (+11 more)
-
-### Community 45 - "QueryClient"
-Cohesion: 0.05
-Nodes (41): AttachPgnCommand, GameReconciliationApplicationService, ReconcilePgnCommand, ReviewedAttachmentError, ReviewedAttachmentErrorCode, QueryClient, GameRepository, sourceByType() (+33 more)
+### Community 44 - "Color"
+Cohesion: 0.10
+Nodes (33): AnalysisEvaluationView, AnalysisGame, AnalysisGameOccurrence, AnalysisGameRow, AnalysisJobRow, AnalysisJobView, AnalysisRepositoryErrorCode, AnalysisRunRow (+25 more)
 
 ### Community 46 - "training-application.ts"
-Cohesion: 0.09
-Nodes (33): CreateTrainingPlanInput, PublicTrainingItemView, TrainingApplicationErrorCode, TrainingCandidateView, TrainingPlanView, why(), AttemptRow, CandidateRow (+25 more)
+Cohesion: 0.07
+Nodes (38): CreateTrainingPlanInput, PublicTrainingItemView, TrainingApplicationErrorCode, TrainingCandidateView, TrainingPlanView, why(), ContributionLineageRow, PersistedTrainingConceptLineage (+30 more)
 
 ### Community 47 - "test/coach-student-intelligence.test.ts"
 Cohesion: 0.13
@@ -423,17 +430,17 @@ Nodes (15): ApiError, Attempt, boardSquares(), Candidate, CandidateCard(), Chess
 Cohesion: 0.14
 Nodes (17): Canonical Game Counting, Exact Verified Identity Filtering, Historical Intelligence Boundary, Position Corpus Explorer, PositionCorpusRepository, PositionExplorerApplicationService, Position Occurrences, position:v1 Identity (+9 more)
 
-### Community 50 - "academy-repository.ts"
-Cohesion: 0.12
-Nodes (22): AcademyMembershipRecord, AcademyMembershipRole, AcademyRecord, AcademyRepositoryErrorCode, AcademyRow, AssignableTrainingPlan, AssignmentRow, CreateTrainingAssignmentInput (+14 more)
+### Community 50 - "db/src/index.ts"
+Cohesion: 0.11
+Nodes (24): AcademyInvitationDeliveryStatus, AcademyInvitationStatus, AcademyMembershipRecord, AcademyMembershipRole, AcademyRecord, AcademyRepositoryErrorCode, AcademyRow, AssignableTrainingPlan (+16 more)
 
-### Community 51 - "EvidenceRow"
-Cohesion: 0.47
-Nodes (6): EvidenceRow, ConceptRow, ClassificationRuleFacts, ConceptDifficulty, ConceptKind, ConceptStatus
+### Community 51 - "server.ts"
+Cohesion: 0.18
+Nodes (6): DisabledEmailDeliveryProvider, EmailDeliveryError, SmtpEmailDeliveryOptions, SmtpEmailDeliveryProvider, database, environment
 
 ### Community 52 - "concept-coverage.ts"
-Cohesion: 0.16
-Nodes (11): ConceptCoverageApplicationError, buildConceptCoverageReport(), CONCEPT_COVERAGE_REPORT_VERSION, CONCEPT_COVERAGE_STATUSES, ConceptCoverageEntry, ConceptCoverageReport, conceptCoverageStatus, CONTEXT_ONLY (+3 more)
+Cohesion: 0.22
+Nodes (9): buildConceptCoverageReport(), CONCEPT_COVERAGE_REPORT_VERSION, CONCEPT_COVERAGE_STATUSES, ConceptCoverageEntry, conceptCoverageStatus, CONTEXT_ONLY, DEFERRED, domainStableId() (+1 more)
 
 ### Community 53 - "compilerOptions"
 Cohesion: 0.10
@@ -444,20 +451,20 @@ Cohesion: 0.05
 Nodes (43): dependencies, @chess-intelligent/chess-core, @chess-intelligent/config, @chess-intelligent/db, @chess-intelligent/domain, fastify, @fastify/cookie, @fastify/cors (+35 more)
 
 ### Community 55 - "ontology-repository.ts"
-Cohesion: 0.19
-Nodes (11): iso(), jsonArray(), OntologySyncResult, OntologyVersionSummary, RelationshipRow, versionRecord(), VersionRow, VersionSummaryRow (+3 more)
+Cohesion: 0.13
+Nodes (19): EvidenceRow, ConceptRow, EvidencePolicyRow, EvidenceTypeRow, iso(), OntologyImmutabilityError, OntologySyncResult, OntologyVersionSummary (+11 more)
 
 ### Community 56 - "devDependencies"
 Cohesion: 0.11
 Nodes (19): esbuild, eslint, eslint-config-next, @eslint/js, globals, devDependencies, esbuild, eslint (+11 more)
 
 ### Community 57 - "TrainingRepository"
-Cohesion: 0.11
-Nodes (9): PublishedOntologySnapshotReader, TrainingApplicationError, TrainingApplicationService, iso(), json(), TrainingItemRecord, TrainingRepository, OntologyRegistry (+1 more)
+Cohesion: 0.12
+Nodes (8): PublishedOntologySnapshotReader, TrainingApplicationError, TrainingApplicationService, iso(), json(), TrainingItemRecord, TrainingRepository, OntologyRegistry
 
 ### Community 58 - "PlayerSkillGraphRepository"
-Cohesion: 0.25
-Nodes (4): iso(), json(), number(), PlayerSkillGraphRepository
+Cohesion: 0.14
+Nodes (8): PlayerSkillGraphApplicationError, PlayerSkillGraphApplicationService, PlayerSkillGraphConceptView, iso(), json(), number(), PlayerSkillGraphRepository, TrainingAugmentedConceptState
 
 ### Community 59 - "web/package.json"
 Cohesion: 0.07
@@ -476,8 +483,8 @@ Cohesion: 0.19
 Nodes (14): database, outputPath, target, compareRestoreManifests(), createRestoreManifest(), postgresProcessTarget, requireExplicitFilePath(), RESTORE_MANIFEST_TABLES (+6 more)
 
 ### Community 63 - "ontology-application.ts"
-Cohesion: 0.27
-Nodes (6): OntologyApplicationError, OntologyApplicationErrorCode, OntologyApplicationService, OntologyReadView, resolveDomainId(), OntologyValidationIssue
+Cohesion: 0.20
+Nodes (8): OntologyApplicationError, OntologyApplicationErrorCode, OntologyApplicationService, OntologyReadView, resolveDomainId(), jsonArray(), OntologySnapshot, OntologyValidationIssue
 
 ### Community 64 - "player/page.tsx"
 Cohesion: 0.18
@@ -503,9 +510,9 @@ Nodes (26): CONCEPT_CLASSIFIER_BUNDLE_V1, CONCEPT_CLASSIFIER_V1_CONFIGURATION, C
 Cohesion: 0.20
 Nodes (14): baseUrl, compose(), composeArguments, databaseSnapshot(), delay(), docker(), expected, persistenceStable (+6 more)
 
-### Community 70 - "buildApp"
-Cohesion: 0.23
-Nodes (4): AcademyApplicationError, AcademyApplicationService, buildApp(), projectSkillGraphFreshness()
+### Community 70 - "AcademyApplicationService"
+Cohesion: 0.17
+Nodes (5): AcademyApplicationError, AcademyApplicationService, AcademyOntologyReader, projectSkillGraphFreshness(), StudentIntelligenceProfile
 
 ### Community 71 - "skills/page.tsx"
 Cohesion: 0.19
@@ -535,13 +542,13 @@ Nodes (4): Answer, Outcome, Q: Trace Task 016 SkillGraphRun through grounded AI 
 Cohesion: 0.30
 Nodes (8): AppendSecurityAuditEventInput, AuditRow, iso(), metadata(), SecurityAuditEventRecord, SecurityAuditRepository, SecurityAuditAction, SecurityAuditOutcome
 
-### Community 78 - "openai-grounded-language-model.ts"
-Cohesion: 0.19
-Nodes (11): AppOptions, GroundedLanguageModel, GroundedLanguageModelResult, compactContext(), GROUNDED_BRIEF_JSON_SCHEMA, OpenAiGroundedLanguageModel, OpenAiGroundedLanguageModelOptions, OpenAiResponse (+3 more)
+### Community 78 - "grounded-ai-application.ts"
+Cohesion: 0.11
+Nodes (19): GROUNDED_BRIEF_SYSTEM_PROMPT, GroundedAiApplicationErrorCode, GroundedLanguageModel, GroundedLanguageModelResult, compactContext(), GROUNDED_BRIEF_JSON_SCHEMA, OpenAiGroundedLanguageModel, OpenAiGroundedLanguageModelOptions (+11 more)
 
-### Community 79 - "ChessEngine"
-Cohesion: 0.05
-Nodes (20): line(), ManualDossierEngine, pgns, shutdown(), focal, line(), ManualSkillGraphEngine, shutdown() (+12 more)
+### Community 79 - "analysis-worker.ts"
+Cohesion: 0.07
+Nodes (18): line(), ManualDossierEngine, pgns, shutdown(), focal, line(), ManualSkillGraphEngine, shutdown() (+10 more)
 
 ### Community 80 - "OntologyValidator"
 Cohesion: 0.19
@@ -572,12 +579,16 @@ Cohesion: 0.33
 Nodes (6): Continuous Integration Pipeline, Database Migration and Quality Checks, Local Infrastructure Stack, PostgreSQL Service, Redis Service, Repository Quality Checks
 
 ### Community 87 - "domain/src/index.ts"
-Cohesion: 0.10
-Nodes (17): CORPUS_FIXTURE_GAMES, CorpusFixtureGame, FOCAL_FIDE_ID, ImportResponse, ResolvedPlayerResponse, COLORS, DATA_SOURCE_TYPES, GAME_CONTEXTS (+9 more)
+Cohesion: 0.09
+Nodes (19): line(), ManualConceptEngine, shutdown(), OntologyRepository, migratedDatabase(), readOntologySourceFile(), database, report (+11 more)
+
+### Community 88 - "game-reconciliation-application.ts"
+Cohesion: 0.18
+Nodes (10): AttachPgnCommand, GameReconciliationApplicationService, ReconcilePgnCommand, ReviewedAttachmentError, ReviewedAttachmentErrorCode, PgnAttachmentResult, GameReconciliationService, ReconciliationClassification (+2 more)
 
 ### Community 89 - "pilot-grounded-ai-smoke.ts"
-Cohesion: 0.17
-Nodes (7): GROUNDED_BRIEF_PROMPT_VERSION, caseCount, outputPath, provider, report, results, successful
+Cohesion: 0.18
+Nodes (12): GroundedBriefConceptContext, caseCount, buildPilotAiSmokeContext(), PILOT_AI_SMOKE_SCENARIOS, PilotAiSmokeScenario, pilotAiSmokeSystemPrompt(), uuid(), outputPath (+4 more)
 
 ### Community 90 - "db/package.json"
 Cohesion: 0.07
@@ -591,6 +602,10 @@ Nodes (11): devDependencies, typescript, exports, typescript, name, private, scr
 Cohesion: 0.10
 Nodes (19): node, packages/chess-core/src/index.ts, packages/config/src/index.ts, packages/db/src/index.ts, packages/domain/src/index.ts, packages/ui/src/index.ts, compilerOptions, baseUrl (+11 more)
 
+### Community 93 - "metadata-game-repository.ts"
+Cohesion: 0.16
+Nodes (12): AttachmentStateRow, CandidateRow, CandidateSourceRow, IdentityRow, MetadataImportResult, normalizedName(), PgnAttachmentError, PgnAttachmentErrorCode (+4 more)
+
 ### Community 94 - "api/tsconfig.json"
 Cohesion: 0.33
 Nodes (5): extends, include, src/**/*.ts, test/**/*.ts, ../../tsconfig.base.json
@@ -599,13 +614,17 @@ Nodes (5): extends, include, src/**/*.ts, test/**/*.ts, ../../tsconfig.base.json
 Cohesion: 0.29
 Nodes (9): ApiError, ExplorerResult, nullableNumber(), percentage(), PositionExplorerPage(), navigate(), runQuery(), submit() (+1 more)
 
+### Community 97 - "AcademyAccessRepository"
+Cohesion: 0.20
+Nodes (3): AcademyAccessRepository, AcademyAccessRepositoryError, iso()
+
 ### Community 98 - "chess-core/package.json"
 Cohesion: 0.10
 Nodes (20): chess.js, dependencies, @chess-intelligent/domain, chess.js, devDependencies, @types/node, typescript, vitest (+12 more)
 
-### Community 99 - "worker-loop.ts"
-Cohesion: 0.36
-Nodes (3): runWorkerLoop(), WorkerLoopOptions, WorkerLoopTarget
+### Community 99 - "analysis-worker.test.ts"
+Cohesion: 0.18
+Nodes (5): DeterministicFakeEngine, FailingFakeEngine, fixtureUrl, line(), TransientFailingFakeEngine
 
 ### Community 100 - "web/tsconfig.json"
 Cohesion: 0.14
@@ -635,9 +654,9 @@ Nodes (6): Daily checks, Disable and incident response, Pilot 001 operations, Pr
 Cohesion: 0.08
 Nodes (25): Academy benchmark, Backup / restore, Blockers discovered, Browser role matrix, Coach impersonation, Connection pooling, Execution environment, Full learning smoke (+17 more)
 
-### Community 107 - "grounded-ai-repository.ts"
-Cohesion: 0.71
-Nodes (6): ArtifactRow, CreateGroundedAiArtifactInput, GroundedAiArtifactRecord, GroundedBriefAudience, GroundedBriefContext, GroundedBriefOutput
+### Community 107 - "academy-bootstrap-owner-cli.ts"
+Cohesion: 0.18
+Nodes (8): academyId, academyName, database, displayName, email, ARGON2ID_OPTIONS, Argon2idPasswordHasher, PASSWORD_ALGORITHM
 
 ### Community 108 - "ui/tsconfig.json"
 Cohesion: 0.29
@@ -655,9 +674,9 @@ Nodes (5): Decisions, Pilot 001 weekly review template, Qualitative evidence, Wi
 Cohesion: 0.33
 Nodes (5): extends, include, src/**/*.ts, test/**/*.ts, ../../tsconfig.base.json
 
-### Community 112 - "task016-api-server.ts"
-Cohesion: 0.33
-Nodes (4): GroundedBriefClaim, database, groundedLanguageModel, port
+### Community 112 - "test/player-intelligence.test.ts"
+Cohesion: 0.17
+Nodes (5): DossierFixtureEngine, EngineScenario, fixtures, line(), OpponentPreparationDossier
 
 ### Community 113 - ".prettierrc.json"
 Cohesion: 0.40
@@ -695,13 +714,25 @@ Nodes (15): auditSurface(), CdpClient, chrome, clickByText(), delay(), evaluate(
 Cohesion: 0.11
 Nodes (17): ADMIN, Authentication, sessions, consent, and mail, Browser matrix, COACH, Compose topology, Decision, Defects remediated, Gate results (+9 more)
 
-### Community 145 - "appendSecurityAuditEvent"
-Cohesion: 0.19
-Nodes (9): AcademyActorRecord, AcademyInvitationDeliveryStatus, AcademyInvitationRecord, AcademyInvitationRepository, AcademyInvitationRepositoryError, AcademyInvitationStatus, InvitationRow, iso() (+1 more)
+### Community 144 - "RecordingEmailDeliveryProvider"
+Cohesion: 0.27
+Nodes (4): AcademyInvitationEmail, PasswordResetEmail, RecordingEmailDeliveryProvider, RecordingEmailProvider
+
+### Community 145 - "AcademyInvitationRepository"
+Cohesion: 0.27
+Nodes (3): AcademyInvitationRepository, AcademyInvitationRepositoryError, iso()
 
 ### Community 146 - "pilot-repository.ts"
-Cohesion: 0.07
-Nodes (36): academyId, database, date(), fromInclusive, outputPath, required(), supportIncidentCount, toExclusive (+28 more)
+Cohesion: 0.08
+Nodes (35): COACH_CLIENT_EVENTS, PilotApplicationErrorCode, AiReasonCountRow, AppendPilotEventInput, ConceptFeedbackCountRow, countDistinct(), digest(), EventRow (+27 more)
+
+### Community 147 - "pilot-export-cli.ts"
+Cohesion: 0.25
+Nodes (8): academyId, database, date(), fromInclusive, outputPath, required(), supportIncidentCount, toExclusive
+
+### Community 148 - "game-phase.ts"
+Cohesion: 0.47
+Nodes (4): classifyGamePhase(), GAME_PHASE_VERSION, MATERIAL_VALUE, GamePhase
 
 ### Community 152 - "Q: Pilot 001 architecture dependency paths"
 Cohesion: 0.40
@@ -866,7 +897,7 @@ Nodes (3): Generator identities, Supported targets, Training coverage V1
 ## Knowledge Gaps
 - **1062 isolated node(s):** `semi`, `singleQuote`, `trailingComma`, `printWidth`, `name` (+1057 more)
   These have ≤1 connection - possible missing edges or undocumented components.
-- **25 thin communities (<3 nodes) omitted from report** — run `graphify query` to explore isolated nodes.
+- **26 thin communities (<3 nodes) omitted from report** — run `graphify query` to explore isolated nodes.
 
 ## Work-memory lessons
 
@@ -878,17 +909,17 @@ Nodes (3): Generator identities, Supported targets, Training coverage V1
 ## Suggested Questions
 _Questions this graph is uniquely positioned to answer:_
 
-- **Why does `buildApp()` connect `buildApp` to `player-intelligence.ts`, `.request`, `app.ts`, `ResolvedPlayerIdentity`, `AuthRepository`, `Database`, `opponent-preparation-repository.ts`, `pilot-application.ts`, `opponent-preparation.test.ts`, `PlayerSkillGraphApplicationService`, `security-routes.ts`, `player-skill-graph-application.ts`, `appendSecurityAuditEvent`, `db/src/index.ts`, `analysis-worker.ts`, `production-operational-foundation.test.ts`, `classification-repository.ts`, `.generate`, `grounded-ai-application.ts`, `chess-core/src/index.ts`, `database.ts`, `AcademySecurityApplicationService`, `concept-classification-application.ts`, `test/adaptive-training.test.ts`, `AcademyRepository`, `preparation.ts`, `dateOnly`, `QueryClient`, `test/coach-student-intelligence.test.ts`, `concept-coverage.ts`, `ontology-repository.ts`, `TrainingRepository`, `PlayerSkillGraphRepository`, `ontology-application.ts`, `security-audit-repository.ts`, `ChessEngine`, `test/player-skill-graph.test.ts`, `domain/src/index.ts`, `task016-api-server.ts`?**
-  _High betweenness centrality (0.028) - this node is a cross-community bridge._
-- **Why does `Color` connect `Color` to `player-intelligence.ts`, `ResolvedPlayerIdentity`, `opponent-preparation-repository.ts`, `engine-analysis.ts`, `player-skill-graph-application.ts`, `concept-facts.ts`, `db/src/index.ts`, `concept-classification.ts`, `classification-repository.ts`, `chess-core/src/index.ts`, `concept-classification-application.ts`, `player-skill-graph.ts`, `player-skill-graph-repository.ts`, `preparation.ts`, `dateOnly`, `QueryClient`, `training-application.ts`, `academy-repository.ts`, `EvidenceRow`, `TrainingRepository`, `domain/src/index.ts`?**
+- **Why does `buildApp()` connect `buildApp` to `player-intelligence.ts`, `EmailDeliveryProvider`, `app.ts`, `ResolvedPlayerIdentity`, `appendSecurityAuditEvent`, `opponent-preparation-repository.ts`, `game-repository.ts`, `PilotApplicationService`, `security-routes.ts`, `pilot-repository.ts`, `player-skill-graph-application.ts`, `AcademyInvitationRepository`, `AnalysisRepository`, `MetadataGameRepository`, `production-operational-foundation.test.ts`, `classification-repository.ts`, `.generate`, `grounded-ai-application.test.ts`, `chess-core/src/index.ts`, `PgDatabase`, `AcademySecurityApplicationService`, `concept-classification-application.ts`, `test/adaptive-training.test.ts`, `AcademyRepository`, `DataSourceType`, `preparation.ts`, `QueryClient`, `test/coach-student-intelligence.test.ts`, `server.ts`, `ontology-repository.ts`, `TrainingRepository`, `PlayerSkillGraphRepository`, `ontology-application.ts`, `AcademyApplicationService`, `security-audit-repository.ts`, `grounded-ai-application.ts`, `analysis-worker.ts`, `test/player-skill-graph.test.ts`, `domain/src/index.ts`, `game-reconciliation-application.ts`, `AcademyAccessRepository`, `analysis-worker.test.ts`, `academy-bootstrap-owner-cli.ts`, `test/player-intelligence.test.ts`?**
+  _High betweenness centrality (0.030) - this node is a cross-community bridge._
+- **Why does `Color` connect `Color` to `player-intelligence.ts`, `ResolvedPlayerIdentity`, `buildApp`, `opponent-preparation-repository.ts`, `game-repository.ts`, `engine-analysis.ts`, `reconciliation.ts`, `player-skill-graph-application.ts`, `concept-facts.ts`, `concept-classification.ts`, `classification-repository.ts`, `chess-core/src/index.ts`, `concept-classification-application.ts`, `adaptive-training.ts`, `player-skill-graph-repository.ts`, `DataSourceType`, `preparation.ts`, `QueryClient`, `training-application.ts`, `ontology-repository.ts`, `TrainingRepository`, `domain/src/index.ts`, `metadata-game-repository.ts`, `test/player-intelligence.test.ts`?**
   _High betweenness centrality (0.016) - this node is a cross-community bridge._
-- **Why does `Database` connect `Database` to `.request`, `app.ts`, `ResolvedPlayerIdentity`, `AcademyMembershipRoleV1`, `AuthRepository`, `opponent-preparation-repository.ts`, `pilot-application.ts`, `opponent-preparation.test.ts`, `appendSecurityAuditEvent`, `pilot-repository.ts`, `db/src/index.ts`, `analysis-worker.ts`, `production-operational-foundation.test.ts`, `classification-repository.ts`, `grounded-ai-application.ts`, `database.ts`, `AcademySecurityApplicationService`, `test/adaptive-training.test.ts`, `AcademyRepository`, `player-skill-graph-repository.ts`, `Color`, `dateOnly`, `QueryClient`, `training-application.ts`, `test/coach-student-intelligence.test.ts`, `academy-repository.ts`, `ontology-repository.ts`, `TrainingRepository`, `PlayerSkillGraphRepository`, `restore-verify-cli.ts`, `security-audit-repository.ts`, `openai-grounded-language-model.ts`, `ChessEngine`, `test/player-skill-graph.test.ts`, `domain/src/index.ts`, `grounded-ai-repository.ts`?**
-  _High betweenness centrality (0.013) - this node is a cross-community bridge._
+- **Why does `Database` connect `buildApp` to `EmailDeliveryProvider`, `app.ts`, `ResolvedPlayerIdentity`, `AcademyMembershipRoleV1`, `appendSecurityAuditEvent`, `opponent-preparation-repository.ts`, `game-repository.ts`, `AcademyInvitationRepository`, `pilot-repository.ts`, `MetadataGameRepository`, `production-operational-foundation.test.ts`, `classification-repository.ts`, `.generate`, `PgDatabase`, `test/adaptive-training.test.ts`, `AcademyRepository`, `player-skill-graph-repository.ts`, `DataSourceType`, `Color`, `QueryClient`, `training-application.ts`, `test/coach-student-intelligence.test.ts`, `db/src/index.ts`, `ontology-repository.ts`, `TrainingRepository`, `PlayerSkillGraphRepository`, `restore-verify-cli.ts`, `security-audit-repository.ts`, `test/player-skill-graph.test.ts`, `metadata-game-repository.ts`, `AcademyAccessRepository`, `analysis-worker.test.ts`, `test/player-intelligence.test.ts`?**
+  _High betweenness centrality (0.014) - this node is a cross-community bridge._
 - **Are the 58 inferred relationships involving `buildApp()` (e.g. with `.cancelAssignment()` and `.compareProgress()`) actually correct?**
   _`buildApp()` has 58 INFERRED edges - model-reasoned connections that need verification._
 - **What connects `semi`, `singleQuote`, `trailingComma` to the rest of the system?**
   _1062 weakly-connected nodes found - possible documentation gaps or missing edges._
 - **Should `player-intelligence.ts` be split into smaller, more focused modules?**
-  _Cohesion score 0.057692307692307696 - nodes in this community are weakly interconnected._
-- **Should `app.ts` be split into smaller, more focused modules?**
-  _Cohesion score 0.03076923076923077 - nodes in this community are weakly interconnected._
+  _Cohesion score 0.05487269534679543 - nodes in this community are weakly interconnected._
+- **Should `EmailDeliveryProvider` be split into smaller, more focused modules?**
+  _Cohesion score 0.14619883040935672 - nodes in this community are weakly interconnected._

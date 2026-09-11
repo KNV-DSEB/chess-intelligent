@@ -732,10 +732,10 @@
     "semantic_hash": "f87395883d4ee68f13cdd607ad672bd7"
   },
   "vitest.config.ts": {
-    "mtime": 1787218070.0865593,
-    "seen": 1788102017.1938958,
-    "ast_hash": "c23927e219e545637ddf548cf388fcb2",
-    "semantic_hash": "c23927e219e545637ddf548cf388fcb2"
+    "mtime": 1789146041.9009163,
+    "seen": 1789146299.7325902,
+    "ast_hash": "74c887d3493ce8c048a10e290c840a42",
+    "semantic_hash": ""
   },
   ".github/workflows/ci.yml": {
     "mtime": 1788002494.46911,
@@ -1380,15 +1380,15 @@
     "semantic_hash": ""
   },
   "packages/domain/src/grounded-ai.test.ts": {
-    "mtime": 1789029305.4723663,
-    "seen": 1789057804.6721275,
-    "ast_hash": "0e69240b87f1fb902c88db29a2f032ac",
+    "mtime": 1789145976.753419,
+    "seen": 1789146299.7325351,
+    "ast_hash": "aa8445242a6ed4479a5e9e25c5851c08",
     "semantic_hash": ""
   },
   "packages/domain/src/grounded-ai.ts": {
-    "mtime": 1789028994.079655,
-    "seen": 1789057804.672129,
-    "ast_hash": "d7e80d0a358f9644938f5b08c952f924",
+    "mtime": 1789145976.7524202,
+    "seen": 1789146299.7325382,
+    "ast_hash": "b377f612d6ac9928e7563877b110521f",
     "semantic_hash": ""
   },
   "scripts/acceptance/task016-api-server.ts": {
@@ -1764,9 +1764,9 @@
     "semantic_hash": ""
   },
   "scripts/acceptance/pilot-grounded-ai-smoke.ts": {
-    "mtime": 1789097488.299078,
-    "seen": 1789117017.2476273,
-    "ast_hash": "7c13a9880b87c94602e5a05150f4dd56",
+    "mtime": 1789146110.1275454,
+    "seen": 1789146299.7325704,
+    "ast_hash": "c034ea371cf02fd35c07ae54a7ca6299",
     "semantic_hash": ""
   },
   "docs/pilot/pilot-001-change-log.md": {
@@ -1800,15 +1800,15 @@
     "semantic_hash": ""
   },
   "docs/pilot/pilot-001-readiness-checklist.md": {
-    "mtime": 1789145209.2753575,
-    "seen": 1789145268.0070822,
-    "ast_hash": "3c9a28a7738dbb84b2d766d4f43e0785",
+    "mtime": 1789145680.9688969,
+    "seen": 1789146299.7326546,
+    "ast_hash": "384150fedf2eb6238d8f0da92758a906",
     "semantic_hash": ""
   },
   "docs/pilot/pilot-001-release-manifest.md": {
-    "mtime": 1789145231.6625073,
-    "seen": 1789145268.0070858,
-    "ast_hash": "d7d524dbea28eea1da55136017db3055",
+    "mtime": 1789145524.6024873,
+    "seen": 1789146299.7326555,
+    "ast_hash": "7db4813311f02f6c91321197c81bdb65",
     "semantic_hash": ""
   },
   "docs/pilot/pilot-001-student-guide.md": {
@@ -1845,6 +1845,18 @@
     "mtime": 1789117226.6523516,
     "seen": 1789144848.9726133,
     "ast_hash": "1d16d2d6af0972da4f96e0ec4c56f6b9",
+    "semantic_hash": ""
+  },
+  "scripts/acceptance/pilot-grounded-ai-smoke-corpus.test.ts": {
+    "mtime": 1789145978.6358633,
+    "seen": 1789146299.732567,
+    "ast_hash": "f1983877cc909f99cf217cfe1b966653",
+    "semantic_hash": ""
+  },
+  "scripts/acceptance/pilot-grounded-ai-smoke-corpus.ts": {
+    "mtime": 1789146110.1243389,
+    "seen": 1789146299.7325683,
+    "ast_hash": "cb0f3c0fa8597178c60fe9c10c42adbc",
     "semantic_hash": ""
   }
 }
