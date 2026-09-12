@@ -123,6 +123,8 @@ Task 014 — Production Gate Execution & Blocker Remediation V1 (execution compl
 Task 015 — Production Topology & Four-Role Browser Gate Closure V1
 Task 016 — Learning Intelligence Expansion, Grounded AI Briefing & Pilot Experience V1
 Pilot 001 — Private Academy Pilot Readiness & Launch V1 (implementation complete; launch blocked)
+Pilot 001B — Real Deployment & Launch Gate Closure V1 (source remediation complete; environment
+execution blocked)
 ```
 
 Current production gate:
@@ -146,8 +148,8 @@ Non-blocking risks:
 - the historical internal Caddy TLS and Mailpit evidence proves protocol behavior,
   not public certificate issuance or real-provider deliverability; Pilot launch
   remains blocked until the external services are exercised;
-- production operators must supply a Worker-compatible Stockfish binary and
-  retain its exact hash/version provenance.
+- the GHCR Pilot Worker image now compiles pinned Stockfish 18 for Linux x86-64,
+  while every engine run still retains its exact binary hash/version provenance.
 ```
 
 Expected future direction:
@@ -163,13 +165,17 @@ Current Pilot gate:
 PILOT_BLOCKED
 
 Pilot 001B added the Vercel Web-only release boundary, a digest-pinned backend-only
-container profile for external managed PostgreSQL, and migration/restore verification
-through Pilot migration 016. The explicit launch mode is AI_DISABLED_FOR_PILOT.
+container profile for external managed PostgreSQL, migration/restore verification
+through Pilot migration 016, and a tag-only GHCR publication boundary for separate
+compiled API and Worker images. The Worker image builds pinned Stockfish 18 as a
+separate UCI executable and includes its GPL license/corresponding source. The explicit
+launch mode is AI_DISABLED_FOR_PILOT.
 
-Launch still requires Vercel/container-host/registry access, immutable deployed image
-digests, the real Pilot hostnames with trusted TLS, managed PostgreSQL, transactional
-email, provisioned Pilot identities/consent, the deployed four-role Coach+Student dry
-run, named operational owners, and separate backup/restore proof.
+Railway Pilot and restore PostgreSQL instances are operator-provisioned but not yet
+verified. Launch still requires successful rc4 GHCR digests, Railway API/Worker
+deployment, Vercel, the real Pilot hostnames with trusted TLS, transactional email,
+provisioned Pilot identities/consent, the deployed four-role Coach+Student dry run,
+named operational owners, and separate backup/restore proof.
 ```
 
 Do not implement future milestones inside the current task unless explicitly requested.
@@ -769,7 +775,10 @@ Stockfish is used as:
 external UCI process
 ```
 
-and is not committed into the repository.
+and is not committed into the repository. The Pilot Worker container build compiles the
+exact Stockfish 18 upstream revision recorded in `THIRD_PARTY_LICENSES.md`, executes it
+through the same UCI process boundary, and ships the GPL license plus corresponding
+source archive in the image.
 
 Chess-specific dependencies must be reviewed in:
 

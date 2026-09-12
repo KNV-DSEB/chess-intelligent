@@ -9,7 +9,7 @@ Browser
         ▼
   api.<pilot-domain> → Caddy → Fastify API → managed PostgreSQL
                                       │
-                         managed PostgreSQL ← Worker → external Stockfish
+                         managed PostgreSQL ← Worker → Stockfish 18 UCI process
                                       │
                                       └→ transactional SMTP
 ```
@@ -38,7 +38,10 @@ policy on their host.
 2. Replace every placeholder. Use a URL-safe/percent-encoded application database password.
 3. Production requires Secure cookies, exact `WEB_PUBLIC_ORIGIN`, SMTP delivery,
    `AUTO_MIGRATE=false`, and internal routes disabled.
-4. Provide a real executable Stockfish file at `STOCKFISH_HOST_PATH`. The repository does not bundle it.
+4. The published Worker image contains Stockfish 18 built for baseline Linux x86-64 from pinned
+   upstream commit `cb3d4ee9b47d0c5aae855b12379378ea1439675c`. The executable remains behind
+   `STOCKFISH_PATH` as a separate UCI process; its GPL license and corresponding source archive
+   ship in the image. Do not replace it without recording the new version, architecture, and hash.
 5. `docker/Caddyfile.pilot-api` uses `API_PUBLIC_HOST` and Caddy's public ACME flow. Port 80/443
    and public DNS must reach the backend host. `docker/Caddyfile.local-acceptance` remains local
    protocol evidence only.
@@ -50,20 +53,30 @@ Never commit `.env`, TLS private keys, SMTP credentials, database URLs, dumps, o
 
 ## Build and first boot
 
+Pushing a tag matching `pilot-001-rc*` runs
+`.github/workflows/publish-pilot-containers.yml`. The workflow checks out the exact triggering
+commit, logs in to GHCR with the built-in `GITHUB_TOKEN`, and publishes only the API and Worker
+images. It creates release-tag and full-commit-SHA tags, never `latest`, then reports both immutable
+digest references in the GitHub Actions job summary.
+
 ```text
 pnpm install --frozen-lockfile
 pnpm check
 pnpm build
-docker build -f docker/Dockerfile.api -t <api registry ref> .
-docker build -f docker/Dockerfile.worker -t <worker registry ref> .
-docker push <api registry ref>
-docker push <worker registry ref>
-record immutable RepoDigests in the operator environment
+push the exact Pilot RC tag
+wait for the publish pilot containers workflow to pass
+record the API and Worker ghcr.io/...@sha256:... references from its job summary
 docker compose --env-file <operator env> -f docker-compose.pilot-backend.yml pull
 docker compose --env-file <operator env> -f docker-compose.pilot-backend.yml run --rm migrate
 docker compose --env-file <operator env> -f docker-compose.pilot-backend.yml run --rm ontology
 docker compose --env-file <operator env> -f docker-compose.pilot-backend.yml up -d api worker proxy
 ```
+
+For Railway, configure distinct API and Worker services from those exact digest references. Run
+the migration and ontology commands from the same API digest before starting either long-lived
+service. The Worker image already owns `/opt/stockfish/stockfish`; no host bind mount or runtime
+download is permitted. Railway deployment itself remains an operator gate and is not performed by
+the publication workflow.
 
 Run `academy:bootstrap-owner` inside the API image with `ACADEMY_BOOTSTRAP_PASSWORD` injected only for that process. The CLI is conflict-safe: it rejects an existing User email or active Owner rather than silently replacing identity.
 

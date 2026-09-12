@@ -8,20 +8,23 @@ Evidence window: 2026-09-12 (Asia/Bangkok).
 
 ## Deployed release
 
-- Git SHA: frozen input `5c110007764075eff0725122b860f4555f180a73`; replacement remediation
-  SHA is the target of `pilot-001-rc3`.
-- RC tag: `pilot-001-rc3` after source verification; `pilot-001-rc2` was not moved.
+- Git SHA: frozen input `7fc23e5d0c959dbed8cde75007e0dcc1221b3637`; GHCR remediation SHA is
+  the target of `pilot-001-rc4`.
+- RC tag: `pilot-001-rc4` after source verification; `pilot-001-rc3` is not moved.
 - Final tag: not created.
 - Vercel deployment identity: `NOT_RUN`.
-- API image digest: `NOT_RUN`.
-- Worker image digest: `NOT_RUN`.
+- API image: `ghcr.io/knv-dseb/chess-intelligent-api:pilot-001-rc4`; digest
+  `PENDING_TAG_WORKFLOW`.
+- Worker image: `ghcr.io/knv-dseb/chess-intelligent-worker:pilot-001-rc4`; digest
+  `PENDING_TAG_WORKFLOW`.
 
 ## Deployment topology
 
 - Vercel Web: source configuration PASS; deployment `NOT_RUN`.
-- Backend provider/runtime: backend-only Linux Compose profile ready; provider `NOT_SELECTED`.
+- Backend provider/runtime: Railway selected; long-lived API/Worker services `NOT_DEPLOYED`.
 - API hostname: `NOT_PROVISIONED`.
-- Managed PostgreSQL: `NOT_PROVISIONED`.
+- Managed PostgreSQL: Pilot and separate restore instances `OPERATOR_PROVISIONED`; verification
+  `NOT_RUN`.
 - SMTP provider: `NOT_PROVISIONED`.
 - Stockfish deployment: `NOT_RUN`.
 - AI mode: `AI_DISABLED_FOR_PILOT`.
@@ -39,14 +42,17 @@ Evidence window: 2026-09-12 (Asia/Bangkok).
 ## Backend runtime
 
 - API: compiled artifact and source/static topology PASS; deployment `NOT_RUN`.
-- Worker: long-lived compiled artifact preserved; deployment `NOT_RUN`.
+- Worker: long-lived compiled artifact preserved with the pinned Stockfish 18 runtime; deployment
+  `NOT_RUN`.
 - Health: source/test behavior PASS; deployed `/livez` and `/readyz` `NOT_RUN`.
-- Image identity: digest-only Compose references implemented; actual digests `NOT_RUN`.
-- Runtime host: `NOT_SELECTED`.
+- Image identity: tag-only GHCR publication workflow implemented; actual digests
+  `PENDING_TAG_WORKFLOW`.
+- Runtime host: Railway selected; services not created/deployed by this task.
 
 ## PostgreSQL
 
-- Provider/version: `NOT_PROVISIONED`.
+- Provider/version: Railway PostgreSQL instances provisioned by the operator; connection/version
+  verification `NOT_RUN`.
 - Migrations 001–016: local deterministic tests PASS; real PostgreSQL `NOT_RUN`.
 - Ontology publication: real verifier now publishes and verifies `1.0.0`, canonical hash, and 64
   definitions; real target `NOT_RUN`.
@@ -84,7 +90,11 @@ reused as public Pilot evidence.
 ## Stockfish / Worker
 
 - Real deployed AnalysisJob: `NOT_RUN`.
-- Stockfish version/hash: `NOT_VERIFIED_FOR_PILOT_DEPLOYMENT`.
+- Stockfish image boundary: version 18 compiled for baseline Linux x86-64 from official source
+  revision `cb3d4ee9b47d0c5aae855b12379378ea1439675c`; image publication
+  `PENDING_TAG_WORKFLOW`.
+- Stockfish executable hash/reported version: recorded by the Worker on the first deployed run;
+  `NOT_RUN`.
 - Exact-history provenance: source and Task 015 historical acceptance PASS; new deployment
   `NOT_RUN`.
 - Worker status: not deployed.
@@ -208,6 +218,8 @@ actual backup is restored into a separate empty managed PostgreSQL database with
    event, and feedback tables required by the Pilot lineage gate.
 3. The repository had only the Task 015 single-host Web/API topology; it had no Vercel release-SHA
    guard or backend-only digest-pinned profile.
+4. The backend had no GHCR publication workflow, and the Worker image depended on a host bind mount
+   that cannot provide a self-contained Railway runtime.
 
 ## Remediations applied
 
@@ -216,6 +228,10 @@ actual backup is restored into a separate empty managed PostgreSQL database with
 2. Backup/restore manifests now retain stable ID counts/hashes across the full Pilot lineage.
 3. `vercel.json`, a deterministic Web build guard, and a Web-free/DB-free backend Compose profile
    were added without changing Fastify, Worker, Stockfish, authentication, or database architecture.
+4. A tag-only GHCR workflow now builds the existing compiled API/Worker artifacts from the exact
+   triggering commit with a repository-scoped `GITHUB_TOKEN`. The Worker image compiles pinned
+   Stockfish 18, retains it as a separate UCI process, and carries its GPL license and corresponding
+   source archive.
 
 ## Readiness checklist
 
@@ -229,10 +245,13 @@ All remaining `NOT_RUN` gates are visible in `pilot-001-readiness-checklist.md`.
 ## Remaining blockers
 
 - Vercel project/auth and stable same-site Web hostname.
-- Container registry plus long-lived Linux backend host and public API hostname.
-- Managed Pilot PostgreSQL, disposable clean-rehearsal DB, and separate restore DB.
+- Successful GHCR publication with immutable API/Worker digests, then Railway API/Worker deployment
+  and a public API hostname.
+- Verified connectivity/migrations on the provisioned Pilot PostgreSQL plus a separate restore into
+  the provisioned restore PostgreSQL.
 - Real transactional SMTP and designated inboxes.
-- Compatible Stockfish 18 operator binary on the backend host.
+- Successful deployed Worker job proving the embedded Stockfish 18 version/hash and exact-history
+  persistence.
 - Release, security, support, and backup owners.
 - Pilot Academy/cohort provisioning and every deployed browser/learning/backup gate.
 
@@ -256,8 +275,8 @@ runbook, change log, AI mode record, and durable `AGENTS.md` invariants were upd
 
 ## Next step
 
-Operator handoff is the only next action: supply/select the Vercel project, registry/backend host,
-managed PostgreSQL plus restore target, DNS, SMTP, Stockfish artifact, and named owners. Then deploy
-the exact RC and execute the remaining gates.
+After rc4 GHCR publication succeeds, the next operator action is Railway deployment using the exact
+API and Worker digest references. Vercel, DNS, SMTP, database verification/restore, owners, and the
+deployed gates remain separate later actions.
 
 DO NOT START TASK 017.

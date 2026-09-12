@@ -4,10 +4,10 @@ Status: `PILOT_BLOCKED`
 
 ## Immutable source identity
 
-- Frozen input release: `pilot-001-rc2` resolves to
-  `5c110007764075eff0725122b860f4555f180a73`; the tag was not moved.
-- Pilot 001B remediation release: `pilot-001-rc3` (the annotated tag target is the final
-  remediation commit).
+- Frozen input release: `pilot-001-rc3` resolves to
+  `7fc23e5d0c959dbed8cde75007e0dcc1221b3637`; the tag is not moved.
+- GHCR publication remediation release: `pilot-001-rc4` (the tag target is the immutable image
+  source commit; its publication workflow supplies the final image digests).
 - Branch: `main`.
 - Deployment timestamp: `NOT_DEPLOYED`.
 - Migration boundary: `016_private_academy_pilot.sql`.
@@ -27,21 +27,28 @@ Status: `PILOT_BLOCKED`
 
 - Vercel Web: `NOT_DEPLOYED`; `vercel.json` builds only `apps/web` and rejects a missing/drifted
   release SHA or non-HTTPS API origin.
-- Backend provider/runtime: `NOT_PROVISIONED`; `docker-compose.pilot-backend.yml` preserves
-  long-lived Fastify/Worker/Stockfish and excludes Web/PostgreSQL.
-- Managed PostgreSQL: `NOT_PROVISIONED`.
+- Backend provider/runtime: Railway selected; API/Worker services are `NOT_DEPLOYED`.
+- `docker-compose.pilot-backend.yml` preserves the digest-pinned Fastify/Worker boundary and
+  excludes Web/PostgreSQL.
+- Managed PostgreSQL: Pilot and separate restore instances are `OPERATOR_PROVISIONED`; migration,
+  connectivity, and restore integrity remain `NOT_RUN` in this evidence window.
 - Transactional SMTP: `NOT_PROVISIONED`.
 - Public Web/API hostnames: `NOT_PROVISIONED`.
 
 ## Image and engine identity
 
-- API image digest: `NOT_BUILT`.
-- Worker image digest: `NOT_BUILT`.
-- Stockfish version/hash/architecture: `NOT_VERIFIED_FOR_PILOT_DEPLOYMENT`.
+- API image: `ghcr.io/knv-dseb/chess-intelligent-api:pilot-001-rc4`; immutable digest
+  `PENDING_TAG_WORKFLOW`.
+- Worker image: `ghcr.io/knv-dseb/chess-intelligent-worker:pilot-001-rc4`; immutable digest
+  `PENDING_TAG_WORKFLOW`.
+- Stockfish build identity: version 18, official source revision
+  `cb3d4ee9b47d0c5aae855b12379378ea1439675c`, baseline `linux/amd64`; executable hash and reported
+  version remain run provenance and are verified when the deployed Worker executes a job.
 
 The backend profile requires repository plus SHA-256 digest components and cannot silently fall
-back to a mutable application image tag. The Docker Engine was unavailable on the release host, and
-no registry/container-host credential existed, so no image or deployment identity is claimed.
+back to a mutable application image tag. The rc4 tag workflow uses the repository-scoped
+`GITHUB_TOKEN`; no PAT or registry credential is committed. `PENDING_TAG_WORKFLOW` is not a published
+digest and must be replaced only with the exact successful GHCR result.
 
 ## Local source verification
 

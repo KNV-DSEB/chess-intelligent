@@ -1,8 +1,8 @@
 {
-  "generated_at": "2026-09-12T01:29:52.347084+00:00",
+  "generated_at": "2026-09-12T09:56:51.557001+00:00",
   "nodes": {
     "agents_external_data_authorization": {
-      "code_fingerprint": "24322fa877cd1dad1091026919c861aff878002167b04e686becbae9a71f6633",
+      "code_fingerprint": "5b126001fec05850a435e3598fd5a2e9a798a96b124b453b8574da4837bfa498",
       "label": "External Data Authorization Rule",
       "last": "2026-08-28T05:20:04.500439+00:00",
       "provenance": [
@@ -12,7 +12,7 @@
           "q": "Trace current authorization entry points and actor identity paths before Task 012"
         }
       ],
-      "score": 0.709723392,
+      "score": 0.703973466,
       "source_file": "AGENTS.md",
       "status": "tentative",
       "uses": 1
@@ -28,7 +28,7 @@
           "q": "Validate Task 015 production security and runtime dependency paths after implementation"
         }
       ],
-      "score": 0.844057177,
+      "score": 0.837218925,
       "source_file": "apps/api/src/academy-security-application.ts",
       "status": "tentative",
       "uses": 1
@@ -44,7 +44,7 @@
           "q": "Trace current authorization entry points and actor identity paths before Task 012"
         }
       ],
-      "score": 0.709723392,
+      "score": 0.703973466,
       "source_file": "apps/api/src/app.ts",
       "status": "tentative",
       "uses": 1
@@ -70,10 +70,26 @@
           "q": "Trace current authorization entry points and actor identity paths before Task 012"
         }
       ],
-      "score": 2.66273587,
+      "score": 2.641163331,
       "source_file": "apps/api/src/app.ts",
       "status": "preferred",
       "uses": 3
+    },
+    "apps_api_src_auth_http_registercsrforiginboundary": {
+      "code_fingerprint": "5c42f25f8654587bafd718bd352bdaf151b922edb4a3d97e42dfe34ddec902e5",
+      "label": "registerCsrfOriginBoundary()",
+      "last": "2026-09-12T03:09:57.094515+00:00",
+      "provenance": [
+        {
+          "date": "2026-09-12T03:09:57.094515+00:00",
+          "outcome": "useful",
+          "q": "Trace Pilot 001B deployment, database recovery, session, SMTP, and Worker dependencies"
+        }
+      ],
+      "score": 0.993492403,
+      "source_file": "apps/api/src/auth-http.ts",
+      "status": "tentative",
+      "uses": 1
     },
     "apps_api_src_concept_classification_application_conceptclassificationapplicationservice": {
       "code_fingerprint": "df03efce9ea687a156167f3d8fd1ced6bcaae2fbd1e57a94e8b728dd94c1758f",
@@ -86,8 +102,24 @@
           "q": "Graphify current repository and trace Tasks 007-008 paths to validate the Task 009 implementation plan."
         }
       ],
-      "score": 0.626162193,
+      "score": 0.62108925,
       "source_file": "apps/api/src/concept-classification-application.ts",
+      "status": "tentative",
+      "uses": 1
+    },
+    "apps_api_src_email_delivery_smtpemaildeliveryprovider": {
+      "code_fingerprint": "ecee0710fd01cb9bc2a504a943aed9e2a5d391f60c6f6acb0054667744e9d1d9",
+      "label": "SmtpEmailDeliveryProvider",
+      "last": "2026-09-12T03:09:57.094515+00:00",
+      "provenance": [
+        {
+          "date": "2026-09-12T03:09:57.094515+00:00",
+          "outcome": "useful",
+          "q": "Trace Pilot 001B deployment, database recovery, session, SMTP, and Worker dependencies"
+        }
+      ],
+      "score": 0.993492403,
+      "source_file": "apps/api/src/email-delivery.ts",
       "status": "tentative",
       "uses": 1
     },
@@ -102,7 +134,7 @@
           "q": "Trace Task 016 SkillGraphRun through grounded AI context construction, provider validation, append-only artifact persistence, authorization, UI claim citations, and evidence drilldown."
         }
       ],
-      "score": 0.968762576,
+      "score": 0.960914006,
       "source_file": "apps/api/src/grounded-ai-application.ts",
       "status": "tentative",
       "uses": 1
@@ -118,7 +150,7 @@
           "q": "Pilot 001 architecture dependency paths"
         }
       ],
-      "score": 0.984249902,
+      "score": 0.976275859,
       "source_file": "apps/api/src/grounded-ai-application.ts",
       "status": "tentative",
       "uses": 1
@@ -134,7 +166,7 @@
           "q": "Pilot 001 architecture dependency paths"
         }
       ],
-      "score": 0.984249902,
+      "score": 0.976275859,
       "source_file": "apps/api/src/openai-grounded-language-model.ts",
       "status": "tentative",
       "uses": 1
@@ -150,7 +182,7 @@
           "q": "Pilot 001 architecture dependency paths"
         }
       ],
-      "score": 0.984249902,
+      "score": 0.976275859,
       "source_file": "apps/api/src/pilot-application.ts",
       "status": "tentative",
       "uses": 1
@@ -166,7 +198,7 @@
           "q": "Trace Task 016 classifier bundle V2 facts through persisted concept evidence, Skill Graph aggregation, adaptive training candidates, and immutable TrainingItems."
         }
       ],
-      "score": 0.968761897,
+      "score": 0.960913333,
       "source_file": "apps/api/src/training-application.ts",
       "status": "tentative",
       "uses": 1
@@ -182,7 +214,7 @@
           "q": "Fix GitHub Actions pnpm check formatting failure shown in the attached screenshot"
         }
       ],
-      "score": 0.695074775,
+      "score": 0.689443526,
       "source_file": "apps/web/package.json",
       "status": "tentative",
       "uses": 1
@@ -198,8 +230,24 @@
           "q": "Validate Task 015 production security and runtime dependency paths after implementation"
         }
       ],
-      "score": 0.844057177,
+      "score": 0.837218925,
       "source_file": "apps/worker/src/analysis-worker.ts",
+      "status": "tentative",
+      "uses": 1
+    },
+    "apps_worker_src_stockfish_uci_engine": {
+      "code_fingerprint": "438680707a827a858e9a41e7a6dba36e232eff76252414bed8327b07dfa0062e",
+      "label": "stockfish-uci-engine.ts",
+      "last": "2026-09-12T03:09:57.094515+00:00",
+      "provenance": [
+        {
+          "date": "2026-09-12T03:09:57.094515+00:00",
+          "outcome": "useful",
+          "q": "Trace Pilot 001B deployment, database recovery, session, SMTP, and Worker dependencies"
+        }
+      ],
+      "score": 0.993492403,
+      "source_file": "apps/worker/src/stockfish-uci-engine.ts",
       "status": "tentative",
       "uses": 1
     },
@@ -214,7 +262,7 @@
           "q": "Validate Task 015 production security and runtime dependency paths after implementation"
         }
       ],
-      "score": 0.844057177,
+      "score": 0.837218925,
       "source_file": "apps/worker/src/worker-loop.ts",
       "status": "tentative",
       "uses": 1
@@ -222,16 +270,37 @@
     "apps_worker_src_worker_worker": {
       "code_fingerprint": "12e58dc0dc588de9416cc426ba42e6714dbd6f2e289da1ecfa0f11f3cf7d0279",
       "label": "worker",
-      "last": "2026-08-29T11:01:26.284191+00:00",
+      "last": "2026-09-12T03:09:57.094515+00:00",
       "provenance": [
+        {
+          "date": "2026-09-12T03:09:57.094515+00:00",
+          "outcome": "useful",
+          "q": "Trace Pilot 001B deployment, database recovery, session, SMTP, and Worker dependencies"
+        },
         {
           "date": "2026-08-29T11:01:26.284191+00:00",
           "outcome": "useful",
           "q": "Trace Task 013 production security, database, migration, worker, session, invitation, password reset, and audit paths"
         }
       ],
-      "score": 0.73030146,
+      "score": 1.717877219,
       "source_file": "apps/worker/src/worker.ts",
+      "status": "preferred",
+      "uses": 2
+    },
+    "docs_operations_deployment_runbook": {
+      "code_fingerprint": "f3f985989bee54003c79d45af9e30cd1c1a7b16d7e90d3e71cb7a15431ff9d2c",
+      "label": "deployment-runbook.md",
+      "last": "2026-09-12T03:09:57.094515+00:00",
+      "provenance": [
+        {
+          "date": "2026-09-12T03:09:57.094515+00:00",
+          "outcome": "useful",
+          "q": "Trace Pilot 001B deployment, database recovery, session, SMTP, and Worker dependencies"
+        }
+      ],
+      "score": 0.993492403,
+      "source_file": "docs/operations/deployment-runbook.md",
       "status": "tentative",
       "uses": 1
     },
@@ -246,7 +315,7 @@
           "q": "Fix GitHub Actions pnpm check formatting failure shown in the attached screenshot"
         }
       ],
-      "score": 0.695074775,
+      "score": 0.689443526,
       "source_file": "package.json",
       "status": "tentative",
       "uses": 1
@@ -262,7 +331,7 @@
           "q": "Trace Task 016 classifier bundle V2 facts through persisted concept evidence, Skill Graph aggregation, adaptive training candidates, and immutable TrainingItems."
         }
       ],
-      "score": 0.968761897,
+      "score": 0.960913333,
       "source_file": "packages/chess-core/src/concept-facts.ts",
       "status": "tentative",
       "uses": 1
@@ -278,7 +347,7 @@
           "q": "Graphify current repository and trace Tasks 007-008 paths to validate the Task 009 implementation plan."
         }
       ],
-      "score": 0.626162193,
+      "score": 0.62108925,
       "source_file": "packages/db/migrations/009_concept_evidence_classification.sql",
       "status": "tentative",
       "uses": 1
@@ -294,7 +363,7 @@
           "q": "Graphify current repository and trace Tasks 007-008 paths to validate the Task 009 implementation plan."
         }
       ],
-      "score": 0.626162193,
+      "score": 0.62108925,
       "source_file": "packages/db/migrations/009_concept_evidence_classification.sql",
       "status": "tentative",
       "uses": 1
@@ -310,7 +379,7 @@
           "q": "Validate Task 015 production security and runtime dependency paths after implementation"
         }
       ],
-      "score": 0.844057177,
+      "score": 0.837218925,
       "source_file": "packages/db/src/academy-access-repository.ts",
       "status": "tentative",
       "uses": 1
@@ -336,7 +405,7 @@
           "q": "Trace Task 009 to Task 010 and validate Adaptive Training Engine integration boundaries"
         }
       ],
-      "score": 2.253415633,
+      "score": 2.235159261,
       "source_file": "packages/db/src/analysis-repository.ts",
       "status": "preferred",
       "uses": 3
@@ -352,8 +421,24 @@
           "q": "Validate Task 015 production security and runtime dependency paths after implementation"
         }
       ],
-      "score": 0.844057177,
+      "score": 0.837218925,
       "source_file": "packages/db/src/analysis-repository.ts",
+      "status": "tentative",
+      "uses": 1
+    },
+    "packages_db_src_backup_cli": {
+      "code_fingerprint": "bed3a108c898d5903e5497091b4d55b586ae429acca3a5db5e598a3cbca9cb69",
+      "label": "backup-cli.ts",
+      "last": "2026-09-12T03:09:57.094515+00:00",
+      "provenance": [
+        {
+          "date": "2026-09-12T03:09:57.094515+00:00",
+          "outcome": "useful",
+          "q": "Trace Pilot 001B deployment, database recovery, session, SMTP, and Worker dependencies"
+        }
+      ],
+      "score": 0.993492403,
+      "source_file": "packages/db/src/backup-cli.ts",
       "status": "tentative",
       "uses": 1
     },
@@ -378,7 +463,7 @@
           "q": "Graphify current repository and trace Tasks 007-008 paths to validate the Task 009 implementation plan."
         }
       ],
-      "score": 2.03552065,
+      "score": 2.019029586,
       "source_file": "packages/db/src/classification-repository.ts",
       "status": "preferred",
       "uses": 3
@@ -394,7 +479,7 @@
           "q": "Trace Task 016 SkillGraphRun through grounded AI context construction, provider validation, append-only artifact persistence, authorization, UI claim citations, and evidence drilldown."
         }
       ],
-      "score": 0.968762576,
+      "score": 0.960914006,
       "source_file": "packages/db/src/grounded-ai-repository.ts",
       "status": "tentative",
       "uses": 1
@@ -415,7 +500,7 @@
           "q": "Trace Task 016 SkillGraphRun through grounded AI context construction, provider validation, append-only artifact persistence, authorization, UI claim citations, and evidence drilldown."
         }
       ],
-      "score": 1.953012478,
+      "score": 1.937189865,
       "source_file": "packages/db/src/grounded-ai-repository.ts",
       "status": "preferred",
       "uses": 2
@@ -423,18 +508,23 @@
     "packages_db_src_migrations": {
       "code_fingerprint": "cf261be09f89e7036b48615907b5f51888686ca286fd8cef5ac4d59671183490",
       "label": "migrations.ts",
-      "last": "2026-08-29T11:01:26.284191+00:00",
+      "last": "2026-09-12T03:09:57.094515+00:00",
       "provenance": [
+        {
+          "date": "2026-09-12T03:09:57.094515+00:00",
+          "outcome": "useful",
+          "q": "Trace Pilot 001B deployment, database recovery, session, SMTP, and Worker dependencies"
+        },
         {
           "date": "2026-08-29T11:01:26.284191+00:00",
           "outcome": "useful",
           "q": "Trace Task 013 production security, database, migration, worker, session, invitation, password reset, and audit paths"
         }
       ],
-      "score": 0.73030146,
+      "score": 1.717877219,
       "source_file": "packages/db/src/migrations.ts",
-      "status": "tentative",
-      "uses": 1
+      "status": "preferred",
+      "uses": 2
     },
     "packages_db_src_ontology_repository_ontologyrepository": {
       "code_fingerprint": "15e962a433e37a8ac276d8240bd5ed6354d33cafe73f10fa14c049254d5701d6",
@@ -447,7 +537,7 @@
           "q": "Graphify current repository and trace Tasks 007-008 paths to validate the Task 009 implementation plan."
         }
       ],
-      "score": 0.626162193,
+      "score": 0.62108925,
       "source_file": "packages/db/src/ontology-repository.ts",
       "status": "tentative",
       "uses": 1
@@ -463,7 +553,7 @@
           "q": "Pilot 001 architecture dependency paths"
         }
       ],
-      "score": 0.984249902,
+      "score": 0.976275859,
       "source_file": "packages/db/src/pilot-repository.ts",
       "status": "tentative",
       "uses": 1
@@ -479,7 +569,7 @@
           "q": "Pilot 001 architecture dependency paths"
         }
       ],
-      "score": 0.984249902,
+      "score": 0.976275859,
       "source_file": "packages/db/src/pilot-repository.ts",
       "status": "tentative",
       "uses": 1
@@ -495,7 +585,7 @@
           "q": "Trace Task 016 classifier bundle V2 facts through persisted concept evidence, Skill Graph aggregation, adaptive training candidates, and immutable TrainingItems."
         }
       ],
-      "score": 0.968761897,
+      "score": 0.960913333,
       "source_file": "packages/db/src/player-skill-graph-repository.ts",
       "status": "tentative",
       "uses": 1
@@ -511,7 +601,7 @@
           "q": "Validate Task 015 production security and runtime dependency paths after implementation"
         }
       ],
-      "score": 0.844057177,
+      "score": 0.837218925,
       "source_file": "packages/db/src/security-audit-repository.ts",
       "status": "tentative",
       "uses": 1
@@ -527,7 +617,7 @@
           "q": "Trace Task 016 classifier bundle V2 facts through persisted concept evidence, Skill Graph aggregation, adaptive training candidates, and immutable TrainingItems."
         }
       ],
-      "score": 0.968761897,
+      "score": 0.960913333,
       "source_file": "packages/db/src/training-repository.ts",
       "status": "tentative",
       "uses": 1
@@ -543,7 +633,7 @@
           "q": "Validate Task 015 production security and runtime dependency paths after implementation"
         }
       ],
-      "score": 0.844057177,
+      "score": 0.837218925,
       "source_file": "packages/db/src/training-repository.ts",
       "status": "tentative",
       "uses": 1
@@ -559,7 +649,7 @@
           "q": "Trace Task 016 classifier bundle V2 facts through persisted concept evidence, Skill Graph aggregation, adaptive training candidates, and immutable TrainingItems."
         }
       ],
-      "score": 0.968761897,
+      "score": 0.960913333,
       "source_file": "packages/domain/src/concept-classification.ts",
       "status": "tentative",
       "uses": 1
@@ -575,7 +665,7 @@
           "q": "Trace Task 016 SkillGraphRun through grounded AI context construction, provider validation, append-only artifact persistence, authorization, UI claim citations, and evidence drilldown."
         }
       ],
-      "score": 0.968762576,
+      "score": 0.960914006,
       "source_file": "packages/domain/src/grounded-ai.ts",
       "status": "tentative",
       "uses": 1
@@ -591,7 +681,7 @@
           "q": "Trace Task 016 SkillGraphRun through grounded AI context construction, provider validation, append-only artifact persistence, authorization, UI claim citations, and evidence drilldown."
         }
       ],
-      "score": 0.968762576,
+      "score": 0.960914006,
       "source_file": "packages/domain/src/grounded-ai.ts",
       "status": "tentative",
       "uses": 1
@@ -607,7 +697,7 @@
           "q": "Trace Task 009 to Task 010 and validate Adaptive Training Engine integration boundaries"
         }
       ],
-      "score": 0.701391037,
+      "score": 0.695708617,
       "source_file": "packages/domain/src/ontology.ts",
       "status": "tentative",
       "uses": 1
@@ -623,7 +713,7 @@
           "q": "Pilot 001 architecture dependency paths"
         }
       ],
-      "score": 0.984249902,
+      "score": 0.976275859,
       "source_file": "packages/domain/src/pilot.ts",
       "status": "tentative",
       "uses": 1
@@ -639,7 +729,7 @@
           "q": "Pilot 001 architecture dependency paths"
         }
       ],
-      "score": 0.984249902,
+      "score": 0.976275859,
       "source_file": "packages/domain/src/pilot.ts",
       "status": "tentative",
       "uses": 1
@@ -655,7 +745,7 @@
           "q": "Fix GitHub Actions pnpm check formatting failure shown in the attached screenshot"
         }
       ],
-      "score": 0.695074775,
+      "score": 0.689443526,
       "source_file": "pnpm-workspace.yaml",
       "status": "tentative",
       "uses": 1
@@ -671,7 +761,7 @@
           "q": "Fix GitHub Actions pnpm check formatting failure shown in the attached screenshot"
         }
       ],
-      "score": 0.695074775,
+      "score": 0.689443526,
       "source_file": "package.json",
       "status": "tentative",
       "uses": 1
@@ -687,7 +777,7 @@
           "q": "Fix GitHub Actions pnpm check formatting failure shown in the attached screenshot"
         }
       ],
-      "score": 0.695074775,
+      "score": 0.689443526,
       "source_file": ".prettierrc.json",
       "status": "tentative",
       "uses": 1

@@ -39,6 +39,10 @@ describe('production artifact topology', () => {
     expect(apiImage).toContain('/app/ontology/chess ./ontology/chess');
     expect(apiImage).toContain('CMD ["node", "apps/api/dist/server.js"]');
     expect(workerImage).toContain('CMD ["node", "apps/worker/dist/worker.js"]');
+    expect(workerImage).toContain('ENV STOCKFISH_PATH=/opt/stockfish/stockfish');
+    expect(workerImage).toContain('cb3d4ee9b47d0c5aae855b12379378ea1439675c');
+    expect(workerImage).toContain('/usr/share/licenses/stockfish/COPYING');
+    expect(workerImage).toContain('/usr/share/stockfish/stockfish-18-source.tar.gz');
     expect(webImage).toContain('CMD ["node", "apps/web/server.js"]');
     expect(`${apiImage}${workerImage}${webImage}`).not.toMatch(/CMD \[[^\]]*(tsx|pnpm dev)/u);
   });
@@ -88,8 +92,31 @@ describe('production artifact topology', () => {
     );
     expect(backend).not.toMatch(/^\s{2}web:/mu);
     expect(backend).not.toMatch(/^\s{2}postgres:/mu);
+    expect(backend).not.toContain('STOCKFISH_HOST_PATH');
     expect(apiCaddy).toContain('{$API_PUBLIC_HOST}');
     expect(apiCaddy).not.toContain('tls internal');
+  });
+
+  it('publishes only immutable Pilot API and Worker images through GHCR', async () => {
+    const workflow = await source('.github/workflows/publish-pilot-containers.yml');
+
+    expect(workflow).toContain("- 'pilot-001-rc*'");
+    expect(workflow).toContain('contents: read');
+    expect(workflow).toContain('packages: write');
+    expect(workflow).toContain('password: ${{ secrets.GITHUB_TOKEN }}');
+    expect(workflow).toContain('ref: ${{ github.sha }}');
+    expect(workflow).toContain('ghcr.io/knv-dseb/chess-intelligent-api');
+    expect(workflow).toContain('ghcr.io/knv-dseb/chess-intelligent-worker');
+    expect(workflow).toContain('file: docker/Dockerfile.api');
+    expect(workflow).toContain('file: docker/Dockerfile.worker');
+    expect(workflow).toContain('org.opencontainers.image.source=https://github.com/');
+    expect(workflow).toContain('org.opencontainers.image.revision=${{ github.sha }}');
+    expect(workflow).toContain('org.opencontainers.image.version=${{ github.ref_name }}');
+    expect(workflow.match(/uses: [^\n]+@[0-9a-f]{40}/gu)).toHaveLength(6);
+    expect(workflow).not.toContain('pull_request:');
+    expect(workflow).not.toContain('workflow_dispatch:');
+    expect(workflow).not.toContain('chess-intelligent-web');
+    expect(workflow).not.toMatch(/(?:^|[\s:])latest(?:$|[\s,])/mu);
   });
 
   it('fails a Vercel build whose public API is not HTTPS or whose release SHA drifts', async () => {

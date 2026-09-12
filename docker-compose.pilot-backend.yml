@@ -83,8 +83,6 @@ services:
       DB_POOL_MAX: ${WORKER_DB_POOL_MAX:-5}
       DB_CONNECTION_TIMEOUT_MS: 5000
       DB_STATEMENT_TIMEOUT_MS: 60000
-    volumes:
-      - ${STOCKFISH_HOST_PATH:?STOCKFISH_HOST_PATH is required}:/opt/stockfish/stockfish:ro
     depends_on:
       ontology:
         condition: service_completed_successfully
