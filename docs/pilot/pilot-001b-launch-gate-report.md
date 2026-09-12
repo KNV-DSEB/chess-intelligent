@@ -8,15 +8,14 @@ Evidence window: 2026-09-12 (Asia/Bangkok).
 
 ## Deployed release
 
-- Git SHA: frozen input `7fc23e5d0c959dbed8cde75007e0dcc1221b3637`; GHCR remediation SHA is
-  the target of `pilot-001-rc4`.
+- Git SHA: `37386cc86266e6ce7fd3dec8e2763c607287e0ac`.
 - RC tag: `pilot-001-rc4` after source verification; `pilot-001-rc3` is not moved.
 - Final tag: not created.
 - Vercel deployment identity: `NOT_RUN`.
-- API image: `ghcr.io/knv-dseb/chess-intelligent-api:pilot-001-rc4`; digest
-  `PENDING_TAG_WORKFLOW`.
-- Worker image: `ghcr.io/knv-dseb/chess-intelligent-worker:pilot-001-rc4`; digest
-  `PENDING_TAG_WORKFLOW`.
+- API image:
+  `ghcr.io/knv-dseb/chess-intelligent-api@sha256:76bac9de4ae64aae0c9d13b6029f811ac6c792373537add4eb5b33dbc35bd7d7`.
+- Worker image:
+  `ghcr.io/knv-dseb/chess-intelligent-worker@sha256:005f913899b1624724c362cc92ae34bb1c77c5305317c1614e8f9d448463439e`.
 
 ## Deployment topology
 
@@ -45,8 +44,8 @@ Evidence window: 2026-09-12 (Asia/Bangkok).
 - Worker: long-lived compiled artifact preserved with the pinned Stockfish 18 runtime; deployment
   `NOT_RUN`.
 - Health: source/test behavior PASS; deployed `/livez` and `/readyz` `NOT_RUN`.
-- Image identity: tag-only GHCR publication workflow implemented; actual digests
-  `PENDING_TAG_WORKFLOW`.
+- Image identity: tag-only GHCR publication PASS. The rc4 and full-commit-SHA tags resolve to the
+  same immutable digest for each image; no `latest` tag is used.
 - Runtime host: Railway selected; services not created/deployed by this task.
 
 ## PostgreSQL
@@ -91,8 +90,7 @@ reused as public Pilot evidence.
 
 - Real deployed AnalysisJob: `NOT_RUN`.
 - Stockfish image boundary: version 18 compiled for baseline Linux x86-64 from official source
-  revision `cb3d4ee9b47d0c5aae855b12379378ea1439675c`; image publication
-  `PENDING_TAG_WORKFLOW`.
+  revision `cb3d4ee9b47d0c5aae855b12379378ea1439675c`; Worker image publication PASS.
 - Stockfish executable hash/reported version: recorded by the Worker on the first deployed run;
   `NOT_RUN`.
 - Exact-history provenance: source and Task 015 historical acceptance PASS; new deployment
@@ -245,8 +243,7 @@ All remaining `NOT_RUN` gates are visible in `pilot-001-readiness-checklist.md`.
 ## Remaining blockers
 
 - Vercel project/auth and stable same-site Web hostname.
-- Successful GHCR publication with immutable API/Worker digests, then Railway API/Worker deployment
-  and a public API hostname.
+- Railway API/Worker deployment from the immutable GHCR digests and a public API hostname.
 - Verified connectivity/migrations on the provisioned Pilot PostgreSQL plus a separate restore into
   the provisioned restore PostgreSQL.
 - Real transactional SMTP and designated inboxes.
@@ -275,8 +272,8 @@ runbook, change log, AI mode record, and durable `AGENTS.md` invariants were upd
 
 ## Next step
 
-After rc4 GHCR publication succeeds, the next operator action is Railway deployment using the exact
-API and Worker digest references. Vercel, DNS, SMTP, database verification/restore, owners, and the
-deployed gates remain separate later actions.
+The next operator action is Railway deployment using the exact API and Worker digest references.
+Vercel, DNS, SMTP, database verification/restore, owners, and the deployed gates remain separate
+later actions.
 
 DO NOT START TASK 017.

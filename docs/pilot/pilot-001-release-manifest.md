@@ -6,8 +6,8 @@ Status: `PILOT_BLOCKED`
 
 - Frozen input release: `pilot-001-rc3` resolves to
   `7fc23e5d0c959dbed8cde75007e0dcc1221b3637`; the tag is not moved.
-- GHCR publication remediation release: `pilot-001-rc4` (the tag target is the immutable image
-  source commit; its publication workflow supplies the final image digests).
+- GHCR publication remediation release: `pilot-001-rc4` resolves to
+  `37386cc86266e6ce7fd3dec8e2763c607287e0ac`; the tag is not moved.
 - Branch: `main`.
 - Deployment timestamp: `NOT_DEPLOYED`.
 - Migration boundary: `016_private_academy_pilot.sql`.
@@ -37,26 +37,36 @@ Status: `PILOT_BLOCKED`
 
 ## Image and engine identity
 
-- API image: `ghcr.io/knv-dseb/chess-intelligent-api:pilot-001-rc4`; immutable digest
-  `PENDING_TAG_WORKFLOW`.
-- Worker image: `ghcr.io/knv-dseb/chess-intelligent-worker:pilot-001-rc4`; immutable digest
-  `PENDING_TAG_WORKFLOW`.
+- API image:
+  `ghcr.io/knv-dseb/chess-intelligent-api@sha256:76bac9de4ae64aae0c9d13b6029f811ac6c792373537add4eb5b33dbc35bd7d7`.
+- Worker image:
+  `ghcr.io/knv-dseb/chess-intelligent-worker@sha256:005f913899b1624724c362cc92ae34bb1c77c5305317c1614e8f9d448463439e`.
 - Stockfish build identity: version 18, official source revision
   `cb3d4ee9b47d0c5aae855b12379378ea1439675c`, baseline `linux/amd64`; executable hash and reported
   version remain run provenance and are verified when the deployed Worker executes a job.
 
 The backend profile requires repository plus SHA-256 digest components and cannot silently fall
-back to a mutable application image tag. The rc4 tag workflow uses the repository-scoped
-`GITHUB_TOKEN`; no PAT or registry credential is committed. `PENDING_TAG_WORKFLOW` is not a published
-digest and must be replaced only with the exact successful GHCR result.
+back to a mutable application image tag. The rc4 tag workflow used the repository-scoped
+`GITHUB_TOKEN`; no PAT or registry credential is committed. Release and full-commit-SHA tags resolve
+to the same digests above.
+
+GitHub Actions run
+[`34699286530`](https://github.com/KNV-DSEB/chess-intelligent/actions/runs/34699286530) completed
+successfully. Anonymous GHCR manifest reads returned HTTP 200 for both packages, which verifies that
+the packages are visible/pullable and that the immutable digest references exist. OCI config
+inspection confirmed `linux/amd64`, the compiled API/Worker commands, and exact source, revision,
+and version labels.
 
 ## Local source verification
 
 Recorded at `2026-09-12T08:57:02+07:00`:
 
-- `pnpm check -- --maxWorkers=4 --reporter=dot`: PASS — 45 files and 230 tests passed; 5 files and
+- `pnpm check`: PASS — 45 files and 231 tests passed; 5 files and
   6 tests remained behind explicit real-runtime prerequisites.
 - `pnpm build`: PASS — Next.js, API, Worker, and all workspace package builds completed.
+- `git diff --check`: PASS.
+- GitHub Actions CI for both `main` and `pilot-001-rc4`: PASS.
+- GitHub Actions Docker builds for API and Worker: PASS; both images were pushed to GHCR.
 - backend-only Compose interpolation: PASS with the committed placeholder template; this is static
   configuration evidence.
 - Vercel release/API-origin guard: PASS with a synthetic HTTPS origin and the local source SHA.
