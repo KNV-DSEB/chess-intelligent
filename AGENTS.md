@@ -142,6 +142,12 @@
 - During the Pilot release freeze, permit only production blockers, tenant/auth/security fixes,
   evidence or measurement corrections, core workflow breakage, and operational-documentation fixes.
   Do not start Task 017 before real Pilot evidence is reviewed.
+- Vercel serves the Pilot Web only. Fastify API, Worker, and Stockfish remain long-lived container
+  workloads; managed PostgreSQL remains server-side.
+- Production CORS trusts only the exact approved Web Origin. The `__Host-chess_session` cookie
+  remains API-host-only, and Vercel Preview origins are never implicitly trusted.
+- Vercel Pilot builds must pin the exact release SHA, and every `NEXT_PUBLIC_` variable must be
+  safe for browser disclosure.
 
 ## External data rule
 

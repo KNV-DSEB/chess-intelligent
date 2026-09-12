@@ -8,7 +8,8 @@ before provisioning.
 
 ## Provisioning order
 
-1. Deploy the tagged images behind a public, trusted HTTPS hostname.
+1. Deploy the exact tagged Web commit through `vercel.json`, and deploy digest-pinned API/Worker
+   images through `docker-compose.pilot-backend.yml`. Use stable same-site Web/API hostnames.
 2. Run migration `016_private_academy_pilot.sql` as the one-shot migration job, then publish the
    pinned ontology before API/Worker startup.
 3. Configure a real transactional SMTP service and verify invitation/password-reset delivery.

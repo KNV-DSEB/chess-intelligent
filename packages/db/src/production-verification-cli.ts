@@ -1,5 +1,10 @@
+import { ontologyContentSha256 } from '@chess-intelligent/domain';
+
 import { isSchemaCurrent, runMigrations } from './migrations';
 import { PgDatabase } from './database';
+import { RESTORE_MANIFEST_TABLES } from './database-operations';
+import { OntologyRepository } from './ontology-repository';
+import { readOntologySourceFile } from './ontology-source';
 
 if (process.env.TASK013_PRODUCTION_VERIFY_CONFIRM !== 'YES') {
   throw new Error(
@@ -30,6 +35,32 @@ try {
   }
   const applied = await runMigrations(database);
   if (!(await isSchemaCurrent(database))) throw new Error('The latest schema migration is absent.');
+
+  const ontologySource = await readOntologySourceFile();
+  const expectedOntologyHash = ontologyContentSha256(ontologySource);
+  await new OntologyRepository(database).sync(ontologySource);
+  const ontology = await database.query<{
+    version: string;
+    status: string;
+    content_sha256: string;
+    concept_count: number;
+  }>(
+    `SELECT ov.version, ov.status, ov.content_sha256,
+            count(cd.concept_stable_id)::int AS concept_count
+     FROM ontology_versions ov
+     LEFT JOIN concept_definitions cd ON cd.ontology_version_id = ov.id
+     WHERE ov.version = $1
+     GROUP BY ov.id, ov.version, ov.status, ov.content_sha256`,
+    [ontologySource.version],
+  );
+  const ontologyRow = ontology.rows[0];
+  if (
+    ontologyRow?.status !== 'PUBLISHED' ||
+    ontologyRow.content_sha256 !== expectedOntologyHash ||
+    ontologyRow.concept_count !== ontologySource.concepts.length
+  ) {
+    throw new Error('The pinned ontology publication is absent or does not match source.');
+  }
 
   await database.execute('CREATE TEMP TABLE task013_rollback_probe (id integer PRIMARY KEY)');
   try {
@@ -80,16 +111,15 @@ try {
 
   const criticalTables = await database.query<{ table_name: string }>(
     `SELECT table_name FROM information_schema.tables
-     WHERE table_schema = 'public' AND table_name IN (
-       'games', 'analysis_runs', 'concept_evidence_instances', 'player_skill_graph_runs',
-       'training_attempts', 'training_evidence_instances', 'academies', 'users',
-       'auth_sessions', 'academy_invitations', 'password_reset_tokens',
-       'security_audit_events'
-     ) ORDER BY table_name`,
+     WHERE table_schema = 'public' AND table_name = ANY($1::text[])
+     ORDER BY table_name`,
+    [[...RESTORE_MANIFEST_TABLES]],
   );
-  if (criticalTables.rowCount !== 12) throw new Error('One or more critical tables are absent.');
+  if (criticalTables.rowCount !== RESTORE_MANIFEST_TABLES.length) {
+    throw new Error('One or more critical Pilot lineage tables are absent.');
+  }
   process.stdout.write(
-    `${JSON.stringify({ status: 'REAL_POSTGRESQL_SCHEMA_VERIFIED', mode, postgresVersion: version.rows[0]?.server_version ?? 'UNKNOWN', appliedMigrations: applied, rollbackVerified: true, failedMigrationRollbackVerified: true, criticalTableCount: criticalTables.rowCount })}\n`,
+    `${JSON.stringify({ status: 'REAL_POSTGRESQL_SCHEMA_VERIFIED', mode, postgresVersion: version.rows[0]?.server_version ?? 'UNKNOWN', appliedMigrations: applied, ontologyVersion: ontologyRow.version, ontologyContentSha256: ontologyRow.content_sha256, ontologyConceptCount: ontologyRow.concept_count, rollbackVerified: true, failedMigrationRollbackVerified: true, criticalTableCount: criticalTables.rowCount })}\n`,
   );
 } finally {
   await database.close();

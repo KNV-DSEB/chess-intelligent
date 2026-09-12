@@ -2,91 +2,69 @@
 
 Overall result: `PILOT_BLOCKED`
 
+Evidence window: 2026-09-12 (Asia/Bangkok).
+
 ## Gate matrix
 
-| Gate                                         | Status  | Evidence / next action                                                                                                                                                                     |
-| -------------------------------------------- | ------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| Release frozen                               | PASS    | Pilot change policy is documented; only readiness, security, measurement, workflow-blocker, and operations changes are in scope.                                                           |
-| Source control clean                         | PASS    | The release commit was created from the inspected staged set; no unintended release-eligible files remained after the final amend.                                                         |
-| Build                                        | PASS    | `pnpm build` passed on 2026-09-12.                                                                                                                                                         |
-| Migration 016 source/deterministic apply     | PASS    | PGlite applied migrations 001–016; this is not production PostgreSQL proof.                                                                                                                |
-| Real PostgreSQL migration/query verification | NOT_RUN | No explicit disposable `TEST_DATABASE_URL`; the unknown native database was not touched.                                                                                                   |
-| Tagged-deployment Stockfish                  | NOT_RUN | Task 015 historical evidence is not evidence for the Pilot release deployment.                                                                                                             |
-| Public/local Pilot HTTPS topology            | NOT_RUN | Public ACME configuration exists; no actual Pilot hostname/certificate was exercised.                                                                                                      |
-| Invitation/login                             | NOT_RUN | Requires designated accounts through the tagged HTTPS deployment.                                                                                                                          |
-| Password reset if applicable                 | NOT_RUN | Requires the real transactional email boundary and tagged deployment.                                                                                                                      |
-| Academy RBAC / tenant regression             | PASS    | Targeted authenticated integration tests reject foreign Academy and client-authoritative Pilot writes.                                                                                     |
-| Pilot Academy provisioned                    | NOT_RUN | One real Pilot Academy has not been created.                                                                                                                                               |
-| Two Coach accounts                           | NOT_RUN | Cohort has not been provisioned.                                                                                                                                                           |
-| Six–ten Student accounts                     | NOT_RUN | Cohort has not been provisioned.                                                                                                                                                           |
-| StudentProfile → Player links                | NOT_RUN | Real cohort links have not been reviewed.                                                                                                                                                  |
-| Pilot game data                              | NOT_RUN | Real cohort data has not been imported.                                                                                                                                                    |
-| Pilot analysis jobs                          | NOT_RUN | Real cohort analysis has not run.                                                                                                                                                          |
-| Classification V2                            | NOT_RUN | Real cohort classifications have not run.                                                                                                                                                  |
-| Compatible SkillGraphs                       | NOT_RUN | Real cohort explicit SkillGraph runs do not exist yet.                                                                                                                                     |
-| Training candidate availability              | NOT_RUN | Real cohort TrainingPlan candidates have not been inspected.                                                                                                                               |
-| Real AI provider                             | NOT_RUN | No provider key/configuration; no billable smoke was attempted.                                                                                                                            |
-| AI fallback                                  | PASS    | Provider-disabled/provider-failed paths retain structured intelligence and training; invalid output persists nothing.                                                                      |
-| Pilot instrumentation                        | PASS    | `PILOT_EVENT_V1`, server/client authority checks, deduplication, and append-only triggers are tested.                                                                                      |
-| Coach feedback                               | PASS    | Controlled feedback persists with exact graph/ontology/concept lineage and no learning writes.                                                                                             |
-| AI feedback                                  | PASS    | Exact Academy/Student/audience/artifact/claim scope and controlled reasons are tested.                                                                                                     |
-| Event/metric export                          | PASS    | Guarded JSON/CSV aggregate export has explicit denominators, per-concept Coach feedback, and controlled AI reason breakdowns.                                                              |
-| Backup and separate restore                  | NOT_RUN | Exact Pilot database and distinct restore target do not exist.                                                                                                                             |
-| Incident process and owners                  | NOT_RUN | Runbook/templates exist; named release/security/support/backup owners are still required.                                                                                                  |
-| Coach guide                                  | PASS    | `pilot-001-coach-guide.md`.                                                                                                                                                                |
-| Student guide                                | PASS    | `pilot-001-student-guide.md`.                                                                                                                                                              |
-| Authenticated browser smoke                  | NOT_RUN | Local Web shell rendered; four-role tagged HTTPS workflow remains required.                                                                                                                |
-| Authenticated mobile smoke                   | NOT_RUN | Mobile Web shell rendered; signed-in Pilot workflow remains required.                                                                                                                      |
-| Secret scan                                  | PASS    | 335 release-eligible files scanned. Four hits were one explicitly marked non-secret Task 015 placeholder and its three generated Graphify copies; local test private keys are Git-ignored. |
-| Production dependency audit                  | NOT_RUN | Public npm-registry manifest disclosure was not specifically authorized; no workaround was attempted.                                                                                      |
-
-## Verified in source
-
-- [x] Task 016 checkpoint is immutable and recorded.
-- [x] Pilot event/feedback tables are append-only and Academy-scoped.
-- [x] Browser events are limited to approved open/navigation observations.
-- [x] State-changing workflow events are emitted by authenticated server handlers.
-- [x] feedback has controlled values and exact Skill Graph/concept or artifact/claim lineage.
-- [x] Pilot metrics expose explicit denominators and do not claim learning effectiveness.
-- [x] Student readiness distinguishes no games, no analysis, no graph, low coverage, and ready.
-- [x] AI is optional; invalid/provider-failed output persists no artifact.
-- [x] local checks/build and migration verification are part of the release gate.
-
-## Local release-candidate evidence — 2026-09-12
-
-- `pnpm format:check`, `pnpm lint`, and `pnpm typecheck`: passed.
-- `pnpm test -- --maxWorkers=4 --reporter=dot`: 45 files passed, 227 tests passed; 5 files
-  and 6 tests skipped behind explicit external/real-runtime prerequisites.
-- `pnpm build`: passed, including the production Next.js build and API/Worker type builds.
-- migration 016 applied in deterministic PGlite migration tests. This is source verification only.
-- `pnpm test:postgres`: skipped because no explicit disposable `TEST_DATABASE_URL` was configured;
-  no unknown local database was migrated.
-- production Compose configuration rendered with explicit placeholders, but Docker Engine was
-  unavailable. No Pilot image or deployment success is claimed.
-- Impeccable detector found only the incumbent global font and pre-existing security-note border;
-  headless Chrome produced desktop/mobile Web-shell screenshots. Authenticated Pilot browser
-  workflow verification remains a deployment gate.
-- Graphify incremental update produced 3,243 nodes and 6,854 edges. Verified paths include
-  `recordClientEvent → buildApp → PilotRepository`,
-  `OpenAiGroundedLanguageModel → GroundedLanguageModel → app.ts → GroundedAiRepository`, and
-  `buildApp → studentReadiness → derivePilotStudentReadiness` (undirected architecture view;
-  extracted/inferred edge labels are retained in `graphify-out`).
+| Gate                                              | Status         | Evidence / smallest next action                                                                                                            |
+| ------------------------------------------------- | -------------- | ------------------------------------------------------------------------------------------------------------------------------------------ |
+| rc2 identity preserved                            | PASS           | Local tag target and remote tag object match; `pilot-001-rc2` still resolves to `5c110007764075eff0725122b860f4555f180a73`.                |
+| Pilot 001B source remediation                     | PASS           | Vercel Web boundary, backend-only topology, migration 016 verification, and expanded restore lineage have regression coverage.             |
+| Repository check                                  | PASS           | 45 test files and 230 tests passed; 5 files/6 tests remain explicit real-runtime skips.                                                    |
+| Production build                                  | PASS           | All workspace packages, Next.js, API, and Worker built successfully.                                                                       |
+| Vercel build boundary                             | PASS           | Local synthetic guard requires HTTPS `NEXT_PUBLIC_API_URL` and equal expected/deployed full Git SHAs.                                      |
+| Vercel production deployment                      | NOT_RUN        | No Vercel project link, CLI/auth, production URL, or environment configuration is available.                                               |
+| Immutable Vercel deployment identity              | NOT_RUN        | Requires deployment ID, timestamp, URL, and observed Git SHA from the actual production deployment.                                        |
+| API/Worker image digests                          | NOT_RUN        | Docker Engine is stopped and no registry access exists.                                                                                    |
+| Backend container host                            | NOT_RUN        | No provider/runtime or host credential has been selected.                                                                                  |
+| Managed PostgreSQL                                | NOT_RUN        | No explicit Pilot, clean-rehearsal, or restore PostgreSQL URL exists.                                                                      |
+| Migrations 001–016 on real PostgreSQL             | NOT_RUN        | Source gate is corrected; production conclusions still require the designated real server.                                                 |
+| Ontology 1.0.0 / 64 publication                   | NOT_RUN        | Verifier now checks version/hash/count, but no real target was available.                                                                  |
+| Backup and separate restore                       | NOT_RUN        | No Pilot database, separate empty restore database, or PostgreSQL client tools are available.                                              |
+| Trusted public Web/API HTTPS                      | NOT_RUN        | No DNS hostname or public certificate was provisioned.                                                                                     |
+| Web ↔ API cookie/Origin/CORS/CSRF                 | NOT_RUN        | Source/static controls pass; actual Vercel browser behavior requires same-site Web/API hostnames.                                          |
+| Transactional invitation/reset email              | NOT_RUN        | No SMTP provider/configuration or designated inbox exists.                                                                                 |
+| Tagged-deployment Stockfish job                   | NOT_RUN        | No backend deployment or compatible operator binary exists.                                                                                |
+| AI mode                                           | NOT_APPLICABLE | Explicit decision: `AI_DISABLED_FOR_PILOT`; no fake provider will be used with humans.                                                     |
+| AI-disabled product fallback                      | PASS           | Existing regression coverage preserves structured intelligence, evidence, training, and assignments.                                       |
+| Pilot Academy provisioned                         | NOT_RUN        | No deployed database/Owner bootstrap target exists.                                                                                        |
+| Operational owners                                | NOT_RUN        | Release, security, support, and backup humans/channels are not assigned.                                                                   |
+| Two Coach accounts                                | NOT_RUN        | Cohort has not been provisioned.                                                                                                           |
+| Six–ten Student accounts                          | NOT_RUN        | Cohort has not been provisioned.                                                                                                           |
+| StudentProfile → Player and consent review        | NOT_RUN        | Real cohort does not exist.                                                                                                                |
+| Student data readiness                            | NOT_RUN        | No cohort game/analysis/classification/Skill Graph runs exist.                                                                             |
+| Four-role deployed browser matrix                 | NOT_RUN        | Task 015 local internal-TLS evidence is historical, not evidence for this tagged public topology.                                          |
+| Tenant/ownership/impersonation/consent regression | NOT_RUN        | Source integration tests pass; actual deployed boundary remains required.                                                                  |
+| Pilot events and feedback                         | NOT_RUN        | Source tests pass; deployed acceptance has not run.                                                                                        |
+| Full deployed Coach/Student loop                  | NOT_RUN        | Requires provisioned tagged infrastructure and independent sessions.                                                                       |
+| Pilot metric preflight export                     | NOT_RUN        | Export implementation passes tests; no designated Pilot Academy/date window exists.                                                        |
+| Desktop/mobile browser smoke                      | NOT_RUN        | No Vercel production deployment exists.                                                                                                    |
+| Secret audit                                      | PASS           | No real credential was loaded; release-eligible source uses placeholders only. Deployment env/log audit remains part of the deployed gate. |
+| Production dependency audit                       | NOT_RUN        | Public registry manifest disclosure was not specifically authorized.                                                                       |
+| Incident/backup readiness                         | NOT_RUN        | Runbooks exist; real owners, storage, backup, restore, and measured recovery remain absent.                                                |
 
 ## Hard launch blockers
 
-- [ ] build immutable production images from the release tag and record digests.
-- [ ] deploy to the actual Pilot hostname with publicly trusted HTTPS.
-- [ ] verify production cookie, Origin/CORS, and four-role boundaries through that browser/API edge.
-- [ ] configure and verify transactional email; Mailpit is not a Pilot transport.
-- [ ] run and approve the 20–50 case real-provider synthetic AI smoke, or explicitly launch with AI
-      disabled.
-- [ ] provision the real Pilot Academy/accounts/StudentProfiles and consent states.
-- [ ] run the full synthetic Coach and Student loop on the deployed topology.
-- [ ] create a backup from the exact Pilot database, restore into a separate database, and verify.
-- [ ] name operational owners and incident/escalation channels.
+- [ ] provide/link the Vercel project and deploy the exact replacement RC to a stable same-site Web
+      hostname;
+- [ ] provide a registry and long-lived Linux backend runtime, build/push API and Worker images, and
+      record immutable digests;
+- [ ] provide the managed Pilot PostgreSQL plus separate clean-rehearsal and restore targets;
+- [ ] configure DNS/public TLS, exact Web origin, and transactional SMTP;
+- [ ] assign release, security, support, and backup owners;
+- [ ] provision the Academy/cohort and execute the deployed four-role security and learning loop;
+- [ ] take and separately restore the preflight backup, then take the pre-human-launch backup.
+
+## Preserved source evidence
+
+- Pilot event/feedback tables remain append-only and Academy-scoped.
+- Browser events remain limited to approved open/navigation observations.
+- State-changing workflow outcomes remain server-authored.
+- Pilot metrics expose explicit denominators and do not claim learning effectiveness.
+- Missing games, analysis, graph, or evidence remains operational unknown/readiness, not mastery.
+- AI provider failure/disablement cannot create an artifact or block the core structured workflow.
 
 ## Launch rule
 
-Do not invite Pilot users until every hard blocker is checked with a dated evidence artifact. Risks
-that do not affect tenant isolation, authentication, data recovery, evidence integrity, or core loop
-completion may be accepted only by a named release owner.
+Do not invite Pilot users and do not create `pilot-v0.1.0` until every hard launch blocker has
+dated evidence from the actual tagged deployment. Do not start Task 017.

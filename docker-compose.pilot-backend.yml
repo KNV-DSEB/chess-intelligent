@@ -1,0 +1,120 @@
+name: chess-intelligent-pilot-backend
+
+services:
+  migrate:
+    image: ${API_IMAGE_REPOSITORY:?API_IMAGE_REPOSITORY is required}@sha256:${API_IMAGE_DIGEST:?API_IMAGE_DIGEST is required}
+    restart: 'no'
+    environment:
+      DATABASE_URL: ${DATABASE_URL:?DATABASE_URL is required}
+    command: ['node', 'packages/db/dist/migrate-cli.js']
+    networks: [backend]
+
+  ontology:
+    image: ${API_IMAGE_REPOSITORY:?API_IMAGE_REPOSITORY is required}@sha256:${API_IMAGE_DIGEST:?API_IMAGE_DIGEST is required}
+    restart: 'no'
+    environment:
+      DATABASE_URL: ${DATABASE_URL:?DATABASE_URL is required}
+    command: ['node', 'packages/db/dist/ontology-sync-cli.js']
+    depends_on:
+      migrate:
+        condition: service_completed_successfully
+    networks: [backend]
+
+  api:
+    image: ${API_IMAGE_REPOSITORY:?API_IMAGE_REPOSITORY is required}@sha256:${API_IMAGE_DIGEST:?API_IMAGE_DIGEST is required}
+    restart: unless-stopped
+    environment:
+      NODE_ENV: production
+      APP_ENV: production
+      DATABASE_URL: ${DATABASE_URL:?DATABASE_URL is required}
+      API_HOST: 0.0.0.0
+      API_PORT: 4000
+      AUTH_COOKIE_SECURE: 'true'
+      INTERNAL_DEV_ROUTES: 'false'
+      AUTO_MIGRATE: 'false'
+      TRUST_PROXY: 'true'
+      ALLOWED_ORIGINS: ${WEB_PUBLIC_ORIGIN:?WEB_PUBLIC_ORIGIN is required}
+      PUBLIC_WEB_BASE_URL: ${WEB_PUBLIC_ORIGIN:?WEB_PUBLIC_ORIGIN is required}
+      SMTP_ENABLED: 'true'
+      SMTP_HOST: ${SMTP_HOST:?SMTP_HOST is required}
+      SMTP_PORT: ${SMTP_PORT:?SMTP_PORT is required}
+      SMTP_SECURE: ${SMTP_SECURE:?SMTP_SECURE is required}
+      SMTP_REQUIRE_TLS: ${SMTP_REQUIRE_TLS:?SMTP_REQUIRE_TLS is required}
+      SMTP_USERNAME: ${SMTP_USERNAME:?SMTP_USERNAME is required}
+      SMTP_PASSWORD: ${SMTP_PASSWORD:?SMTP_PASSWORD is required}
+      EMAIL_FROM: ${EMAIL_FROM:?EMAIL_FROM is required}
+      DB_POOL_MAX: ${API_DB_POOL_MAX:-10}
+      DB_CONNECTION_TIMEOUT_MS: 5000
+      DB_STATEMENT_TIMEOUT_MS: 30000
+      GROUNDED_AI_PROVIDER: ${GROUNDED_AI_PROVIDER:-DISABLED}
+      GROUNDED_AI_API_KEY: ${GROUNDED_AI_API_KEY:-}
+      GROUNDED_AI_BASE_URL: ${GROUNDED_AI_BASE_URL:-https://api.openai.com/v1}
+      GROUNDED_AI_MODEL: ${GROUNDED_AI_MODEL:-gpt-5.6-terra}
+      GROUNDED_AI_TIMEOUT_MS: ${GROUNDED_AI_TIMEOUT_MS:-30000}
+      GROUNDED_AI_INPUT_USD_PER_MILLION: ${GROUNDED_AI_INPUT_USD_PER_MILLION:-2}
+      GROUNDED_AI_OUTPUT_USD_PER_MILLION: ${GROUNDED_AI_OUTPUT_USD_PER_MILLION:-12}
+    expose: ['4000']
+    depends_on:
+      ontology:
+        condition: service_completed_successfully
+    healthcheck:
+      test:
+        [
+          'CMD',
+          'node',
+          '-e',
+          "fetch('http://127.0.0.1:4000/readyz').then(r=>{if(!r.ok)process.exit(1)})",
+        ]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+    networks: [backend]
+
+  worker:
+    image: ${WORKER_IMAGE_REPOSITORY:?WORKER_IMAGE_REPOSITORY is required}@sha256:${WORKER_IMAGE_DIGEST:?WORKER_IMAGE_DIGEST is required}
+    restart: unless-stopped
+    environment:
+      DATABASE_URL: ${DATABASE_URL:?DATABASE_URL is required}
+      STOCKFISH_PATH: ${STOCKFISH_PATH_CONTAINER:-/opt/stockfish/stockfish}
+      WORKER_ID: pilot-analysis-worker
+      WORKER_POLL_INTERVAL_MS: 1000
+      WORKER_ONCE: 'false'
+      AUTO_MIGRATE: 'false'
+      DB_POOL_MAX: ${WORKER_DB_POOL_MAX:-5}
+      DB_CONNECTION_TIMEOUT_MS: 5000
+      DB_STATEMENT_TIMEOUT_MS: 60000
+    volumes:
+      - ${STOCKFISH_HOST_PATH:?STOCKFISH_HOST_PATH is required}:/opt/stockfish/stockfish:ro
+    depends_on:
+      ontology:
+        condition: service_completed_successfully
+    healthcheck:
+      test: ['CMD', 'node', 'apps/worker/dist/health-cli.js']
+      interval: 30s
+      timeout: 10s
+      retries: 5
+    networks: [backend]
+
+  proxy:
+    image: caddy:2.10-alpine
+    restart: unless-stopped
+    environment:
+      API_PUBLIC_HOST: ${API_PUBLIC_HOST:?API_PUBLIC_HOST is required}
+    ports:
+      - '80:80'
+      - '443:443'
+    volumes:
+      - ./docker/Caddyfile.pilot-api:/etc/caddy/Caddyfile:ro
+      - pilot_caddy_data:/data
+      - pilot_caddy_config:/config
+    depends_on:
+      api:
+        condition: service_healthy
+    networks: [backend]
+
+networks:
+  backend:
+
+volumes:
+  pilot_caddy_data:
+  pilot_caddy_config:

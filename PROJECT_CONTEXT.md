@@ -162,11 +162,14 @@ Current Pilot gate:
 ```text
 PILOT_BLOCKED
 
-Source-level release boundary, real-provider adapter, append-only instrumentation,
-readiness projection, feedback controls, metric export, and launch pack exist.
-Launch still requires release image digests, the real Pilot hostname with trusted TLS,
-transactional email, provider smoke or an explicit AI-disabled decision, provisioned
-Pilot identities/consent, deployed Coach+Student dry run, and separate backup restore proof.
+Pilot 001B added the Vercel Web-only release boundary, a digest-pinned backend-only
+container profile for external managed PostgreSQL, and migration/restore verification
+through Pilot migration 016. The explicit launch mode is AI_DISABLED_FOR_PILOT.
+
+Launch still requires Vercel/container-host/registry access, immutable deployed image
+digests, the real Pilot hostnames with trusted TLS, managed PostgreSQL, transactional
+email, provisioned Pilot identities/consent, the deployed four-role Coach+Student dry
+run, named operational owners, and separate backup/restore proof.
 ```
 
 Do not implement future milestones inside the current task unless explicitly requested.

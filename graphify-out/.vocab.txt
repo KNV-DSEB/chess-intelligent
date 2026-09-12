@@ -833,6 +833,7 @@ safety
 sanitized
 scan
 scenario
+scenarios
 schema
 scope
 score
@@ -993,6 +994,7 @@ useful
 user
 users
 utc
+uuid
 valid
 validate
 validated

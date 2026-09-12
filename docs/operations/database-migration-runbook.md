@@ -20,7 +20,9 @@ Production has no fabricated down migrations. Rollback is application rollback p
    pnpm verify:production:database
    ```
 
-5. Run the upgrade rehearsal against a disposable restored pre-release database with `TASK013_VERIFY_MODE=UPGRADE`.
+5. Run the upgrade rehearsal against a disposable restored pre-release database with
+   `TASK013_VERIFY_MODE=UPGRADE`. The verifier also publishes and validates the pinned ontology
+   `1.0.0`, its canonical hash, and all 64 definitions.
 
 ## Pre-migration backup
 
@@ -41,7 +43,8 @@ The command uses `pg_dump --format=custom --no-owner --no-privileges` and writes
 2. Create the pre-migration backup.
 3. Run one explicit migration process: `pnpm db:migrate`.
 4. Do not let every production replica migrate. Production API/Worker use `AUTO_MIGRATE=false`.
-5. Check `schema_migrations`; the current expected tail is `014_production_verification_foundation.sql`.
+5. Check `schema_migrations`; the current expected tail is
+   `016_private_academy_pilot.sql`.
 6. Start API, then verify `/livez` and `/readyz`; start Worker only after database readiness.
 
 Each migration is applied in one database transaction and recorded only after the transaction succeeds. A failed transaction must not create a `schema_migrations` success row.
@@ -57,7 +60,11 @@ DATABASE_BACKUP_PATH=<same .dump path>
 pnpm db:restore:verify
 ```
 
-The command refuses a non-empty target, runs `pg_restore --exit-on-error`, recreates the manifest, and fails on migration/count/hash differences. It covers representative identity and lineage tables from Player/Game through evidence, Skill Graph, Training, Academy, authentication, invitation/reset, consent, and audit.
+The command refuses a non-empty target, runs `pg_restore --exit-on-error`, recreates the manifest,
+and fails on migration/count/hash differences. It covers representative identity and lineage tables
+from Player/Game/exact position history through analysis, classification, evidence, Skill Graph,
+Training, Academy, authentication, consent, audit, Grounded AI artifacts, Pilot events, and both
+feedback tables.
 
 ## Failed migration response
 

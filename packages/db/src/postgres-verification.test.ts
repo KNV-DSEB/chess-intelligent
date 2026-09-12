@@ -38,6 +38,7 @@ integrationDescribe('PostgreSQL migration verification', () => {
       '013_academy_production_foundation.sql',
       '014_production_verification_foundation.sql',
       '015_grounded_ai_briefing.sql',
+      '016_private_academy_pilot.sql',
     ]);
 
     const gameColumns = await database.query<{ column_name: string }>(
@@ -60,5 +61,21 @@ integrationDescribe('PostgreSQL migration verification', () => {
        WHERE table_schema = 'public' AND table_name = 'position_occurrences'`,
     );
     expect(occurrenceTable.rows).toEqual([{ table_name: 'position_occurrences' }]);
+
+    const pilotTables = await database.query<{ table_name: string }>(
+      `SELECT table_name
+       FROM information_schema.tables
+       WHERE table_schema = 'public'
+         AND table_name IN (
+           'grounded_ai_artifacts', 'pilot_events', 'coach_review_feedback', 'ai_claim_feedback'
+         )
+       ORDER BY table_name`,
+    );
+    expect(pilotTables.rows.map((row) => row.table_name)).toEqual([
+      'ai_claim_feedback',
+      'coach_review_feedback',
+      'grounded_ai_artifacts',
+      'pilot_events',
+    ]);
   });
 });

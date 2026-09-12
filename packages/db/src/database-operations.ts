@@ -6,10 +6,14 @@ import type { Database } from './database';
 export const RESTORE_MANIFEST_TABLES = [
   'players',
   'games',
+  'position_occurrences',
   'analysis_runs',
+  'engine_position_states',
+  'concept_classification_runs',
   'concept_evidence_instances',
   'player_skill_graph_runs',
   'training_plan_runs',
+  'training_items',
   'training_attempts',
   'training_evidence_instances',
   'academies',
@@ -22,6 +26,10 @@ export const RESTORE_MANIFEST_TABLES = [
   'password_reset_tokens',
   'student_access_consent_records',
   'security_audit_events',
+  'grounded_ai_artifacts',
+  'pilot_events',
+  'coach_review_feedback',
+  'ai_claim_feedback',
 ] as const;
 
 export interface RestoreManifest {

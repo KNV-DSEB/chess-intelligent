@@ -1,6 +1,6 @@
 # Pilot 001 grounded AI provider smoke
 
-Status: `NOT_RUN_NO_REAL_PROVIDER_CREDENTIAL`
+Status: `NOT_APPLICABLE_AI_DISABLED_FOR_PILOT`
 
 ## Boundary under test
 
@@ -40,7 +40,9 @@ Required variables: `PILOT_AI_SMOKE_CONFIRM=YES`, `PILOT_AI_SMOKE_OUTPUT`, and
 - the review owner signs off on latency and cost from the generated JSON.
 
 No live result is claimed in this document. A dated smoke JSON from the selected release and real
-provider is a hard launch prerequisite when AI is enabled.
+provider is a hard launch prerequisite only when AI is enabled.
 
-On 2026-09-12, `GROUNDED_AI_API_KEY` and provider selection were absent on the release host, so no
-billable request was attempted and no synthetic result artifact was created.
+On 2026-09-12, `GROUNDED_AI_API_KEY` and provider selection were absent on the release host. Pilot
+001B therefore explicitly selected `AI_DISABLED_FOR_PILOT`: no billable request was attempted, no
+synthetic result artifact was created, and no deterministic fake provider may be used with human
+Pilot users. The structured intelligence/training/assignment workflow remains the launch path.
