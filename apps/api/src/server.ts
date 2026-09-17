@@ -2,6 +2,7 @@ import { loadRootEnvironment, readApiEnvironment } from '@chess-intelligent/conf
 import { PgDatabase, runMigrations } from '@chess-intelligent/db';
 
 import { buildApp } from './app';
+import { resolveApiListenOptions } from './api-listener';
 import { DisabledEmailDeliveryProvider, SmtpEmailDeliveryProvider } from './email-delivery';
 import { OpenAiGroundedLanguageModel } from './openai-grounded-language-model';
 
@@ -57,7 +58,7 @@ try {
     emailDelivery,
     ...(groundedLanguageModel ? { groundedLanguageModel } : {}),
   });
-  await app.listen({ host: environment.API_HOST, port: environment.API_PORT });
+  await app.listen(resolveApiListenOptions(environment.API_PORT));
 } catch (error) {
   await database.close();
   throw error;

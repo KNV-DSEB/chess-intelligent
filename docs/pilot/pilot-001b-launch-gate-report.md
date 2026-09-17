@@ -1,27 +1,27 @@
 # Pilot 001B launch gate report
 
-Evidence window: 2026-09-12 (Asia/Bangkok).
+Evidence window: 2026-09-17 (Asia/Bangkok).
 
 ## Pilot launch result
 
 `PILOT_BLOCKED`
 
-## Deployed release
+## Active release candidate
 
-- Git SHA: `37386cc86266e6ce7fd3dec8e2763c607287e0ac`.
-- RC tag: `pilot-001-rc4` after source verification; `pilot-001-rc3` is not moved.
+- Git SHA: `PENDING_RC5_COMMIT` until the listener fix is committed.
+- RC tag: `pilot-001-rc5`; `pilot-001-rc3` and `pilot-001-rc4` are not moved.
 - Final tag: not created.
 - Vercel deployment identity: `NOT_RUN`.
-- API image:
-  `ghcr.io/knv-dseb/chess-intelligent-api@sha256:76bac9de4ae64aae0c9d13b6029f811ac6c792373537add4eb5b33dbc35bd7d7`.
-- Worker image:
-  `ghcr.io/knv-dseb/chess-intelligent-worker@sha256:005f913899b1624724c362cc92ae34bb1c77c5305317c1614e8f9d448463439e`.
+- API image: `PENDING_RC5_TAG_WORKFLOW`.
+- Worker image: `PENDING_RC5_TAG_WORKFLOW`; it is republished only because the existing immutable
+  release workflow publishes both images, with no Worker source or runtime change.
 
 ## Deployment topology
 
 - Vercel Web: source configuration PASS; deployment `NOT_RUN`.
-- Backend provider/runtime: Railway selected; long-lived API/Worker services `NOT_DEPLOYED`.
-- API hostname: `NOT_PROVISIONED`.
+- Backend provider/runtime: Railway selected. The API deployment is `ACTIVE`, but the rc4 public
+  request returned `Application failed to respond`; rc5 is not deployed by this task.
+- API hostname: provisioned by Railway but not recorded in repository evidence.
 - Managed PostgreSQL: Pilot and separate restore instances `OPERATOR_PROVISIONED`; verification
   `NOT_RUN`.
 - SMTP provider: `NOT_PROVISIONED`.
@@ -40,13 +40,17 @@ Evidence window: 2026-09-12 (Asia/Bangkok).
 
 ## Backend runtime
 
-- API: compiled artifact and source/static topology PASS; deployment `NOT_RUN`.
+- API: the deployed rc4 process reported `Server listening at http://127.0.0.1:4000`, so Railway
+  could not route public traffic to it. Rc5 binds `0.0.0.0` and prefers Railway's `PORT`, falling
+  back to the existing configured API port for local operation.
 - Worker: long-lived compiled artifact preserved with the pinned Stockfish 18 runtime; deployment
   `NOT_RUN`.
-- Health: source/test behavior PASS; deployed `/livez` and `/readyz` `NOT_RUN`.
+- Health: source/test behavior PASS; deployed `/livez` and `/readyz` remain `NOT_RUN` because rc5
+  is not deployed automatically.
 - Image identity: tag-only GHCR publication PASS. The rc4 and full-commit-SHA tags resolve to the
   same immutable digest for each image; no `latest` tag is used.
-- Runtime host: Railway selected; services not created/deployed by this task.
+- Runtime host: Railway selected; this remediation publishes rc5 but does not change the Railway
+  deployment automatically.
 
 ## PostgreSQL
 
@@ -218,6 +222,8 @@ actual backup is restored into a separate empty managed PostgreSQL database with
    guard or backend-only digest-pinned profile.
 4. The backend had no GHCR publication workflow, and the Worker image depended on a host bind mount
    that cannot provide a self-contained Railway runtime.
+5. The production API bootstrap passed the default `API_HOST=127.0.0.1` and `API_PORT=4000`
+   directly to Fastify, ignoring Railway's `PORT` environment variable.
 
 ## Remediations applied
 
@@ -230,6 +236,9 @@ actual backup is restored into a separate empty managed PostgreSQL database with
    triggering commit with a repository-scoped `GITHUB_TOKEN`. The Worker image compiles pinned
    Stockfish 18, retains it as a separate UCI process, and carries its GPL license and corresponding
    source archive.
+5. The API listener now binds `0.0.0.0`, uses `Number(process.env.PORT ?? API_PORT)`, and rejects an
+   invalid platform port before listening. Focused tests cover fallback, Railway override, and
+   invalid values; database, auth, CORS, session, Worker, and Stockfish behavior are unchanged.
 
 ## Readiness checklist
 
@@ -272,8 +281,8 @@ runbook, change log, AI mode record, and durable `AGENTS.md` invariants were upd
 
 ## Next step
 
-The next operator action is Railway deployment using the exact API and Worker digest references.
-Vercel, DNS, SMTP, database verification/restore, owners, and the deployed gates remain separate
-later actions.
+After rc5 publication succeeds, the next operator action is replacing only the Railway `pilot-api`
+image with the exact rc5 API digest. Vercel, DNS, SMTP, database verification/restore, owners, and
+the deployed gates remain separate later actions.
 
 DO NOT START TASK 017.

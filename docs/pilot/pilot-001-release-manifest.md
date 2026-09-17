@@ -8,6 +8,9 @@ Status: `PILOT_BLOCKED`
   `7fc23e5d0c959dbed8cde75007e0dcc1221b3637`; the tag is not moved.
 - GHCR publication remediation release: `pilot-001-rc4` resolves to
   `37386cc86266e6ce7fd3dec8e2763c607287e0ac`; the tag is not moved.
+- Active Railway API bind remediation release: `pilot-001-rc5`; the exact source commit and image
+  digest are captured after the tag-triggered publication workflow completes. Neither rc3 nor rc4
+  is moved.
 - Branch: `main`.
 - Deployment timestamp: `NOT_DEPLOYED`.
 - Migration boundary: `016_private_academy_pilot.sql`.
@@ -27,7 +30,9 @@ Status: `PILOT_BLOCKED`
 
 - Vercel Web: `NOT_DEPLOYED`; `vercel.json` builds only `apps/web` and rejects a missing/drifted
   release SHA or non-HTTPS API origin.
-- Backend provider/runtime: Railway selected; API/Worker services are `NOT_DEPLOYED`.
+- Backend provider/runtime: Railway selected. The rc4 API deployment reached `ACTIVE`, but its
+  public endpoint failed to respond because the process bound `127.0.0.1:4000`; rc5 corrects only
+  that listener boundary. Worker deployment state is not changed by this remediation.
 - `docker-compose.pilot-backend.yml` preserves the digest-pinned Fastify/Worker boundary and
   excludes Web/PostgreSQL.
 - Managed PostgreSQL: Pilot and separate restore instances are `OPERATOR_PROVISIONED`; migration,
@@ -37,10 +42,13 @@ Status: `PILOT_BLOCKED`
 
 ## Image and engine identity
 
-- API image:
+- Previously published rc4 API image:
   `ghcr.io/knv-dseb/chess-intelligent-api@sha256:76bac9de4ae64aae0c9d13b6029f811ac6c792373537add4eb5b33dbc35bd7d7`.
-- Worker image:
+- Previously published rc4 Worker image:
   `ghcr.io/knv-dseb/chess-intelligent-worker@sha256:005f913899b1624724c362cc92ae34bb1c77c5305317c1614e8f9d448463439e`.
+- Active rc5 API image: `PENDING_TAG_WORKFLOW`.
+- Mechanically republished rc5 Worker image: `PENDING_TAG_WORKFLOW`; no Worker source or runtime
+  behavior changes are part of rc5.
 - Stockfish build identity: version 18, official source revision
   `cb3d4ee9b47d0c5aae855b12379378ea1439675c`, baseline `linux/amd64`; executable hash and reported
   version remain run provenance and are verified when the deployed Worker executes a job.

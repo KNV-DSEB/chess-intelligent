@@ -123,8 +123,8 @@ Task 014 — Production Gate Execution & Blocker Remediation V1 (execution compl
 Task 015 — Production Topology & Four-Role Browser Gate Closure V1
 Task 016 — Learning Intelligence Expansion, Grounded AI Briefing & Pilot Experience V1
 Pilot 001 — Private Academy Pilot Readiness & Launch V1 (implementation complete; launch blocked)
-Pilot 001B — Real Deployment & Launch Gate Closure V1 (GHCR publication complete; environment
-execution blocked)
+Pilot 001B — Real Deployment & Launch Gate Closure V1 (rc5 Railway API bind remediation in
+progress; environment execution blocked)
 ```
 
 Current production gate:
@@ -172,11 +172,13 @@ separate UCI executable and includes its GPL license/corresponding source. The e
 launch mode is AI_DISABLED_FOR_PILOT.
 
 `pilot-001-rc4` at `37386cc86266e6ce7fd3dec8e2763c607287e0ac` published separate
-public API and Worker GHCR packages. Their immutable digests are recorded in the Pilot
-release manifest and launch report; release/full-SHA tags resolve identically and no
-`latest` deployment identity exists. Railway Pilot and restore PostgreSQL instances are
-operator-provisioned but not yet verified. Launch still requires Railway API/Worker
-deployment from those digests, Vercel, the real Pilot hostnames with trusted TLS,
+public API and Worker GHCR packages. Railway then exposed a production blocker: the active
+API container listened on loopback and ignored Railway's `PORT`. `pilot-001-rc5` is the active
+remediation candidate; it binds the API to `0.0.0.0` and prefers the platform port while
+preserving the existing configured fallback port. Rc3 and rc4 remain immutable, and rc5 does
+not change database, auth, CORS, sessions, Worker, Stockfish, or product behavior. Railway
+Pilot and restore PostgreSQL instances are operator-provisioned but not yet verified. Launch
+still requires the rc5 API digest to be deployed, Vercel, real Pilot hostnames with trusted TLS,
 transactional email, provisioned Pilot identities/consent, the deployed four-role
 Coach+Student dry run, named operational owners, and separate backup/restore proof.
 ```
