@@ -10,6 +10,8 @@ Status: `PILOT_BLOCKED`
   `37386cc86266e6ce7fd3dec8e2763c607287e0ac`; the tag is not moved.
 - Active Railway API bind remediation release: `pilot-001-rc5` resolves to
   `6e2617ea210562b3b2144549efe078a1b5b1dc2b`; rc3, rc4, and rc5 are not moved.
+- Active Vercel monorepo remediation release: `pilot-001-rc6`; its immutable tag target is the
+  exact Web deployment identity. No earlier Pilot RC tag is moved.
 - Branch: `main`.
 - Deployment timestamp: `NOT_DEPLOYED`.
 - Migration boundary: `016_private_academy_pilot.sql`.
@@ -27,8 +29,11 @@ Status: `PILOT_BLOCKED`
 
 ## Deployment topology
 
-- Vercel Web: `NOT_DEPLOYED`; `vercel.json` builds only `apps/web` and rejects a missing/drifted
-  release SHA or non-HTTPS API origin.
+- Vercel Web: `NOT_DEPLOYED`; the project must use Root Directory `apps/web`, Framework Preset
+  `Next.js`, Build Command `pnpm run build:vercel`, Install Command
+  `corepack enable && pnpm install --frozen-lockfile`, Output Directory `.next`, and include source
+  files outside the Root Directory. `apps/web/vercel.json` rejects a missing/drifted release SHA
+  or non-HTTPS API origin.
 - Backend provider/runtime: Railway selected. The rc4 API deployment reached `ACTIVE`, but its
   public endpoint failed to respond because the process bound `127.0.0.1:4000`; rc5 corrects only
   that listener boundary. Worker deployment state is not changed by this remediation.
@@ -90,7 +95,8 @@ artifacts, Pilot events, and both feedback tables.
 ## Configuration boundary
 
 - Vercel: `NEXT_PUBLIC_API_URL` is the only required public value; `PILOT_RELEASE_SHA` and
-  `VERCEL_GIT_COMMIT_SHA` must match.
+  `VERCEL_GIT_COMMIT_SHA` must match. The app-root wrapper calls the canonical repository guard;
+  it does not duplicate release-validation semantics.
 - Backend: `APP_ENV=production`, `INTERNAL_DEV_ROUTES=false`, `AUTO_MIGRATE=false`, exact
   `WEB_PUBLIC_ORIGIN`, Secure cookie mode, real SMTP, external encrypted PostgreSQL, and
   digest-pinned API/Worker images.

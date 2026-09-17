@@ -1,5 +1,5 @@
 import { execFile } from 'node:child_process';
-import { readFile } from 'node:fs/promises';
+import { access, readFile } from 'node:fs/promises';
 import { fileURLToPath } from 'node:url';
 import { promisify } from 'node:util';
 
@@ -72,14 +72,56 @@ describe('production artifact topology', () => {
   });
 
   it('keeps Vercel Web separate from digest-pinned backend workloads', async () => {
-    const [vercelConfig, backend, apiCaddy] = await Promise.all([
-      source('vercel.json'),
+    const [
+      vercelConfigSource,
+      webPackageSource,
+      rootPackageSource,
+      wrapper,
+      nextConfig,
+      workspace,
+      backend,
+      apiCaddy,
+    ] = await Promise.all([
+      source('apps/web/vercel.json'),
+      source('apps/web/package.json'),
+      source('package.json'),
+      source('apps/web/scripts/verify-vercel-pilot-build.mjs'),
+      source('apps/web/next.config.ts'),
+      source('pnpm-workspace.yaml'),
       source('docker-compose.pilot-backend.yml'),
       source('docker/Caddyfile.pilot-api'),
     ]);
 
-    expect(vercelConfig).toContain('verify-vercel-pilot-build.mjs');
-    expect(vercelConfig).toContain('apps/web/.next');
+    const vercelConfig = JSON.parse(vercelConfigSource) as Record<string, unknown>;
+    const webPackage = JSON.parse(webPackageSource) as {
+      dependencies?: Record<string, string>;
+      scripts?: Record<string, string>;
+    };
+    const rootPackage = JSON.parse(rootPackageSource) as {
+      dependencies?: Record<string, string>;
+      devDependencies?: Record<string, string>;
+    };
+
+    expect(vercelConfig).toMatchObject({
+      framework: 'nextjs',
+      installCommand: 'corepack enable && pnpm install --frozen-lockfile',
+      buildCommand: 'pnpm run build:vercel',
+      outputDirectory: '.next',
+    });
+    expect(webPackage.dependencies?.next).toBeDefined();
+    expect(rootPackage.dependencies?.next).toBeUndefined();
+    expect(rootPackage.devDependencies?.next).toBeUndefined();
+    expect(webPackage.dependencies?.['@chess-intelligent/ui']).toBe('workspace:*');
+    expect(webPackage.scripts?.['build:vercel']).toBe(
+      'pnpm run verify:vercel-release && next build',
+    );
+    expect(wrapper).toContain('../../../scripts/operations/verify-vercel-pilot-build.mjs');
+    expect(nextConfig).toContain("transpilePackages: ['@chess-intelligent/ui']");
+    expect(workspace).toContain('- apps/*');
+    expect(workspace).toContain('- packages/*');
+    await expect(access(new URL('../../../vercel.json', import.meta.url))).rejects.toMatchObject({
+      code: 'ENOENT',
+    });
     expect(backend).toContain(
       '${API_IMAGE_REPOSITORY:?API_IMAGE_REPOSITORY is required}@sha256:${API_IMAGE_DIGEST:?API_IMAGE_DIGEST is required}',
     );

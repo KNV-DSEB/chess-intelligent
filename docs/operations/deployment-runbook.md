@@ -14,11 +14,16 @@ Browser
                                       └→ transactional SMTP
 ```
 
-`vercel.json` is the Web-only build boundary. Keep the Vercel project rooted at the repository
-root so pnpm workspace dependencies remain visible. The build requires the exact HTTPS
-`NEXT_PUBLIC_API_URL`, an explicit `PILOT_RELEASE_SHA`, and Vercel's
-`VERCEL_GIT_COMMIT_SHA`; the build fails if the two SHAs differ. Only browser-safe variables may
-use a `NEXT_PUBLIC_` prefix.
+`apps/web/vercel.json` is the Web-only build boundary. Configure the Vercel project with Root
+Directory `apps/web`, Framework Preset `Next.js`, Build Command `pnpm run build:vercel`, Install
+Command `corepack enable && pnpm install --frozen-lockfile`, Output Directory `.next`, and enable
+**Include source files outside of the Root Directory in the Build Step**. That supported monorepo
+setting makes the repository lockfile, workspace definition, canonical release guard, and
+`packages/ui` available without adding Next.js to the repository-root package. The app-local
+wrapper invokes the one canonical guard at `scripts/operations/verify-vercel-pilot-build.mjs`.
+The build requires the exact HTTPS `NEXT_PUBLIC_API_URL`, an explicit `PILOT_RELEASE_SHA`, and
+Vercel's `VERCEL_GIT_COMMIT_SHA`; the build fails if the two SHAs differ. Only browser-safe
+variables may use a `NEXT_PUBLIC_` prefix.
 
 `docker-compose.pilot-backend.yml` is the Linux-host backend profile. It contains only one-shot
 migration/ontology jobs, API, Worker, and the API TLS proxy. It requires digest-pinned API/Worker
@@ -47,7 +52,8 @@ policy on their host.
    protocol evidence only.
 6. In Vercel Production configure only `NEXT_PUBLIC_API_URL=https://api.<pilot-domain>` and
    `PILOT_RELEASE_SHA=<full RC commit SHA>`, then enable Vercel system environment variables.
-   Target the exact Git SHA rather than deploying an unrecorded moving branch.
+   Apply the exact app-root settings above before creating the deployment. Target the exact Git
+   SHA rather than deploying an unrecorded moving branch.
 
 Never commit `.env`, TLS private keys, SMTP credentials, database URLs, dumps, or restore manifests.
 

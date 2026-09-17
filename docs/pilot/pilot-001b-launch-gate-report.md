@@ -10,6 +10,8 @@ Evidence window: 2026-09-17 (Asia/Bangkok).
 
 - Git SHA: `6e2617ea210562b3b2144549efe078a1b5b1dc2b`.
 - RC tag: `pilot-001-rc5`; `pilot-001-rc3` and `pilot-001-rc4` are not moved.
+- Vercel Web RC: `pilot-001-rc6`; its immutable tag target is the exact deployment identity and no
+  prior tag is moved. Backend behavior remains the rc5 behavior in this Web-only remediation.
 - Final tag: not created.
 - Vercel deployment identity: `NOT_RUN`.
 - API image:
@@ -35,6 +37,9 @@ Evidence window: 2026-09-17 (Asia/Bangkok).
 
 - Build: local Next.js production build PASS.
 - Deployment: `NOT_RUN`; no project link, CLI/auth, or provider environment exists.
+- Project settings: Root Directory `apps/web`; Framework Preset `Next.js`; Build Command
+  `pnpm run build:vercel`; Install Command `corepack enable && pnpm install --frozen-lockfile`;
+  Output Directory `.next`; include source files outside the Root Directory enabled.
 - Hostname: `NOT_PROVISIONED`.
 - Git identity: build guard requires `PILOT_RELEASE_SHA === VERCEL_GIT_COMMIT_SHA`.
 - Environment: guard accepts only an HTTPS credential-free API origin and rejects secret-like
@@ -231,6 +236,8 @@ actual backup is restored into a separate empty managed PostgreSQL database with
    that cannot provide a self-contained Railway runtime.
 5. The production API bootstrap passed the default `API_HOST=127.0.0.1` and `API_PORT=4000`
    directly to Fastify, ignoring Railway's `PORT` environment variable.
+6. The Vercel project was rooted at `./`, so framework detection inspected the repository-root
+   package, where Next.js intentionally is not a dependency, instead of `apps/web/package.json`.
 
 ## Remediations applied
 
@@ -246,6 +253,9 @@ actual backup is restored into a separate empty managed PostgreSQL database with
 5. The API listener now binds `0.0.0.0`, uses `Number(process.env.PORT ?? API_PORT)`, and rejects an
    invalid platform port before listening. Focused tests cover fallback, Railway override, and
    invalid values; database, auth, CORS, session, Worker, and Stockfish behavior are unchanged.
+6. The Vercel project boundary now lives at `apps/web`; an app-local wrapper invokes the canonical
+   repository release guard, `.next` is relative to that app root, and Vercel's supported
+   outside-root source inclusion keeps the pnpm workspace and `packages/ui` available.
 
 ## Readiness checklist
 
@@ -258,7 +268,8 @@ All remaining `NOT_RUN` gates are visible in `pilot-001-readiness-checklist.md`.
 
 ## Remaining blockers
 
-- Vercel project/auth and stable same-site Web hostname.
+- Apply the recorded Vercel app-root settings, deploy the exact `pilot-001-rc6` commit, and retain a
+  stable same-site Web hostname.
 - Replacement of the current Railway `pilot-api` rc4 image with the immutable rc5 API digest,
   plus deployed API health verification; Worker deployment verification remains separate.
 - Verified connectivity/migrations on the provisioned Pilot PostgreSQL plus a separate restore into

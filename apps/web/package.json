@@ -4,9 +4,11 @@
   "private": true,
   "scripts": {
     "build": "next build",
+    "build:vercel": "pnpm run verify:vercel-release && next build",
     "dev": "next dev",
     "start": "next start",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --noEmit",
+    "verify:vercel-release": "node scripts/verify-vercel-pilot-build.mjs"
   },
   "dependencies": {
     "@chess-intelligent/ui": "workspace:*",
