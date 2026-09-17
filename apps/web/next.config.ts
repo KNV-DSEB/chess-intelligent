@@ -1,7 +1,11 @@
 import type { NextConfig } from 'next';
 
+import { resolveNextOutputMode } from './next-output-mode';
+
+const output = resolveNextOutputMode();
+
 const nextConfig: NextConfig = {
-  output: 'standalone',
+  ...(output === undefined ? {} : { output }),
   transpilePackages: ['@chess-intelligent/ui'],
   async headers() {
     return [

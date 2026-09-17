@@ -43,6 +43,7 @@ describe('production artifact topology', () => {
     expect(workerImage).toContain('cb3d4ee9b47d0c5aae855b12379378ea1439675c');
     expect(workerImage).toContain('/usr/share/licenses/stockfish/COPYING');
     expect(workerImage).toContain('/usr/share/stockfish/stockfish-18-source.tar.gz');
+    expect(webImage).toContain('/app/apps/web/.next/standalone ./');
     expect(webImage).toContain('CMD ["node", "apps/web/server.js"]');
     expect(`${apiImage}${workerImage}${webImage}`).not.toMatch(/CMD \[[^\]]*(tsx|pnpm dev)/u);
   });

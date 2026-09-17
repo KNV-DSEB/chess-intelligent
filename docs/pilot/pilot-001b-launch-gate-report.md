@@ -12,6 +12,8 @@ Evidence window: 2026-09-17 (Asia/Bangkok).
 - RC tag: `pilot-001-rc5`; `pilot-001-rc3` and `pilot-001-rc4` are not moved.
 - Vercel Web RC: `pilot-001-rc6`; its immutable tag target is the exact deployment identity and no
   prior tag is moved. Backend behavior remains the rc5 behavior in this Web-only remediation.
+- Vercel standalone-output RC: `pilot-001-rc7`; rc6 is not moved. This remediation changes only
+  Web build output selection.
 - Final tag: not created.
 - Vercel deployment identity: `NOT_RUN`.
 - API image:
@@ -35,8 +37,11 @@ Evidence window: 2026-09-17 (Asia/Bangkok).
 
 ## Vercel Web
 
-- Build: local Next.js production build PASS.
-- Deployment: `NOT_RUN`; no project link, CLI/auth, or provider environment exists.
+- Rc6 build: Next.js 16.3.1 compilation, TypeScript, page data, static generation, and page
+  optimization PASS. Vercel then failed its `onBuildComplete` standalone tracing step with missing
+  `.next/next-server.js.nft.json`; this is not a framework-detection or application-compile failure.
+- Deployment: `BLOCKED` at the Vercel build-complete adapter; no successful Web deployment is
+  claimed.
 - Project settings: Root Directory `apps/web`; Framework Preset `Next.js`; Build Command
   `pnpm run build:vercel`; Install Command `corepack enable && pnpm install --frozen-lockfile`;
   Output Directory `.next`; include source files outside the Root Directory enabled.
@@ -238,6 +243,9 @@ actual backup is restored into a separate empty managed PostgreSQL database with
    directly to Fastify, ignoring Railway's `PORT` environment variable.
 6. The Vercel project was rooted at `./`, so framework detection inspected the repository-root
    package, where Next.js intentionally is not a dependency, instead of `apps/web/package.json`.
+7. After the monorepo root correction, rc6 compiled successfully but `output: 'standalone'`
+   caused the Next.js 16.3.1/Vercel adapter to request absent
+   `.next/next-server.js.nft.json` during `onBuildComplete`.
 
 ## Remediations applied
 
@@ -256,6 +264,9 @@ actual backup is restored into a separate empty managed PostgreSQL database with
 6. The Vercel project boundary now lives at `apps/web`; an app-local wrapper invokes the canonical
    repository release guard, `.next` is relative to that app root, and Vercel's supported
    outside-root source inclusion keeps the pnpm workspace and `packages/ui` available.
+7. Rc7 uses Vercel's standard `VERCEL` indicator to omit standalone output only on Vercel.
+   Non-Vercel builds retain standalone output for the existing Web container; no generated trace
+   file is fabricated and the release guard remains unchanged.
 
 ## Readiness checklist
 
@@ -268,7 +279,7 @@ All remaining `NOT_RUN` gates are visible in `pilot-001-readiness-checklist.md`.
 
 ## Remaining blockers
 
-- Apply the recorded Vercel app-root settings, deploy the exact `pilot-001-rc6` commit, and retain a
+- Apply the recorded Vercel app-root settings, deploy the exact `pilot-001-rc7` commit, and retain a
   stable same-site Web hostname.
 - Replacement of the current Railway `pilot-api` rc4 image with the immutable rc5 API digest,
   plus deployed API health verification; Worker deployment verification remains separate.
@@ -300,9 +311,9 @@ runbook, change log, AI mode record, and durable `AGENTS.md` invariants were upd
 
 ## Next step
 
-The next operator action is replacing only the Railway `pilot-api` image with
-`ghcr.io/knv-dseb/chess-intelligent-api@sha256:22ee3485b956d99b9a2ce08c6a94716079b6932543bdad8158d9f1827d6168bc`.
-Vercel, DNS, SMTP, database verification/restore, owners, and the deployed gates remain separate
-later actions.
+For the Web blocker, the next operator action is setting `PILOT_RELEASE_SHA` to the immutable
+`pilot-001-rc7` tag target and creating a new Vercel Production deployment from that exact SHA
+without changing the recorded project settings. Railway, DNS, SMTP, database verification/restore,
+owners, and the deployed gates remain separate later actions.
 
 DO NOT START TASK 017.

@@ -12,6 +12,8 @@ Status: `PILOT_BLOCKED`
   `6e2617ea210562b3b2144549efe078a1b5b1dc2b`; rc3, rc4, and rc5 are not moved.
 - Active Vercel monorepo remediation release: `pilot-001-rc6`; its immutable tag target is the
   exact Web deployment identity. No earlier Pilot RC tag is moved.
+- Active Vercel standalone-output remediation release: `pilot-001-rc7`; rc6 remains immutable.
+  Its tag target is the next exact Web deployment identity.
 - Branch: `main`.
 - Deployment timestamp: `NOT_DEPLOYED`.
 - Migration boundary: `016_private_academy_pilot.sql`.
@@ -29,11 +31,15 @@ Status: `PILOT_BLOCKED`
 
 ## Deployment topology
 
-- Vercel Web: `NOT_DEPLOYED`; the project must use Root Directory `apps/web`, Framework Preset
+- Vercel Web: `RC6_BUILD_BLOCKED`; Next.js 16.3.1 compilation, TypeScript, page collection, static
+  generation, and optimization completed, then Vercel's build-complete adapter failed because
+  standalone tracing expected missing `.next/next-server.js.nft.json`. The project must use Root
+  Directory `apps/web`, Framework Preset
   `Next.js`, Build Command `pnpm run build:vercel`, Install Command
   `corepack enable && pnpm install --frozen-lockfile`, Output Directory `.next`, and include source
   files outside the Root Directory. `apps/web/vercel.json` rejects a missing/drifted release SHA
-  or non-HTTPS API origin.
+  or non-HTTPS API origin. Rc7 disables standalone only when Vercel's standard `VERCEL` indicator
+  is present; container/self-hosted builds retain standalone output.
 - Backend provider/runtime: Railway selected. The rc4 API deployment reached `ACTIVE`, but its
   public endpoint failed to respond because the process bound `127.0.0.1:4000`; rc5 corrects only
   that listener boundary. Worker deployment state is not changed by this remediation.

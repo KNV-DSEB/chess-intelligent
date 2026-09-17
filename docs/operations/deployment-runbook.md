@@ -25,6 +25,12 @@ The build requires the exact HTTPS `NEXT_PUBLIC_API_URL`, an explicit `PILOT_REL
 Vercel's `VERCEL_GIT_COMMIT_SHA`; the build fails if the two SHAs differ. Only browser-safe
 variables may use a `NEXT_PUBLIC_` prefix.
 
+Vercel exposes the standard `VERCEL` system indicator during its build. While that variable is
+present, the Web config leaves Next.js output mode unset so Vercel's adapter owns tracing and
+packaging. Outside Vercel, the config retains `output: 'standalone'`; `docker/Dockerfile.web`
+continues to copy `.next/standalone` and run the generated `apps/web/server.js`. Do not force
+standalone output into a Vercel build under the current Next.js/Vercel combination.
+
 `docker-compose.pilot-backend.yml` is the Linux-host backend profile. It contains only one-shot
 migration/ontology jobs, API, Worker, and the API TLS proxy. It requires digest-pinned API/Worker
 registry images and an external encrypted `DATABASE_URL`; it does not contain Web or PostgreSQL.
