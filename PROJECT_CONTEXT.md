@@ -123,8 +123,8 @@ Task 014 — Production Gate Execution & Blocker Remediation V1 (execution compl
 Task 015 — Production Topology & Four-Role Browser Gate Closure V1
 Task 016 — Learning Intelligence Expansion, Grounded AI Briefing & Pilot Experience V1
 Pilot 001 — Private Academy Pilot Readiness & Launch V1 (implementation complete; launch blocked)
-Pilot 001B — Real Deployment & Launch Gate Closure V1 (rc5 Railway API bind remediation in
-progress; environment execution blocked)
+Pilot 001B — Real Deployment & Launch Gate Closure V1 (rc5 Railway API bind remediation published;
+environment execution blocked)
 ```
 
 Current production gate:
@@ -173,12 +173,14 @@ launch mode is AI_DISABLED_FOR_PILOT.
 
 `pilot-001-rc4` at `37386cc86266e6ce7fd3dec8e2763c607287e0ac` published separate
 public API and Worker GHCR packages. Railway then exposed a production blocker: the active
-API container listened on loopback and ignored Railway's `PORT`. `pilot-001-rc5` is the active
-remediation candidate; it binds the API to `0.0.0.0` and prefers the platform port while
-preserving the existing configured fallback port. Rc3 and rc4 remain immutable, and rc5 does
-not change database, auth, CORS, sessions, Worker, Stockfish, or product behavior. Railway
-Pilot and restore PostgreSQL instances are operator-provisioned but not yet verified. Launch
-still requires the rc5 API digest to be deployed, Vercel, real Pilot hostnames with trusted TLS,
+API container listened on loopback and ignored Railway's `PORT`. `pilot-001-rc5` at
+`6e2617ea210562b3b2144549efe078a1b5b1dc2b` binds the API to `0.0.0.0` and prefers the platform
+port while preserving the existing configured fallback port. Its public immutable API image is
+`ghcr.io/knv-dseb/chess-intelligent-api@sha256:22ee3485b956d99b9a2ce08c6a94716079b6932543bdad8158d9f1827d6168bc`.
+Rc3 and rc4 remain immutable, and rc5 does not change database, auth, CORS, sessions, Worker,
+Stockfish, or product behavior. Railway Pilot and restore PostgreSQL instances are
+operator-provisioned but not yet verified. Launch still requires the rc5 API digest to be deployed,
+Vercel, real Pilot hostnames with trusted TLS,
 transactional email, provisioned Pilot identities/consent, the deployed four-role
 Coach+Student dry run, named operational owners, and separate backup/restore proof.
 ```

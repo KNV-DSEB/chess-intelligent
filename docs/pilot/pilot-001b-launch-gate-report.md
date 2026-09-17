@@ -8,13 +8,16 @@ Evidence window: 2026-09-17 (Asia/Bangkok).
 
 ## Active release candidate
 
-- Git SHA: `PENDING_RC5_COMMIT` until the listener fix is committed.
+- Git SHA: `6e2617ea210562b3b2144549efe078a1b5b1dc2b`.
 - RC tag: `pilot-001-rc5`; `pilot-001-rc3` and `pilot-001-rc4` are not moved.
 - Final tag: not created.
 - Vercel deployment identity: `NOT_RUN`.
-- API image: `PENDING_RC5_TAG_WORKFLOW`.
-- Worker image: `PENDING_RC5_TAG_WORKFLOW`; it is republished only because the existing immutable
-  release workflow publishes both images, with no Worker source or runtime change.
+- API image:
+  `ghcr.io/knv-dseb/chess-intelligent-api@sha256:22ee3485b956d99b9a2ce08c6a94716079b6932543bdad8158d9f1827d6168bc`.
+- Worker image:
+  `ghcr.io/knv-dseb/chess-intelligent-worker@sha256:82ebb25489fa8eb8c01a4c7d3fdcf134d43735c2c901e766a83936643621eb9e`;
+  it was republished only because the existing immutable release workflow publishes both images,
+  with no Worker source or runtime change.
 
 ## Deployment topology
 
@@ -47,8 +50,12 @@ Evidence window: 2026-09-17 (Asia/Bangkok).
   `NOT_RUN`.
 - Health: source/test behavior PASS; deployed `/livez` and `/readyz` remain `NOT_RUN` because rc5
   is not deployed automatically.
-- Image identity: tag-only GHCR publication PASS. The rc4 and full-commit-SHA tags resolve to the
+- Image identity: tag-only GHCR publication PASS. The rc5 and full-commit-SHA tags resolve to the
   same immutable digest for each image; no `latest` tag is used.
+- Publication evidence: GitHub Actions run
+  [`35215919935`](https://github.com/KNV-DSEB/chess-intelligent/actions/runs/35215919935)
+  completed successfully; anonymous manifest reads confirmed both packages are public and the
+  digest references exist.
 - Runtime host: Railway selected; this remediation publishes rc5 but does not change the Railway
   deployment automatically.
 
@@ -252,7 +259,8 @@ All remaining `NOT_RUN` gates are visible in `pilot-001-readiness-checklist.md`.
 ## Remaining blockers
 
 - Vercel project/auth and stable same-site Web hostname.
-- Railway API/Worker deployment from the immutable GHCR digests and a public API hostname.
+- Replacement of the current Railway `pilot-api` rc4 image with the immutable rc5 API digest,
+  plus deployed API health verification; Worker deployment verification remains separate.
 - Verified connectivity/migrations on the provisioned Pilot PostgreSQL plus a separate restore into
   the provisioned restore PostgreSQL.
 - Real transactional SMTP and designated inboxes.
@@ -281,8 +289,9 @@ runbook, change log, AI mode record, and durable `AGENTS.md` invariants were upd
 
 ## Next step
 
-After rc5 publication succeeds, the next operator action is replacing only the Railway `pilot-api`
-image with the exact rc5 API digest. Vercel, DNS, SMTP, database verification/restore, owners, and
-the deployed gates remain separate later actions.
+The next operator action is replacing only the Railway `pilot-api` image with
+`ghcr.io/knv-dseb/chess-intelligent-api@sha256:22ee3485b956d99b9a2ce08c6a94716079b6932543bdad8158d9f1827d6168bc`.
+Vercel, DNS, SMTP, database verification/restore, owners, and the deployed gates remain separate
+later actions.
 
 DO NOT START TASK 017.
