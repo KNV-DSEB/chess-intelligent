@@ -125,6 +125,8 @@ Task 016 — Learning Intelligence Expansion, Grounded AI Briefing & Pilot Exper
 Pilot 001 — Private Academy Pilot Readiness & Launch V1 (implementation complete; launch blocked)
 Pilot 001B — Real Deployment & Launch Gate Closure V1 (rc5 Railway API bind remediation published;
 environment execution blocked)
+Pilot 001C — Product UX Reconstruction & Pilot Experience V2 (`pilot-001-rc8` source/local browser
+acceptance complete; deployment not run)
 ```
 
 Current production gate:
@@ -155,8 +157,9 @@ Non-blocking risks:
 Expected future direction:
 
 ```text
-Next — close Pilot 001 environment/operations blockers and run the private academy pilot
-Then — define Task 017 only from reviewed pilot evidence
+Next — resume Pilot 001B launch closure: same-origin/free-domain session, transactional SMTP,
+deployed four-role matrix, and one full deployed learning-loop dry run
+Then — run the private academy pilot and define Task 017 only from reviewed human Pilot evidence
 ```
 
 Current Pilot gate:
@@ -183,6 +186,17 @@ operator-provisioned but not yet verified. Launch still requires the rc5 API dig
 Vercel, real Pilot hostnames with trusted TLS,
 transactional email, provisioned Pilot identities/consent, the deployed four-role
 Coach+Student dry run, named operational owners, and separate backup/restore proof.
+
+Pilot 001C reconstructs the Web presentation around the existing verified loop:
+Coach attention → exact Student evidence → training assignment → Student attempt → compatible
+progress review. It changes no API, database, ontology, classifier, learning policy, authorization,
+or Pilot event contract. Its deterministic PGlite fixture and local browser screenshots are UX
+acceptance only and never deployed-production evidence.
+
+Primary Coach/Student surfaces now use task language, show useful chess evidence before technical
+lineage, preserve unsupported/no-evidence/insufficient/estimated distinctions, and place raw IDs,
+hashes, and policy metadata behind advanced provenance disclosure. Coach navigation is Home →
+Students → Training → Progress; Student navigation is Today → Training → Progress.
 ```
 
 Do not implement future milestones inside the current task unless explicitly requested.

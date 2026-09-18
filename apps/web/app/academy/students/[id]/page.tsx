@@ -152,7 +152,7 @@ async function responseBody<Value>(response: Response): Promise<Value> {
 }
 
 function label(value: string): string {
-  return value.toLowerCase().replaceAll('_', ' ');
+  return value.toLowerCase().replaceAll('_', ' ').replaceAll('.', ' ');
 }
 
 export default function StudentIntelligencePage() {
@@ -251,7 +251,7 @@ export default function StudentIntelligencePage() {
     setNotice(null);
     try {
       const form = new FormData(event.currentTarget);
-      const created = await responseBody<{ assignment: { id: string } }>(
+      await responseBody<{ assignment: { id: string } }>(
         await fetch(`${apiUrl}/academies/${academyId}/assignments`, {
           method: 'POST',
           credentials: 'include',
@@ -267,7 +267,7 @@ export default function StudentIntelligencePage() {
         }),
       );
       setSelectedItemIds([]);
-      setNotice(`Assignment ${created.assignment.id} created without creating mastery evidence.`);
+      setNotice('Assignment created. It will count only after a valid post-assignment attempt.');
       await load(academyId);
     } catch (caught) {
       setError(caught instanceof Error ? caught.message : 'Could not create the assignment.');
@@ -281,7 +281,7 @@ export default function StudentIntelligencePage() {
     setLoading(true);
     setError(null);
     try {
-      const refreshed = await responseBody<{ run: { id: string } }>(
+      await responseBody<{ run: { id: string } }>(
         await fetch(`${apiUrl}/academies/${academyId}/students/${studentId}/skill-graph`, {
           method: 'POST',
           credentials: 'include',
@@ -294,7 +294,7 @@ export default function StudentIntelligencePage() {
           }),
         }),
       );
-      setNotice(`Explicit Skill Graph run ${refreshed.run.id} created.`);
+      setNotice('Learning picture refreshed from the latest compatible evidence.');
       await load(academyId);
     } catch (caught) {
       setError(caught instanceof Error ? caught.message : 'Could not refresh the Skill Graph.');
@@ -351,7 +351,7 @@ export default function StudentIntelligencePage() {
     setLoading(true);
     setError(null);
     try {
-      const created = await responseBody<{ run: { id: string } }>(
+      await responseBody<{ run: { id: string } }>(
         await fetch(`${apiUrl}/academies/${academyId}/students/${studentId}/training-plans`, {
           method: 'POST',
           credentials: 'include',
@@ -359,7 +359,7 @@ export default function StudentIntelligencePage() {
           body: JSON.stringify({ skillGraphRunId: skillGraph.run.id, maxItems: 10 }),
         }),
       );
-      setNotice(`TrainingPlan ${created.run.id.slice(0, 8)} is ready for assignment.`);
+      setNotice('A new evidence-backed training plan is ready for assignment.');
       await load(academyId);
     } catch (caught) {
       setError(caught instanceof Error ? caught.message : 'Could not create the TrainingPlan.');
@@ -441,9 +441,11 @@ export default function StudentIntelligencePage() {
   }
 
   return (
-    <section className="panel wide academy-page" id="student-intelligence-top">
-      <a href={`/academy?academyId=${academyId}`}>← Academy roster</a>
-      {loading && !data ? <p>Loading Student Intelligence…</p> : null}
+    <section className="student-intelligence-page" id="student-intelligence-top">
+      <a className="back-link" href={`/academy?academyId=${academyId}`}>
+        ← Coach home
+      </a>
+      {loading && !data ? <p>Loading verified student evidence…</p> : null}
       {error ? <p className="error">{error}</p> : null}
       {notice ? <p className="notice">{notice}</p> : null}
 
@@ -451,10 +453,10 @@ export default function StudentIntelligencePage() {
         <>
           <header className="academy-student-header">
             <div>
-              <span className="eyebrow">Student Intelligence</span>
+              <p className="context-line">Student intelligence</p>
               <h1>{data.student.displayName}</h1>
               <p>
-                Canonical Player: {data.player.displayName}
+                Chess record: {data.player.displayName}
                 {data.player.fideId ? ` · FIDE ${data.player.fideId}` : ''}
               </p>
             </div>
@@ -466,63 +468,78 @@ export default function StudentIntelligencePage() {
             </div>
           </header>
 
-          <aside className="academy-security-note">
-            <b>{data.authorizationStatus}</b>
-            <span>StudentProfile and Player remain separate identities.</span>
-          </aside>
+          <div className="student-summary-band">
+            <div>
+              <span>Current picture</span>
+              <strong>{label(data.pilotReadiness.state)}</strong>
+              <small>{data.pilotReadiness.reason}</small>
+            </div>
+            <div>
+              <span>Recommended next action</span>
+              <strong>
+                {data.skillGraph
+                  ? 'Review evidence, then assign focused training'
+                  : 'Build the verified game and analysis record'}
+              </strong>
+              <small>No conclusion is drawn from missing evidence.</small>
+            </div>
+          </div>
 
           <section className="academy-section" id="compatible-skill-graph">
             <div className="section-heading">
               <div>
-                <h2>Compatible Skill Graph</h2>
-                <p>
-                  {data.profile.ontologyVersion} · {data.profile.skillGraphPolicyVersion}
-                </p>
+                <h2>Evidence coverage</h2>
+                <p>How much of this learning picture is directly supported.</p>
               </div>
               {data.freshness.status === 'REFRESH_AVAILABLE' ? (
                 <button disabled={loading} onClick={refreshSkillGraph}>
-                  Refresh explicitly ({data.freshness.newTrainingEvidenceCount} new units)
+                  Include {data.freshness.newTrainingEvidenceCount} new training result
+                  {data.freshness.newTrainingEvidenceCount === 1 ? '' : 's'}
                 </button>
               ) : null}
             </div>
             {data.skillGraph ? (
               <>
-                <div className="academy-coverage-grid detail">
+                <div className="academy-coverage-grid detail evidence-funnel">
                   <span>
-                    <b>{data.skillGraph.coverage.canonicalGames}</b> canonical games
+                    <b>{data.skillGraph.coverage.canonicalGames}</b> games reviewed
                   </span>
                   <span>
-                    <b>{data.skillGraph.coverage.decisionOccurrences}</b> decisions
+                    <b>{data.skillGraph.coverage.decisionOccurrences}</b> decisions found
                   </span>
                   <span>
-                    <b>{data.skillGraph.coverage.classifiedDecisions}</b> classified
+                    <b>{data.skillGraph.coverage.classifiedDecisions}</b> concept-classified
                   </span>
                   <span>
-                    <b>{data.skillGraph.coverage.engineBackedDecisions}</b> engine-backed
+                    <b>{data.skillGraph.coverage.engineBackedDecisions}</b> engine-verified
                   </span>
                   <span>
-                    <b>{data.skillGraph.coverage.masteryEligibleEvidence}</b> mastery evidence
+                    <b>{data.skillGraph.coverage.masteryEligibleEvidence}</b> model-eligible
                   </span>
                   <span>
-                    <b>{data.skillGraph.coverage.trainingMeasurementUnits}</b> training units
-                  </span>
-                  <span>
-                    <b>{data.skillGraph.coverage.estimatedConcepts}</b> estimated concepts
-                  </span>
-                  <span>
-                    <b>{data.skillGraph.coverage.insufficientConcepts}</b> insufficient
-                  </span>
-                  <span>
-                    <b>{data.skillGraph.coverage.noEvidenceConcepts}</b> no evidence
+                    <b>{data.skillGraph.coverage.trainingMeasurementUnits}</b> training results
                   </span>
                 </div>
-                <p className="academy-run-id">
-                  Run <code>{data.skillGraph.run.id}</code> · as of {data.skillGraph.run.asOfDate}
-                </p>
+                <details className="advanced-panel compact-advanced">
+                  <summary>Advanced evidence configuration</summary>
+                  <p>Snapshot date {data.skillGraph.run.asOfDate}</p>
+                  <p>
+                    Run <code>{data.skillGraph.run.id}</code>
+                  </p>
+                  <p>
+                    Concept library {data.profile.ontologyVersion} · learning model{' '}
+                    {data.profile.skillGraphPolicyVersion}
+                  </p>
+                  <p>
+                    {data.authorizationStatus} · Student profile and chess record remain separate
+                    identities.
+                  </p>
+                </details>
               </>
             ) : (
               <p className="academy-empty">
-                No compatible graph. Opening this page did not create one.
+                No compatible learning picture exists yet. Opening this page did not create or infer
+                one.
               </p>
             )}
           </section>
@@ -559,12 +576,11 @@ export default function StudentIntelligencePage() {
                     onClaimFeedback={submitAiFeedback}
                   />
                   <section className="next-actions">
-                    <div className="section-kicker">Next actions</div>
                     <h2>Move from evidence to practice</h2>
                     <ol>
                       <li>Inspect the exact game or training lineage.</li>
-                      <li>Choose items from an immutable TrainingPlan below.</li>
-                      <li>Refresh the Skill Graph only after new evidence exists.</li>
+                      <li>Choose a diagnostic or practice item below.</li>
+                      <li>Refresh the learning picture only after new evidence exists.</li>
                     </ol>
                   </section>
                   <section className="opening-context">
@@ -579,11 +595,10 @@ export default function StudentIntelligencePage() {
               </div>
               <section className="recent-change" aria-labelledby="recent-change-title">
                 <div>
-                  <div className="section-kicker">Recent change</div>
                   <h2 id="recent-change-title">
                     {data.freshness.status === 'REFRESH_AVAILABLE'
-                      ? 'New evidence is waiting for an explicit graph refresh'
-                      : 'Current graph matches the selected evidence snapshot'}
+                      ? 'New verified training evidence is ready to include'
+                      : 'The learning picture matches the selected evidence snapshot'}
                   </h2>
                 </div>
                 <p>
@@ -596,13 +611,13 @@ export default function StudentIntelligencePage() {
           ) : null}
 
           <section className="academy-section" id="training-history">
-            <h2>Training history</h2>
+            <h2>Training activity</h2>
             <div className="academy-coverage-grid">
               <span>
                 <b>{data.trainingSummary.trainingPlans}</b> plans
               </span>
               <span>
-                <b>{data.trainingSummary.distinctScoredItems}</b> measured items
+                <b>{data.trainingSummary.distinctScoredItems}</b> measured exercises
               </span>
               <span>
                 <b>{data.trainingSummary.attemptCount}</b> attempts including retries
@@ -614,23 +629,26 @@ export default function StudentIntelligencePage() {
                 <b>{data.trainingSummary.firstAttemptIncorrect}</b> first incorrect
               </span>
             </div>
-            <p>These are training-performance counts, not mastery accuracy.</p>
+            <p>These counts describe activity and first attempts, not learning effectiveness.</p>
           </section>
 
           <section className="academy-section">
             <div className="section-heading">
               <div>
-                <h2>Create assignment from an immutable TrainingPlan</h2>
-                <p>Plan generation is explicit and pinned to the current Skill Graph.</p>
+                <h2>Choose the next training</h2>
+                <p>
+                  Diagnostic items gather missing evidence. Practice items reinforce a verified
+                  missed application.
+                </p>
               </div>
               <button disabled={loading || !skillGraph} onClick={() => void createTrainingPlan()}>
-                Create plan from current graph
+                Prepare a training plan
               </button>
             </div>
             {data.trainingPlans.length ? (
               <form className="academy-assignment-form" onSubmit={createAssignment}>
                 <label>
-                  Training plan
+                  Evidence-backed plan
                   <select
                     value={selectedPlanId}
                     onChange={(event) => {
@@ -640,7 +658,8 @@ export default function StudentIntelligencePage() {
                   >
                     {data.trainingPlans.map((plan) => (
                       <option key={plan.id} value={plan.id}>
-                        {plan.id.slice(0, 8)} · baseline {plan.skillGraphRunId.slice(0, 8)}
+                        {new Date(plan.createdAt).toLocaleDateString()} · {plan.items.length}{' '}
+                        available items
                       </option>
                     ))}
                   </select>
@@ -661,7 +680,10 @@ export default function StudentIntelligencePage() {
                         }
                       />
                       <span>
-                        <b>{item.conceptStableId}</b> · {label(item.trainingMode)}
+                        <b>{label(item.conceptStableId)}</b> ·{' '}
+                        {item.trainingMode === 'DIAGNOSTIC'
+                          ? 'Diagnostic — gather evidence'
+                          : 'Practice — reinforce a verified pattern'}
                         <small>
                           {item.assignmentRejection
                             ? label(item.assignmentRejection)
@@ -676,16 +698,16 @@ export default function StudentIntelligencePage() {
                   <input name="dueAt" type="date" />
                 </label>
                 <label>
-                  Operational note (not concept evidence)
+                  Note for the student (does not affect evidence)
                   <textarea name="note" maxLength={2000} />
                 </label>
                 <button disabled={loading || selectedItemIds.length === 0}>
-                  Create assignment
+                  Assign selected training
                 </button>
               </form>
             ) : (
               <p className="academy-empty">
-                No existing TrainingPlan is available. Create one explicitly from the current graph.
+                No training plan is ready. Prepare one from the current verified learning picture.
               </p>
             )}
           </section>
@@ -727,7 +749,7 @@ export default function StudentIntelligencePage() {
           {progress ? (
             <section className="academy-section academy-progress">
               <div className="section-heading">
-                <h2>Comparable progress review</h2>
+                <h2>Progress since assignment</h2>
                 <a
                   href="#student-intelligence-top"
                   onClick={() => {
@@ -739,7 +761,7 @@ export default function StudentIntelligencePage() {
                     });
                   }}
                 >
-                  Return to Student overview
+                  Return to student overview
                 </a>
               </div>
               <p>
@@ -786,8 +808,8 @@ export default function StudentIntelligencePage() {
                       ))}
                   </div>
                   <p>
-                    Posterior movement is an estimate change, not an automatic
-                    improvement/regression label.
+                    Estimate movement is shown neutrally. It is not an automatic improvement or
+                    regression label.
                   </p>
                 </>
               )}

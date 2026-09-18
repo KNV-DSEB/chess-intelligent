@@ -53,7 +53,7 @@ interface IntelligenceResponse {
 type LearningLoadState = 'LOADING' | 'READY' | 'UNKNOWN' | 'ERROR';
 
 function label(value: string): string {
-  return value.toLowerCase().replaceAll('_', ' ');
+  return value.toLowerCase().replaceAll('_', ' ').replaceAll('.', ' ');
 }
 
 export default function StudentHomePage() {
@@ -233,36 +233,67 @@ export default function StudentHomePage() {
   }
 
   return (
-    <section className="panel wide academy-page student-pilot-page">
-      <p className="eyebrow">Student self-service</p>
-      <h1>{intelligence?.student.displayName ?? 'My training'}</h1>
-      <p className="student-welcome">
-        Your next training is first. Evidence explains why it is here.
-      </p>
+    <section className="student-home-page" id="today">
+      <header className="student-today-header">
+        <div>
+          <p className="context-line">Today</p>
+          <h1>
+            {intelligence
+              ? `Ready, ${intelligence.student.displayName}?`
+              : 'Your training notebook'}
+          </h1>
+          <p>One position at a time. You can always open the evidence behind the exercise.</p>
+        </div>
+        <div className="student-day-mark" aria-hidden="true">
+          <span>{new Date().toLocaleDateString(undefined, { month: 'short' })}</span>
+          <strong>{new Date().getDate()}</strong>
+        </div>
+      </header>
       {error ? <p className="error">{error}</p> : null}
       {intelligence ? (
-        <aside className="academy-security-note">
-          <b>{label(intelligence.pilotReadiness.state)}</b>
-          <span>{label(intelligence.freshness.status)}</span>
-          <span>{intelligence.freshness.newTrainingEvidenceCount} new training evidence units</span>
-        </aside>
+        <p className="student-context-note">
+          Learning picture: <strong>{label(intelligence.pilotReadiness.state)}</strong>.{' '}
+          {intelligence.freshness.newTrainingEvidenceCount > 0
+            ? `${intelligence.freshness.newTrainingEvidenceCount} new result${intelligence.freshness.newTrainingEvidenceCount === 1 ? '' : 's'} waiting for coach review.`
+            : 'No new evidence update is waiting.'}
+        </p>
       ) : null}
       <section
         className="student-training-first"
-        id="training-history"
+        id="training"
         aria-labelledby="my-assignments-title"
       >
-        <div className="section-kicker">Ready to train</div>
-        <h2 id="my-assignments-title">My assignments</h2>
+        <div className="folio-heading">
+          <div>
+            <h2 id="my-assignments-title">Your next move</h2>
+            <p>
+              Start with the current assignment. Diagnostic items gather evidence; practice items
+              reinforce a verified pattern.
+            </p>
+          </div>
+        </div>
         <div className="academy-roster">
           {assignments?.assignments.map((view) => (
-            <article className="academy-student-card" key={view.assignment.id}>
-              <h3>{label(view.progress.status)}</h3>
-              <p>
-                {view.progress.completedItemCount}/{view.progress.itemCount} completed
-                {view.assignment.dueAt ? ` · due ${view.assignment.dueAt}` : ''}
-              </p>
-              <div className="home-actions">
+            <article className="student-assignment-card" key={view.assignment.id}>
+              <header>
+                <div>
+                  <h3>
+                    {view.progress.status === 'ACTIVE'
+                      ? 'Current assignment'
+                      : label(view.progress.status)}
+                  </h3>
+                  <p>
+                    {view.progress.completedItemCount}/{view.progress.itemCount} completed
+                    {view.assignment.dueAt
+                      ? ` · due ${new Date(view.assignment.dueAt).toLocaleDateString()}`
+                      : ''}
+                  </p>
+                </div>
+                <span className="assignment-progress-mark">
+                  {view.progress.completedItemCount}/{view.progress.itemCount}
+                </span>
+              </header>
+              <div className="student-exercise-list">
                 {view.itemLinks.map((item, index) => {
                   const detail = view.assignment.items.find(
                     (candidate) => candidate.trainingItemId === item.trainingItemId,
@@ -271,7 +302,7 @@ export default function StudentHomePage() {
                   const concept = label(detail?.conceptStableId ?? `training item ${index + 1}`);
                   return (
                     <a
-                      className="button-link"
+                      className="student-exercise-link"
                       href={item.href}
                       key={item.trainingItemId}
                       onClick={() => {
@@ -284,7 +315,10 @@ export default function StudentHomePage() {
                         }
                       }}
                     >
-                      {action}: {concept}
+                      <span>{index + 1}</span>
+                      <strong>{concept}</strong>
+                      <small>{action === 'Measure' ? 'Diagnostic' : 'Practice'}</small>
+                      <b>Open position →</b>
                     </a>
                   );
                 })}
@@ -292,12 +326,18 @@ export default function StudentHomePage() {
             </article>
           ))}
           {assignments?.assignments.length === 0 ? (
-            <p>No active or historical assignments.</p>
+            <div className="student-unknown-state">
+              <h3>No training assigned today</h3>
+              <p>
+                Your coach has not assigned an exercise. This does not say anything about your
+                skill.
+              </p>
+            </div>
           ) : null}
         </div>
       </section>
       {learningLoadState === 'READY' && skillGraph && coverage ? (
-        <div className="student-learning-layout" id="compatible-skill-graph">
+        <div className="student-learning-layout" id="progress">
           <LearningIntelligencePanel
             graph={skillGraph}
             coverage={coverage}
@@ -315,13 +355,11 @@ export default function StudentHomePage() {
         </div>
       ) : learningLoadState === 'LOADING' ? (
         <section className="student-unknown-state" aria-live="polite">
-          <div className="section-kicker">Learning picture</div>
           <h2>Loading verified learning evidence…</h2>
           <p>The page has not made an evidence conclusion yet.</p>
         </section>
       ) : learningLoadState === 'ERROR' ? (
         <section className="student-unknown-state" role="alert">
-          <div className="section-kicker">Learning service unavailable</div>
           <h2>Evidence could not be loaded</h2>
           <p>{learningError} This is a service state, not missing or negative evidence.</p>
           <button type="button" onClick={() => window.location.reload()}>
@@ -330,7 +368,6 @@ export default function StudentHomePage() {
         </section>
       ) : (
         <section className="student-unknown-state">
-          <div className="section-kicker">Learning picture</div>
           <h2>More verified evidence is needed</h2>
           <p>
             No compatible Skill Graph is available in this scope. That is an unknown state, not a

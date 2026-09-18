@@ -377,7 +377,7 @@ button:disabled {
 .student-training-first h2,
 .student-unknown-state h2 {
   margin: 0.3rem 0 0;
-  font-family: 'Space Grotesk', Inter, ui-sans-serif, system-ui, sans-serif;
+  font-family: 'Iowan Old Style', 'Palatino Linotype', Palatino, Georgia, serif;
   font-size: clamp(1.25rem, 2.3vw, 1.7rem);
   line-height: 1.15;
   letter-spacing: -0.025em;
@@ -2151,7 +2151,7 @@ td:last-child code {
   display: flex;
   gap: 0.8rem;
   padding: 0.9rem 1rem;
-  border-left: 4px solid #c28a2c;
+  border: 1px solid #e5d5b7;
   background: #fff8e8;
   color: #644c22;
   font-size: 0.82rem;
@@ -2568,5 +2568,1308 @@ td:last-child code {
 
   .academy-security-note b {
     white-space: normal;
+  }
+}
+
+/* Pilot 001C — master-game folio */
+
+:root {
+  --ink: #17231c;
+  --ink-soft: #4d5d52;
+  --forest: #1d5a42;
+  --forest-deep: #102d22;
+  --forest-wash: #e7eee8;
+  --paper: #fffdf6;
+  --canvas: #f2eee3;
+  --line: #d3d2c6;
+  --line-strong: #989f94;
+  --amber: #a76522;
+  --amber-wash: #f5e6ca;
+  --danger: #8f342c;
+  --shadow-1: 0 8px 24px rgb(16 45 34 / 7%);
+  --shadow-2: 0 24px 64px rgb(16 45 34 / 14%);
+  font-family: Aptos, Inter, 'Segoe UI', sans-serif;
+}
+
+::selection {
+  color: var(--paper);
+  background: var(--forest);
+}
+
+.skip-link {
+  position: fixed;
+  z-index: 100;
+  top: 0.75rem;
+  left: 0.75rem;
+  padding: 0.65rem 0.85rem;
+  color: var(--paper);
+  background: var(--forest-deep);
+  border-radius: 8px;
+  transform: translateY(-180%);
+}
+
+.skip-link:focus {
+  transform: translateY(0);
+}
+
+* {
+  scrollbar-color: var(--line-strong) transparent;
+  scrollbar-width: thin;
+}
+
+body {
+  line-height: 1.55;
+  background:
+    linear-gradient(
+      90deg,
+      transparent 0,
+      transparent 5.4rem,
+      rgb(167 101 34 / 8%) 5.45rem,
+      transparent 5.5rem
+    ),
+    var(--canvas);
+}
+
+h1,
+h2,
+h3,
+blockquote {
+  font-family: 'Iowan Old Style', 'Palatino Linotype', Palatino, Georgia, serif;
+  letter-spacing: -0.025em;
+  text-wrap: balance;
+}
+
+h1 {
+  font-size: clamp(2.25rem, 5vw, 4.6rem);
+  line-height: 0.98;
+}
+
+h2 {
+  font-size: clamp(1.55rem, 3vw, 2.35rem);
+  line-height: 1.08;
+}
+
+h3 {
+  line-height: 1.18;
+}
+
+p {
+  max-width: 72ch;
+}
+
+a {
+  text-underline-offset: 0.2em;
+}
+
+button,
+input,
+select,
+textarea,
+summary,
+a {
+  transition:
+    color 160ms ease-out,
+    background-color 160ms ease-out,
+    border-color 160ms ease-out,
+    box-shadow 160ms ease-out;
+}
+
+:focus-visible {
+  outline: 3px solid #c98736;
+  outline-offset: 3px;
+}
+
+button {
+  min-height: 44px;
+  border-radius: 10px;
+}
+
+button:disabled {
+  cursor: not-allowed;
+  opacity: 0.56;
+}
+
+input,
+select,
+textarea {
+  min-height: 46px;
+  border-color: var(--line-strong);
+  border-radius: 10px;
+  background: #fffefb;
+}
+
+.site-header {
+  position: sticky;
+  z-index: 20;
+  top: 0;
+  min-height: 76px;
+  padding: 0.8rem max(1.25rem, calc((100vw - 1240px) / 2));
+  color: #f8f4e9;
+  background: rgb(16 45 34 / 98%);
+  box-shadow: 0 8px 24px rgb(16 45 34 / 12%);
+}
+
+.site-brand-mark {
+  width: 40px !important;
+  height: 40px !important;
+  border-radius: 10px !important;
+  font-family: 'Iowan Old Style', Georgia, serif;
+  font-size: 0.88rem !important;
+}
+
+.site-brand-copy {
+  display: grid;
+  gap: 0;
+}
+
+.site-brand-copy strong {
+  font-family: 'Iowan Old Style', Georgia, serif;
+  font-size: 1rem;
+  white-space: nowrap;
+}
+
+.site-brand-copy small {
+  color: #b9c8bd;
+  font-size: 0.65rem;
+  font-weight: 500;
+  letter-spacing: 0.11em;
+  text-transform: uppercase;
+}
+
+.site-header nav,
+.session-navigation,
+.role-navigation {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.role-navigation > a {
+  padding: 0.55rem 0.15rem;
+  border-bottom: 1px solid transparent;
+}
+
+.role-navigation > a:hover {
+  color: #f4d9a6;
+  border-bottom-color: #c98736;
+}
+
+.utility-menu {
+  position: relative;
+  color: #eef3ee;
+}
+
+.utility-menu > summary {
+  list-style: none;
+  cursor: pointer;
+  font-size: 0.86rem;
+  font-weight: 650;
+}
+
+.utility-menu > summary::-webkit-details-marker {
+  display: none;
+}
+
+.utility-menu > div {
+  position: absolute;
+  top: calc(100% + 0.75rem);
+  right: 0;
+  display: grid;
+  min-width: 14rem;
+  padding: 0.55rem;
+  background: var(--forest-deep);
+  border: 1px solid rgb(255 255 255 / 14%);
+  border-radius: 12px;
+  box-shadow: var(--shadow-2);
+}
+
+.utility-menu a {
+  padding: 0.65rem 0.75rem;
+  border-radius: 8px;
+}
+
+.utility-menu a:hover {
+  background: rgb(255 255 255 / 8%);
+}
+
+.session-status {
+  padding-left: 1rem;
+  border-left: 1px solid rgb(255 255 255 / 18%);
+  font-size: 0.82rem;
+}
+
+main {
+  min-height: calc(100vh - 76px);
+  padding: clamp(1.25rem, 4vw, 4rem) clamp(1rem, 4vw, 2.5rem);
+}
+
+.context-line {
+  margin: 0 0 0.75rem;
+  color: var(--amber);
+  font-size: 0.76rem;
+  font-weight: 800;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.text-link,
+.back-link,
+.text-button {
+  color: var(--forest);
+  font-weight: 750;
+}
+
+.text-button {
+  min-height: 0;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  text-decoration: underline;
+  text-underline-offset: 0.2em;
+}
+
+.button-link.compact {
+  padding: 0.58rem 0.9rem;
+}
+
+.auth-shell {
+  display: grid;
+  grid-template-columns: minmax(18rem, 0.9fr) minmax(22rem, 0.8fr);
+  max-width: 1040px;
+  min-height: min(680px, calc(100vh - 150px));
+  margin: 0 auto;
+  overflow: hidden;
+  background: var(--paper);
+  border-radius: 16px;
+  box-shadow: var(--shadow-2);
+}
+
+.auth-story {
+  display: grid;
+  align-content: space-between;
+  padding: clamp(2rem, 6vw, 5rem);
+  color: #f8f4e9;
+  background: var(--forest-deep);
+}
+
+.auth-score-sheet {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 0.9rem 1.5rem;
+  padding-block: 1rem;
+  border-block: 1px solid rgb(255 255 255 / 22%);
+}
+
+.auth-score-sheet span {
+  color: #bdcbbf;
+  font-size: 0.72rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+.auth-story blockquote {
+  margin: 3rem 0 0;
+  font-size: clamp(1.65rem, 3vw, 2.8rem);
+  line-height: 1.08;
+}
+
+.auth-panel {
+  align-self: center;
+  width: 100%;
+  max-width: 30rem;
+  padding: clamp(2rem, 6vw, 4rem);
+  border: 0;
+  box-shadow: none;
+}
+
+.auth-panel h1 {
+  margin-bottom: 1rem;
+}
+
+.password-field {
+  position: relative;
+  display: block;
+}
+
+.password-field input {
+  padding-right: 4.5rem;
+}
+
+.password-toggle {
+  position: absolute;
+  right: 0.4rem;
+  bottom: 0.38rem;
+  min-height: 36px;
+  padding: 0.25rem 0.65rem;
+  color: var(--forest);
+  background: transparent;
+  border: 0;
+}
+
+.coach-workspace,
+.student-intelligence-page,
+.student-home-page,
+.assignment-page,
+.direct-training {
+  width: min(100%, 1240px);
+  margin: 0 auto;
+}
+
+.coach-home-hero,
+.student-today-header {
+  display: grid;
+  grid-template-columns: minmax(0, 1.5fr) minmax(15rem, 0.5fr);
+  gap: clamp(2rem, 6vw, 6rem);
+  align-items: end;
+  padding: clamp(2rem, 6vw, 5rem);
+  color: #f8f4e9;
+  background: var(--forest-deep);
+  border-radius: 16px 16px 0 0;
+  box-shadow: var(--shadow-2);
+}
+
+.coach-home-hero h1,
+.student-today-header h1 {
+  max-width: 12ch;
+  margin: 0;
+}
+
+.coach-home-hero p:not(.context-line),
+.student-today-header p:not(.context-line) {
+  color: #cfdbd2;
+}
+
+.coach-day-note {
+  display: grid;
+  gap: 0.35rem;
+  padding-left: 1.5rem;
+  border-left: 1px solid #607a69;
+}
+
+.coach-day-note span,
+.coach-day-note small {
+  color: #b9c9bd;
+}
+
+.coach-day-note strong {
+  font-family: 'Iowan Old Style', Georgia, serif;
+  font-size: 1.4rem;
+}
+
+.coach-workspace > .academy-context-form {
+  grid-template-columns: minmax(0, 1fr) auto;
+  max-width: none;
+  margin: 0;
+  padding: 1rem clamp(1.25rem, 4vw, 3rem);
+  align-items: end;
+  background: #e6e0d1;
+  border-radius: 0 0 16px 16px;
+}
+
+.coach-workspace > .academy-context-form label {
+  max-width: 34rem;
+}
+
+.coach-workspace > .academy-context-form.context-loaded {
+  display: none;
+}
+
+.workspace-trust-line {
+  display: flex;
+  gap: 0.65rem;
+  align-items: center;
+  margin: 1.25rem 0;
+  padding: 0.85rem 1rem;
+  color: var(--forest-deep);
+  background: var(--forest-wash);
+  border-radius: 10px;
+  font-size: 0.86rem;
+}
+
+.workspace-trust-line p {
+  margin: 0;
+}
+
+.coach-focus,
+.coach-section,
+.academy-section,
+.learning-priorities,
+.skill-map,
+.evidence-drawer,
+.student-training-first {
+  margin-top: 1.5rem;
+  padding: clamp(1.25rem, 4vw, 2.5rem);
+  background: var(--paper);
+  border: 0;
+  border-radius: 14px;
+  box-shadow: var(--shadow-1);
+}
+
+.folio-heading {
+  display: flex;
+  justify-content: space-between;
+  gap: 1.5rem;
+  align-items: end;
+  margin-bottom: 1.25rem;
+}
+
+.folio-heading h2,
+.folio-heading p {
+  margin: 0;
+}
+
+.folio-heading p {
+  margin-top: 0.45rem;
+  color: var(--ink-soft);
+}
+
+.focus-ledger,
+.student-ledger,
+.score-sheet-list,
+.student-exercise-list {
+  border-top: 1px solid var(--line);
+}
+
+.focus-row {
+  display: grid;
+  grid-template-columns: auto minmax(12rem, 1fr) minmax(7rem, auto) auto;
+  gap: 1rem;
+  align-items: center;
+  padding: 1rem 0;
+  border-bottom: 1px solid var(--line);
+}
+
+.focus-row h3,
+.focus-row p {
+  margin: 0;
+}
+
+.focus-row p {
+  color: var(--ink-soft);
+  font-size: 0.86rem;
+}
+
+.student-initial {
+  display: grid;
+  width: 2.8rem;
+  height: 2.8rem;
+  place-items: center;
+  color: var(--paper);
+  background: var(--forest);
+  border-radius: 50%;
+  font-family: 'Iowan Old Style', Georgia, serif;
+  font-size: 1.1rem;
+}
+
+.focus-evidence {
+  display: grid;
+  text-align: right;
+}
+
+.focus-evidence strong {
+  font-size: 1.15rem;
+}
+
+.focus-evidence span {
+  color: var(--ink-soft);
+  font-size: 0.72rem;
+}
+
+.student-search {
+  width: min(20rem, 100%);
+}
+
+.student-search input {
+  margin: 0;
+}
+
+.student-ledger .academy-student-card {
+  display: grid;
+  grid-template-columns: minmax(16rem, 1.2fr) minmax(11rem, 0.9fr) minmax(9rem, 0.55fr) auto;
+  gap: 1.25rem;
+  align-items: center;
+  padding: 1.15rem 0;
+  border: 0;
+  border-bottom: 1px solid var(--line);
+  border-radius: 0;
+  background: transparent;
+  box-shadow: none;
+}
+
+.student-ledger-identity {
+  display: flex;
+  gap: 0.8rem;
+  align-items: center;
+}
+
+.student-ledger h3,
+.student-ledger p {
+  margin: 0;
+}
+
+.student-ledger p,
+.student-ledger small,
+.student-ledger span {
+  color: var(--ink-soft);
+  font-size: 0.78rem;
+}
+
+.student-ledger-state,
+.student-ledger-assignment {
+  display: grid;
+  gap: 0.3rem;
+}
+
+.student-ledger-assignment strong {
+  font-size: 1.15rem;
+}
+
+.split-section {
+  display: grid;
+  grid-template-columns: minmax(16rem, 0.75fr) minmax(22rem, 1.25fr);
+  gap: clamp(2rem, 6vw, 6rem);
+}
+
+.score-sheet-list > div {
+  display: grid;
+  grid-template-columns: 1fr auto auto;
+  gap: 1rem;
+  padding: 0.8rem 0;
+  border-bottom: 1px solid var(--line);
+}
+
+.progress-notation {
+  display: grid;
+  align-content: center;
+}
+
+.progress-notation strong {
+  font-family: 'Iowan Old Style', Georgia, serif;
+  font-size: clamp(2.4rem, 5vw, 4rem);
+  line-height: 1;
+}
+
+.progress-notation span,
+.progress-notation small {
+  color: var(--ink-soft);
+}
+
+.advanced-panel {
+  margin-top: 1.25rem;
+  padding: 0.35rem 1rem;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  background: rgb(255 253 246 / 70%);
+}
+
+.advanced-panel > summary {
+  min-height: 44px;
+  padding-block: 0.7rem;
+  cursor: pointer;
+  color: var(--forest);
+}
+
+.compact-advanced {
+  font-size: 0.8rem;
+}
+
+.student-intelligence-page > .back-link,
+.assignment-page > a {
+  display: inline-block;
+  margin-bottom: 1.25rem;
+}
+
+.student-intelligence-page > .academy-student-header,
+.assignment-page .academy-student-header {
+  padding: clamp(1.5rem, 5vw, 3.5rem);
+  color: #f8f4e9;
+  background: var(--forest-deep);
+  border-radius: 16px;
+  box-shadow: var(--shadow-2);
+}
+
+.student-intelligence-page .academy-student-header h1,
+.assignment-page .academy-student-header h1 {
+  margin: 0;
+}
+
+.student-intelligence-page .academy-student-header p:not(.context-line),
+.assignment-page .academy-student-header p:not(.context-line) {
+  color: #cdd9d0;
+}
+
+.student-summary-band {
+  display: grid;
+  grid-template-columns: 0.8fr 1.2fr;
+  gap: 1px;
+  margin-top: 1rem;
+  overflow: hidden;
+  background: var(--line);
+  border-radius: 12px;
+}
+
+.student-summary-band > div {
+  display: grid;
+  gap: 0.35rem;
+  padding: 1.2rem 1.4rem;
+  background: var(--paper);
+}
+
+.student-summary-band span,
+.student-summary-band small {
+  color: var(--ink-soft);
+}
+
+.student-summary-band span {
+  font-size: 0.72rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.evidence-funnel {
+  grid-template-columns: repeat(6, minmax(0, 1fr));
+}
+
+.evidence-funnel span {
+  position: relative;
+  min-height: 5.3rem;
+  border-radius: 0;
+  background: transparent;
+  border-right: 1px solid var(--line);
+}
+
+.evidence-funnel span:last-child {
+  border-right: 0;
+}
+
+.pilot-intelligence-layout,
+.student-learning-layout {
+  display: block;
+  margin-top: 1.5rem;
+}
+
+.pilot-side-rail {
+  display: grid;
+  grid-template-columns: 1fr 1fr 0.75fr;
+  gap: 1rem;
+  margin-top: 1rem;
+}
+
+.priority-row {
+  grid-template-columns: minmax(0, 1fr) auto;
+  padding-block: 1.15rem;
+}
+
+.priority-copy > div {
+  align-items: center;
+}
+
+.priority-copy p {
+  max-width: 65ch;
+}
+
+.skill-domain-list {
+  display: grid;
+  gap: 0.65rem;
+}
+
+.skill-domain-group {
+  border-top: 1px solid var(--line);
+}
+
+.skill-domain-group > summary {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 1rem 0;
+  cursor: pointer;
+  color: var(--forest-deep);
+  font-weight: 800;
+  text-transform: capitalize;
+}
+
+.skill-domain-group > summary small {
+  color: var(--ink-soft);
+  font-weight: 500;
+}
+
+.skill-domain-rows {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0 2rem;
+  padding-bottom: 1rem;
+}
+
+.skill-cell {
+  padding: 0.9rem 0;
+  border: 0;
+  border-bottom: 1px solid var(--line);
+  border-radius: 0;
+  background: transparent;
+}
+
+.skill-cell-heading {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  align-items: baseline;
+}
+
+.skill-cell h3,
+.skill-cell p {
+  margin: 0;
+}
+
+.skill-cell p {
+  margin-top: 0.35rem;
+  color: var(--ink-soft);
+  font-size: 0.8rem;
+}
+
+.evidence-state {
+  width: fit-content;
+  white-space: nowrap;
+}
+
+.evidence-drawer {
+  outline: 2px solid var(--amber-wash);
+  outline-offset: -6px;
+}
+
+.evidence-title-row {
+  padding-bottom: 1rem;
+  border-bottom: 1px solid var(--line);
+}
+
+.evidence-title-row h2,
+.evidence-title-row p {
+  margin: 0;
+}
+
+.evidence-game-folio {
+  margin-top: 1.25rem;
+}
+
+.evidence-game-folio > header {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  align-items: start;
+  padding-bottom: 0.85rem;
+}
+
+.evidence-game-folio h3,
+.evidence-game-folio p {
+  margin: 0;
+}
+
+.evidence-game-folio header p {
+  color: var(--ink-soft);
+}
+
+.evidence-position-layout {
+  display: grid;
+  grid-template-columns: minmax(280px, 430px) minmax(18rem, 1fr);
+  gap: clamp(1.5rem, 4vw, 3rem);
+  align-items: start;
+  padding: clamp(1rem, 3vw, 2rem);
+  background: #ede7d8;
+  border-radius: 12px;
+}
+
+.compact-board {
+  width: min(100%, 430px);
+}
+
+.position-placeholder {
+  display: grid;
+  aspect-ratio: 1;
+  place-items: center;
+  color: var(--ink-soft);
+  background: #ddd6c6;
+}
+
+.position-notation h4 {
+  margin-top: 0;
+  font-family: 'Iowan Old Style', Georgia, serif;
+  font-size: 1.25rem;
+}
+
+.position-notation ol {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem;
+  padding: 0;
+  list-style: none;
+}
+
+.position-notation li {
+  display: flex;
+  gap: 0.25rem;
+  padding: 0.35rem 0.45rem;
+  color: var(--ink-soft);
+  border-radius: 6px;
+}
+
+.position-notation li.played-decision {
+  color: var(--forest-deep);
+  background: var(--amber-wash);
+  box-shadow: inset 0 -2px var(--amber);
+}
+
+.evidence-meaning {
+  margin-top: 1.25rem !important;
+}
+
+.engine-note {
+  display: grid;
+  gap: 0.2rem;
+  margin: 1rem 0;
+  padding: 0.9rem;
+  color: #e8f0ea;
+  background: var(--forest-deep);
+  border-radius: 10px;
+}
+
+.engine-note small {
+  color: #b8c8bc;
+}
+
+.provenance-list > div {
+  display: grid;
+  grid-template-columns: 10rem 1fr;
+  gap: 1rem;
+  padding-block: 0.45rem;
+  border-bottom: 1px solid var(--line);
+}
+
+.provenance-list dd {
+  margin: 0;
+  overflow-wrap: anywhere;
+}
+
+.evidence-history {
+  margin-top: 1rem;
+}
+
+.grounded-brief.quiet-ai {
+  position: static;
+  padding: 0;
+  color: var(--ink);
+  background: var(--paper);
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  box-shadow: none;
+}
+
+.grounded-brief.quiet-ai > summary {
+  display: flex;
+  gap: 0.8rem;
+  align-items: center;
+  padding: 1rem;
+  list-style: none;
+}
+
+.grounded-brief.quiet-ai > summary::-webkit-details-marker {
+  display: none;
+}
+
+.grounded-brief.quiet-ai > summary > span:last-child {
+  display: grid;
+}
+
+.grounded-brief.quiet-ai > summary small {
+  color: var(--ink-soft);
+}
+
+.grounded-brief-mark {
+  flex: 0 0 auto;
+  margin: 0;
+  color: var(--forest);
+  border-color: var(--line-strong);
+}
+
+.grounded-brief-body {
+  padding: 0 1rem 1rem;
+}
+
+.grounded-brief.quiet-ai h2,
+.grounded-brief.quiet-ai p,
+.grounded-brief.quiet-ai span {
+  color: var(--ink);
+}
+
+.grounded-brief.quiet-ai button {
+  color: var(--paper);
+  background: var(--forest);
+}
+
+.student-home-page {
+  background: transparent;
+}
+
+.student-today-header {
+  border-radius: 16px;
+}
+
+.student-day-mark {
+  display: grid;
+  place-items: center;
+  width: 7rem;
+  justify-self: end;
+  padding: 1rem;
+  color: var(--forest-deep);
+  background: #f5dfb6;
+  border-radius: 12px;
+}
+
+.student-day-mark span {
+  font-size: 0.72rem;
+  font-weight: 800;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+.student-day-mark strong {
+  font-family: 'Iowan Old Style', Georgia, serif;
+  font-size: 2.6rem;
+  line-height: 1;
+}
+
+.student-context-note {
+  margin: 1rem 0 0;
+  padding: 0.9rem 1rem;
+  color: var(--forest-deep);
+  background: var(--forest-wash);
+  border-radius: 10px;
+}
+
+.student-assignment-card {
+  padding: 0;
+  border-bottom: 1px solid var(--line);
+}
+
+.student-assignment-card > header {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  align-items: start;
+  padding: 1rem 0;
+}
+
+.student-assignment-card h3,
+.student-assignment-card p {
+  margin: 0;
+}
+
+.assignment-progress-mark {
+  font-family: 'Iowan Old Style', Georgia, serif;
+  font-size: 1.5rem;
+}
+
+.student-exercise-link {
+  display: grid;
+  grid-template-columns: auto minmax(10rem, 1fr) auto auto;
+  gap: 0.8rem;
+  align-items: center;
+  padding: 0.9rem 0;
+  color: var(--ink);
+  border-top: 1px solid var(--line);
+  text-decoration: none;
+}
+
+.student-exercise-link > span {
+  display: grid;
+  width: 2rem;
+  height: 2rem;
+  place-items: center;
+  color: var(--paper);
+  background: var(--forest);
+  border-radius: 50%;
+}
+
+.student-exercise-link small {
+  color: var(--ink-soft);
+}
+
+.student-exercise-link b {
+  color: var(--forest);
+}
+
+.direct-training .training-solver {
+  margin: 0;
+  padding: clamp(1.25rem, 4vw, 3rem);
+  background: var(--paper);
+  border: 0;
+  border-radius: 16px;
+  box-shadow: var(--shadow-2);
+}
+
+.training-position-header {
+  display: flex;
+  justify-content: space-between;
+  gap: 1.5rem;
+  align-items: end;
+  padding-bottom: 1.25rem;
+  border-bottom: 1px solid var(--line);
+}
+
+.training-position-header h1 {
+  margin: 0;
+  font-size: clamp(2rem, 4vw, 3.5rem);
+}
+
+.side-to-move {
+  padding: 0.55rem 0.8rem;
+  color: var(--paper);
+  background: var(--forest);
+  border-radius: 999px;
+  white-space: nowrap;
+}
+
+.direct-training .training-solver-grid {
+  margin-top: 1.5rem;
+}
+
+.direct-training .training-solver-grid h2 {
+  margin-top: 0;
+}
+
+.attempt-review {
+  margin-top: 1.5rem;
+  padding: 1rem;
+  background: var(--forest-wash);
+  border-radius: 12px;
+}
+
+.attempt-review > summary {
+  cursor: pointer;
+  font-family: 'Iowan Old Style', Georgia, serif;
+  font-size: 1.25rem;
+}
+
+.assignment-page .academy-coverage-grid {
+  margin-top: 1rem;
+}
+
+.assignment-note {
+  display: flex;
+  gap: 2rem;
+  margin-top: 1rem;
+  padding: 0.9rem 1rem;
+  background: var(--amber-wash);
+  border-radius: 10px;
+}
+
+.assignment-note p {
+  margin: 0;
+}
+
+@media (max-width: 1000px) {
+  .site-header {
+    position: static;
+  }
+
+  .session-navigation {
+    width: 100%;
+  }
+
+  .role-navigation {
+    overflow-x: auto;
+    padding-bottom: 0.25rem;
+  }
+
+  .student-ledger .academy-student-card {
+    grid-template-columns: minmax(14rem, 1.2fr) minmax(10rem, 0.8fr) auto;
+  }
+
+  .student-ledger-assignment {
+    display: none;
+  }
+
+  .evidence-funnel {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  .evidence-funnel span:nth-child(3) {
+    border-right: 0;
+  }
+
+  .pilot-side-rail {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+@media (max-width: 760px) {
+  body {
+    background: var(--canvas);
+  }
+
+  .site-header {
+    gap: 0.75rem;
+  }
+
+  .site-header nav,
+  .session-navigation {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .session-status {
+    padding: 0.65rem 0 0;
+    border-top: 1px solid rgb(255 255 255 / 18%);
+    border-left: 0;
+  }
+
+  .utility-menu {
+    display: none;
+  }
+
+  main {
+    padding: 1rem;
+  }
+
+  .auth-shell {
+    display: block;
+    min-height: 0;
+  }
+
+  .auth-story {
+    display: none;
+  }
+
+  .coach-home-hero,
+  .student-today-header {
+    grid-template-columns: 1fr;
+    gap: 1.5rem;
+    padding: 1.5rem;
+  }
+
+  .coach-home-hero h1,
+  .student-today-header h1 {
+    max-width: none;
+  }
+
+  .coach-day-note {
+    padding-top: 1rem;
+    padding-left: 0;
+    border-top: 1px solid #607a69;
+    border-left: 0;
+  }
+
+  .student-day-mark {
+    justify-self: start;
+  }
+
+  .coach-workspace > .academy-context-form,
+  .focus-row,
+  .student-ledger .academy-student-card,
+  .split-section,
+  .student-summary-band,
+  .skill-domain-rows,
+  .evidence-position-layout {
+    grid-template-columns: 1fr;
+  }
+
+  .coach-workspace > .academy-context-form button {
+    width: 100%;
+  }
+
+  .focus-row {
+    position: relative;
+    grid-template-columns: auto 1fr;
+  }
+
+  .focus-evidence {
+    grid-column: 2;
+    text-align: left;
+  }
+
+  .focus-row .button-link {
+    grid-column: 2;
+    width: fit-content;
+  }
+
+  .student-ledger .academy-student-card {
+    gap: 0.8rem;
+  }
+
+  .student-ledger-assignment {
+    display: grid;
+  }
+
+  .folio-heading,
+  .evidence-game-folio > header,
+  .training-position-header,
+  .student-assignment-card > header {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .student-search {
+    width: 100%;
+  }
+
+  .academy-coverage-grid.detail.evidence-funnel {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .academy-coverage-grid.detail.evidence-funnel span,
+  .academy-coverage-grid.detail.evidence-funnel span:nth-child(3) {
+    min-height: 4rem;
+    padding: 0.75rem;
+    border-right: 0;
+    border-bottom: 1px solid var(--line);
+  }
+
+  .pilot-side-rail {
+    grid-template-columns: 1fr;
+  }
+
+  .priority-row {
+    grid-template-columns: 1fr;
+  }
+
+  .priority-actions,
+  .priority-row .quiet-button {
+    grid-column: 1;
+  }
+
+  .skill-domain-group > summary,
+  .student-exercise-link {
+    align-items: flex-start;
+  }
+
+  .skill-domain-group > summary {
+    flex-direction: column;
+  }
+
+  .student-exercise-link {
+    grid-template-columns: auto 1fr;
+  }
+
+  .student-exercise-link small,
+  .student-exercise-link b {
+    grid-column: 2;
+  }
+
+  .provenance-list > div {
+    grid-template-columns: 1fr;
+    gap: 0.2rem;
+  }
+
+  .assignment-note {
+    flex-direction: column;
+    gap: 0.4rem;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    scroll-behavior: auto !important;
+    transition-duration: 0.01ms !important;
   }
 }

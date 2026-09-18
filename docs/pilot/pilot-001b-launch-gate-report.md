@@ -14,6 +14,9 @@ Evidence window: 2026-09-17 (Asia/Bangkok).
   prior tag is moved. Backend behavior remains the rc5 behavior in this Web-only remediation.
 - Vercel standalone-output RC: `pilot-001-rc7`; rc6 is not moved. This remediation changes only
   Web build output selection.
+- Product UX V2 source RC: `pilot-001-rc8`; rc7 is not moved. Local 1440×900, 1024×768, and
+  390×844 browser acceptance passes against deterministic acceptance data; no deployed rc8 browser
+  evidence is claimed.
 - Final tag: not created.
 - Vercel deployment identity: `NOT_RUN`.
 - API image:

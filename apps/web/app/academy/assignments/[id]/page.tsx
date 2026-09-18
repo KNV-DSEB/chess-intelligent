@@ -54,7 +54,7 @@ async function responseBody<Value>(response: Response): Promise<Value> {
 }
 
 function label(value: string): string {
-  return value.toLowerCase().replaceAll('_', ' ');
+  return value.toLowerCase().replaceAll('_', ' ').replaceAll('.', ' ');
 }
 
 export default function AssignmentPage() {
@@ -115,10 +115,10 @@ export default function AssignmentPage() {
   }
 
   return (
-    <section className="panel wide academy-page">
+    <section className="assignment-page">
       {data ? (
         <a href={`/academy/students/${data.assignment.studentProfileId}?academyId=${academyId}`}>
-          ← Student Intelligence
+          ← Student overview
         </a>
       ) : null}
       {loading && !data ? <p>Loading assignment…</p> : null}
@@ -128,8 +128,8 @@ export default function AssignmentPage() {
         <>
           <header className="academy-student-header">
             <div>
-              <span className="eyebrow">Training Assignment</span>
-              <h1>{data.assignment.studentDisplayName}</h1>
+              <p className="context-line">Training assignment</p>
+              <h1>{data.assignment.studentDisplayName}’s next positions</h1>
               <p>
                 Assigned by {data.assignment.coachDisplayName} ·{' '}
                 {new Date(data.assignment.assignedAt).toLocaleString()}
@@ -139,65 +139,70 @@ export default function AssignmentPage() {
               {label(data.progress.status)}
             </span>
           </header>
-          <aside className="academy-security-note">
-            <b>{data.authorizationStatus}</b>
-            <span>Assignment workflow state is not mastery evidence.</span>
-          </aside>
+          <p className="workspace-trust-line">
+            Assignment progress is activity, not a mastery score.
+          </p>
 
           <div className="academy-coverage-grid">
             <span>
               <b>{data.progress.completedItemCount}</b> / {data.progress.itemCount} completed
             </span>
             <span>
-              <b>{data.progress.firstScoredCorrectItems}</b> first scored correct
+              <b>{data.progress.firstScoredCorrectItems}</b> first attempts correct
             </span>
             <span>
-              <b>{data.progress.firstScoredIncorrectItems}</b> first scored incorrect
+              <b>{data.progress.firstScoredIncorrectItems}</b> first attempts incorrect
             </span>
             <span>
               <b>{data.progress.overdue ? 'Yes' : 'No'}</b> overdue
             </span>
           </div>
-          <div className="academy-assignment-metadata">
+          <div className="assignment-note">
+            <p>Due {data.assignment.dueAt ?? 'not set'}</p>
+            <p>Note: {data.assignment.note ?? 'none'}</p>
+          </div>
+          <details className="advanced-panel compact-advanced">
+            <summary>Advanced assignment provenance</summary>
+            <p>{data.authorizationStatus}</p>
             <p>
               Plan <code>{data.assignment.trainingPlanRunId}</code>
             </p>
             <p>
-              Baseline Skill Graph <code>{data.assignment.baselineSkillGraphRunId}</code>
+              Baseline learning snapshot <code>{data.assignment.baselineSkillGraphRunId}</code>
             </p>
-            <p>Due {data.assignment.dueAt ?? 'not set'}</p>
-            <p>Note: {data.assignment.note ?? 'none'}</p>
-          </div>
+          </details>
 
           <section className="academy-section">
-            <h2>Immutable assigned items</h2>
+            <h2>Assigned positions</h2>
             <div className="academy-assignment-items">
               {data.assignment.items.map((item) => (
                 <article key={item.trainingItemId}>
                   <div>
                     <span>#{item.ordinal}</span>
-                    <h3>{item.conceptStableId}</h3>
+                    <h3>{label(item.conceptStableId)}</h3>
                     <p>
-                      {label(item.trainingMode)} · {label(item.measurementStatus)}
+                      {item.trainingMode === 'DIAGNOSTIC'
+                        ? 'Diagnostic — gather evidence'
+                        : 'Practice — reinforce a verified pattern'}{' '}
+                      · {label(item.measurementStatus)}
                     </p>
                     {item.firstPostAssignmentAttempt ? (
                       <p>
-                        First post-assignment attempt:{' '}
-                        {label(item.firstPostAssignmentAttempt.result)} ·{' '}
+                        First scored attempt: {label(item.firstPostAssignmentAttempt.result)} ·{' '}
                         {new Date(item.firstPostAssignmentAttempt.submittedAt).toLocaleString()}
                       </p>
                     ) : (
-                      <p>Not attempted after assignment.</p>
+                      <p>Waiting for the first attempt.</p>
                     )}
                     {item.postAssignmentAttemptCount > 1 ? (
                       <small>
-                        {item.postAssignmentAttemptCount - 1} visible retries; no additional
-                        completion.
+                        {item.postAssignmentAttemptCount - 1} retries are visible but do not add
+                        another completion.
                       </small>
                     ) : null}
                   </div>
                   <a className="button-link" href={`/training?item=${item.trainingItemId}`}>
-                    Open in Training
+                    Open position
                   </a>
                 </article>
               ))}

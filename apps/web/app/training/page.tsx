@@ -2,6 +2,8 @@
 
 import { type FormEvent, useEffect, useState } from 'react';
 
+import { ChessPosition } from '../components/chess-position';
+
 const apiUrl = process.env.NEXT_PUBLIC_API_URL ?? '/api';
 
 interface ApiError {
@@ -93,21 +95,6 @@ interface TrainingPlan {
   trainingItems: TrainingItem[];
 }
 
-const pieces: Readonly<Record<string, string>> = {
-  K: '♔',
-  Q: '♕',
-  R: '♖',
-  B: '♗',
-  N: '♘',
-  P: '♙',
-  k: '♚',
-  q: '♛',
-  r: '♜',
-  b: '♝',
-  n: '♞',
-  p: '♟',
-};
-
 async function responseBody<Result>(response: Response): Promise<Result> {
   const body = (await response.json()) as Result | ApiError;
   if (!response.ok) {
@@ -122,59 +109,6 @@ function label(value: string): string {
     .split('_')
     .map((word) => `${word.slice(0, 1).toLocaleUpperCase()}${word.slice(1)}`)
     .join(' ');
-}
-
-function boardSquares(fen: string): Array<{ piece: string; square: string; light: boolean }> {
-  const board = fen.split(' ')[0] ?? '';
-  const rows = board.split('/');
-  const squares: Array<{ piece: string; square: string; light: boolean }> = [];
-  rows.forEach((row, rowIndex) => {
-    let file = 0;
-    for (const token of row) {
-      if (/\d/u.test(token)) {
-        for (let offset = 0; offset < Number(token); offset += 1) {
-          const rank = 8 - rowIndex;
-          squares.push({
-            piece: '',
-            square: `${String.fromCharCode(97 + file)}${rank}`,
-            light: (file + rowIndex) % 2 === 0,
-          });
-          file += 1;
-        }
-      } else {
-        const rank = 8 - rowIndex;
-        squares.push({
-          piece: pieces[token] ?? '',
-          square: `${String.fromCharCode(97 + file)}${rank}`,
-          light: (file + rowIndex) % 2 === 0,
-        });
-        file += 1;
-      }
-    }
-  });
-  return squares;
-}
-
-function ChessBoard({ item }: { item: TrainingItem }) {
-  const ordered = boardSquares(item.positionFen);
-  const squares = item.sideToMove === 'BLACK' ? [...ordered].reverse() : ordered;
-  return (
-    <div
-      className="training-board"
-      aria-label={`Exact ${item.sideToMove.toLowerCase()}-to-move position`}
-    >
-      {squares.map((square) => (
-        <div
-          className={square.light ? 'training-square light' : 'training-square dark'}
-          key={square.square}
-          title={square.square}
-        >
-          <span aria-hidden="true">{square.piece}</span>
-          <small>{square.square}</small>
-        </div>
-      ))}
-    </div>
-  );
 }
 
 function CandidateCard({ candidate }: { candidate: Candidate }) {
@@ -216,10 +150,14 @@ export default function TrainingPage() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [notice, setNotice] = useState<string | null>(null);
+  const [directItemMode, setDirectItemMode] = useState(false);
 
   useEffect(() => {
     const itemId = new URLSearchParams(window.location.search).get('item');
-    if (itemId) void openItem(itemId);
+    if (itemId) {
+      setDirectItemMode(true);
+      void openItem(itemId);
+    }
   }, []);
 
   async function resolvePlayer(event: FormEvent<HTMLFormElement>): Promise<void> {
@@ -328,7 +266,7 @@ export default function TrainingPage() {
           : current,
       );
       setNotice(
-        `${label(completed.attempt.result)}. New training evidence recorded. Refresh the Skill Graph explicitly to include it.`,
+        `${label(completed.attempt.result)}. Your scored attempt was recorded and is ready for coach review.`,
       );
       setMoveUci('');
     } catch (caught) {
@@ -372,50 +310,54 @@ export default function TrainingPage() {
   }
 
   return (
-    <section className="panel wide training-page">
-      <span className="eyebrow">Adaptive Training Engine V1</span>
-      <h1>Diagnose → Train → Attempt → Measure</h1>
-      <p>
-        Plans consume one explicit immutable Skill Graph. Assessment gathers missing evidence;
-        practice requires supported negative evidence. Unknown is never treated as weak.
-      </p>
-
-      <form onSubmit={resolvePlayer}>
-        <label>
-          Player FIDE ID
-          <input
-            name="fideId"
-            inputMode="numeric"
-            required
-            pattern="\d{4,10}"
-            placeholder="12456789"
-          />
-        </label>
-        <button disabled={loading}>Load Player and Skill Graph runs</button>
-      </form>
-
-      {player ? (
-        <div className="training-run-picker">
+    <section className={`training-page${directItemMode ? ' direct-training' : ' panel wide'}`}>
+      {!directItemMode ? (
+        <>
+          <p className="context-line">Training workspace</p>
+          <h1>Prepare evidence-backed training</h1>
           <p>
-            <strong>{player.displayName}</strong> · Player {player.playerId}
+            Diagnostic exercises gather missing evidence. Practice exercises reinforce a verified
+            pattern.
           </p>
-          <label>
-            Immutable Skill Graph run
-            <select
-              value={selectedRunId}
-              onChange={(event) => setSelectedRunId(event.target.value)}
-            >
-              {runs.map((run) => (
-                <option value={run.id} key={run.id}>
-                  {run.asOfDate} · {run.skillGraphPolicyVersion} · {run.id.slice(0, 8)}
-                </option>
-              ))}
-            </select>
-          </label>
-          <button disabled={loading || !selectedRunId} onClick={() => void generatePlan()}>
-            Generate training plan
-          </button>
-        </div>
+
+          <form onSubmit={resolvePlayer}>
+            <label>
+              Player FIDE ID
+              <input
+                name="fideId"
+                inputMode="numeric"
+                required
+                pattern="\d{4,10}"
+                placeholder="12456789"
+              />
+            </label>
+            <button disabled={loading}>Load Player and Skill Graph runs</button>
+          </form>
+
+          {player ? (
+            <div className="training-run-picker">
+              <p>
+                <strong>{player.displayName}</strong> · Player {player.playerId}
+              </p>
+              <label>
+                Immutable Skill Graph run
+                <select
+                  value={selectedRunId}
+                  onChange={(event) => setSelectedRunId(event.target.value)}
+                >
+                  {runs.map((run) => (
+                    <option value={run.id} key={run.id}>
+                      {run.asOfDate} · {run.skillGraphPolicyVersion} · {run.id.slice(0, 8)}
+                    </option>
+                  ))}
+                </select>
+              </label>
+              <button disabled={loading || !selectedRunId} onClick={() => void generatePlan()}>
+                Generate training plan
+              </button>
+            </div>
+          ) : null}
+        </>
       ) : null}
 
       {error ? <p className="status status-error">{error}</p> : null}
@@ -491,46 +433,55 @@ export default function TrainingPage() {
 
       {activeItem ? (
         <section className="training-solver">
-          <span className="eyebrow">
-            {activeItem.trainingMode === 'REMEDIATION' ? 'Practice' : 'Assessment'}
-          </span>
-          <h2>{activeItem.targetConcept?.displayName ?? 'Find the best move'}</h2>
-          <p>{activeItem.instructions}</p>
-          <div className="training-solver-grid">
-            <ChessBoard item={activeItem} />
+          <header className="training-position-header">
             <div>
-              <p>
-                <strong>{label(activeItem.sideToMove)} to move</strong>
+              <p className="context-line">
+                {activeItem.trainingMode === 'REMEDIATION'
+                  ? 'Focused practice'
+                  : 'Diagnostic position'}
               </p>
-              <p className="help-text position-key">
-                Exact history <code>{activeItem.exactHistorySha256}</code>
+              <h1>{activeItem.targetConcept?.displayName ?? 'Find the best move'}</h1>
+            </div>
+            <span className="side-to-move">{label(activeItem.sideToMove)} to move</span>
+          </header>
+          <p>
+            {directItemMode
+              ? 'Find the strongest continuation. Enter the move using its starting and ending squares.'
+              : activeItem.instructions}
+          </p>
+          <div className="training-solver-grid">
+            <ChessPosition fen={activeItem.positionFen} sideToMove={activeItem.sideToMove} />
+            <div>
+              <h2>Choose your move</h2>
+              <p>
+                Study the whole board before committing. Your first scored attempt is the
+                measurement used for this exercise.
               </p>
               <form onSubmit={submitMove}>
                 <label>
-                  Move in UCI
+                  Your move
                   <input
                     value={moveUci}
                     onChange={(event) => setMoveUci(event.target.value.toLowerCase())}
                     required
                     pattern="[a-h][1-8][a-h][1-8][qrbn]?"
-                    placeholder="c4e5"
+                    placeholder="e2e4"
                   />
                 </label>
-                <button disabled={loading}>Submit scored move</button>
+                <small>Enter the starting and ending squares, for example e2e4.</small>
+                <button disabled={loading}>{loading ? 'Checking move…' : 'Commit move'}</button>
               </form>
               {activeItem.acceptedMoveUcis ? (
                 <p className="status status-info">
-                  Accepted move: <strong>{activeItem.acceptedMoveUcis.join(', ')}</strong>
+                  Reference move: <strong>{activeItem.acceptedMoveUcis.join(', ')}</strong>
                 </p>
               ) : (
-                <p className="help-text">
-                  The answer is stored server-side and remains hidden until a scored submission.
-                </p>
+                <p className="help-text">The reference move stays private until you submit.</p>
               )}
               {activeItem.source ? (
                 <p>
                   <a href={`/games/${activeItem.source.gameId}`}>
-                    Source Game · before ply {activeItem.source.occurrencePly + 1}
+                    See the source game for this position →
                   </a>
                 </p>
               ) : null}
@@ -538,7 +489,8 @@ export default function TrainingPage() {
           </div>
 
           {activeItem.attempts.length > 0 ? (
-            <>
+            <details className="attempt-review" open>
+              <summary>Review your attempt</summary>
               <h3>Attempt history</h3>
               <ol className="training-attempts">
                 {activeItem.attempts.map((attempt) => (
@@ -549,22 +501,31 @@ export default function TrainingPage() {
                 ))}
               </ol>
               <p className="help-text">
-                V1 mastery selection uses only the first scored attempt for this exact item. Retries
-                remain visible but are correlated.
+                Retries remain visible, but only the first scored attempt is a clean measurement for
+                this exact exercise.
               </p>
-              <h3>Training evidence</h3>
-              {activeItem.trainingEvidence.map((evidence) => (
-                <div className="training-evidence" key={evidence.id}>
-                  <strong>{evidence.conceptStableId}</strong>
-                  <span>{evidence.polarity}</span>
-                  <span>{evidence.resolvedEvidenceRole}</span>
-                  <span>Ontology {evidence.ontologyVersion}</span>
-                </div>
-              ))}
-              <button disabled={loading} onClick={() => void refreshSkillGraph()}>
-                Create explicit Skill Graph V2 run
-              </button>
-            </>
+              {directItemMode ? (
+                <p>Your coach can include this result in a new learning snapshot.</p>
+              ) : (
+                <button disabled={loading} onClick={() => void refreshSkillGraph()}>
+                  Include results in a new learning snapshot
+                </button>
+              )}
+              <details className="advanced-panel compact-advanced">
+                <summary>Advanced training evidence</summary>
+                <p className="position-key">
+                  Exact history <code>{activeItem.exactHistorySha256}</code>
+                </p>
+                {activeItem.trainingEvidence.map((evidence) => (
+                  <div className="training-evidence" key={evidence.id}>
+                    <strong>{evidence.conceptStableId}</strong>
+                    <span>{evidence.polarity}</span>
+                    <span>{evidence.resolvedEvidenceRole}</span>
+                    <span>Concept library {evidence.ontologyVersion}</span>
+                  </div>
+                ))}
+              </details>
+            </details>
           ) : null}
         </section>
       ) : null}

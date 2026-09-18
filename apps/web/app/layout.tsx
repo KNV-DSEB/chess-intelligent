@@ -1,4 +1,5 @@
 import type { Metadata } from 'next';
+import Link from 'next/link';
 import type { ReactNode } from 'react';
 
 import './styles.css';
@@ -13,16 +14,24 @@ export default function RootLayout({ children }: Readonly<{ children: ReactNode 
   return (
     <html lang="en">
       <body>
+        <a className="skip-link" href="#main-content">
+          Skip to main content
+        </a>
         <header className="site-header">
-          <a className="site-brand" href="/">
-            <span aria-hidden="true">CI</span>
-            Chess Intelligent
-          </a>
+          <Link className="site-brand" href="/">
+            <span className="site-brand-mark" aria-hidden="true">
+              CI
+            </span>
+            <span className="site-brand-copy">
+              <strong>Chess Intelligent</strong>
+              <small>Academy notebook</small>
+            </span>
+          </Link>
           <nav aria-label="Primary navigation">
             <SessionNavigation />
           </nav>
         </header>
-        <main>{children}</main>
+        <main id="main-content">{children}</main>
       </body>
     </html>
   );

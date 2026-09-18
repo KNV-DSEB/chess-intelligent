@@ -14,6 +14,9 @@ Status: `PILOT_BLOCKED`
   exact Web deployment identity. No earlier Pilot RC tag is moved.
 - Active Vercel standalone-output remediation release: `pilot-001-rc7`; rc6 remains immutable.
   Its tag target is the next exact Web deployment identity.
+- Product UX V2 source candidate: `pilot-001-rc8`; rc7 remains immutable. Its tag target is the
+  exact Vercel `PILOT_RELEASE_SHA` for the reconstructed Coach/Student experience. This candidate
+  changes no API, Worker, database, ontology, learning-policy, or deployment-topology boundary.
 - Branch: `main`.
 - Deployment timestamp: `NOT_DEPLOYED`.
 - Migration boundary: `016_private_academy_pilot.sql`.
@@ -25,6 +28,9 @@ Status: `PILOT_BLOCKED`
   configuration hash.
 - Grounded brief contracts: context/prompt/artifact V1.
 - Pilot observation contract: `PILOT_EVENT_V1`.
+- Product UX: role-aware Coach/Student navigation, evidence-first Student Intelligence,
+  chess-native evidence drilldown, and board-first training; local browser acceptance PASS, rc8
+  deployment `NOT_RUN`.
 - System coverage: 64 ontology concepts, 13 classifier-observable concepts, 8 trainable tactical
   concepts.
 - AI mode: `AI_DISABLED_FOR_PILOT`.

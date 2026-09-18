@@ -148,6 +148,11 @@
   remains API-host-only, and Vercel Preview origins are never implicitly trusted.
 - Vercel Pilot builds must pin the exact release SHA, and every `NEXT_PUBLIC_` variable must be
   safe for browser disclosure.
+- Primary product UI uses Coach/Student language rather than implementation terminology; advanced
+  provenance remains available through progressive disclosure.
+- Unknown, unsupported, and insufficient-evidence states must never be presented as weakness.
+- Coach UX prioritizes evidence → action, while Student UX remains materially simpler and focused
+  on the current learning task.
 
 ## External data rule
 
