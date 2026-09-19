@@ -17,6 +17,9 @@ Evidence window: 2026-09-17 (Asia/Bangkok).
 - Product UX V2 source RC: `pilot-001-rc8`; rc7 is not moved. Local 1440×900, 1024×768, and
   390×844 browser acceptance passes against deterministic acceptance data; no deployed rc8 browser
   evidence is claimed.
+- Public product entry source RC: `pilot-001-rc9`; rc8 is not moved. Local API integration,
+  production build, and responsive landing/signup browser QA pass. The exact deployed rc9 signup,
+  Academy creation, invitation, cookie, and four-role matrix remain `NOT_RUN`.
 - Final tag: not created.
 - Vercel deployment identity: `NOT_RUN`.
 - API image:
@@ -50,8 +53,9 @@ Evidence window: 2026-09-17 (Asia/Bangkok).
   Output Directory `.next`; include source files outside the Root Directory enabled.
 - Hostname: `NOT_PROVISIONED`.
 - Git identity: build guard requires `PILOT_RELEASE_SHA === VERCEL_GIT_COMMIT_SHA`.
-- Environment: guard accepts only an HTTPS credential-free API origin and rejects secret-like
-  `NEXT_PUBLIC_` names.
+- Environment: the browser client uses only `/backend`; Vercel rewrites it to the approved Railway
+  API. The guard rejects direct API origins, requires the exact release SHA, and rejects
+  secret-like `NEXT_PUBLIC_` names.
 - Browser result: `NOT_RUN`.
 
 ## Backend runtime
@@ -76,7 +80,7 @@ Evidence window: 2026-09-17 (Asia/Bangkok).
 
 - Provider/version: Railway PostgreSQL instances provisioned by the operator; connection/version
   verification `NOT_RUN`.
-- Migrations 001–016: local deterministic tests PASS; real PostgreSQL `NOT_RUN`.
+- Migrations 001–017: local deterministic tests PASS; real PostgreSQL `NOT_RUN`.
 - Ontology publication: real verifier now publishes and verifies `1.0.0`, canonical hash, and 64
   definitions; real target `NOT_RUN`.
 - Connection behavior: bounded pool/source regression PASS; managed runtime `NOT_RUN`.
@@ -99,9 +103,9 @@ Evidence window: 2026-09-17 (Asia/Bangkok).
 
 ## Web ↔ API session behavior
 
-Login, reload, `/auth/me`, logout, and cross-origin credential behavior are all `NOT_RUN` on
-Vercel because no same-site Web/API hostnames exist. Task 015 local/internal-TLS evidence is not
-reused as public Pilot evidence.
+Signup, Academy creation, invitation acceptance, login, reload, `/auth/me`, logout, and exact-Origin
+behavior are all `NOT_RUN` on the deployed RC9. Local same-origin `/backend` and integration evidence
+is not reused as public Pilot evidence.
 
 ## Transactional SMTP
 
@@ -252,7 +256,7 @@ actual backup is restored into a separate empty managed PostgreSQL database with
 
 ## Remediations applied
 
-1. PostgreSQL verification now applies migration 016, publishes/verifies ontology `1.0.0` by
+1. PostgreSQL verification now applies migration 017, publishes/verifies ontology `1.0.0` by
    canonical hash and 64-concept count, and checks the expanded Pilot table set.
 2. Backup/restore manifests now retain stable ID counts/hashes across the full Pilot lineage.
 3. `vercel.json`, a deterministic Web build guard, and a Web-free/DB-free backend Compose profile
@@ -282,8 +286,8 @@ All remaining `NOT_RUN` gates are visible in `pilot-001-readiness-checklist.md`.
 
 ## Remaining blockers
 
-- Apply the recorded Vercel app-root settings, deploy the exact `pilot-001-rc7` commit, and retain a
-  stable same-site Web hostname.
+- Apply the recorded Vercel app-root settings, deploy the exact `pilot-001-rc9` commit, and verify
+  the same-origin `/backend` proxy on the stable production Web hostname.
 - Replacement of the current Railway `pilot-api` rc4 image with the immutable rc5 API digest,
   plus deployed API health verification; Worker deployment verification remains separate.
 - Verified connectivity/migrations on the provisioned Pilot PostgreSQL plus a separate restore into

@@ -44,7 +44,7 @@ The command uses `pg_dump --format=custom --no-owner --no-privileges` and writes
 3. Run one explicit migration process: `pnpm db:migrate`.
 4. Do not let every production replica migrate. Production API/Worker use `AUTO_MIGRATE=false`.
 5. Check `schema_migrations`; the current expected tail is
-   `016_private_academy_pilot.sql`.
+   `017_public_product_entry.sql`.
 6. Start API, then verify `/livez` and `/readyz`; start Worker only after database readiness.
 
 Each migration is applied in one database transaction and recorded only after the transaction succeeds. A failed transaction must not create a `schema_migrations` success row.

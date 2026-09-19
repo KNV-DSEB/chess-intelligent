@@ -12,7 +12,7 @@ import {
 } from '../../../components/learning-intelligence';
 import { recordPilotClientEvent } from '../../../components/pilot-client';
 
-const apiUrl = process.env.NEXT_PUBLIC_API_URL ?? '/api';
+import { apiUrl } from '../../../api-client';
 
 interface AssignmentView {
   assignment: {

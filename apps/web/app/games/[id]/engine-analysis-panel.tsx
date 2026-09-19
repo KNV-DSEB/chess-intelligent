@@ -2,7 +2,7 @@
 
 import { useCallback, useEffect, useState } from 'react';
 
-const apiUrl = process.env.NEXT_PUBLIC_API_URL ?? '/api';
+import { apiUrl } from '../../api-client';
 
 interface Job {
   id: string;

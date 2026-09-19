@@ -39,6 +39,7 @@ integrationDescribe('PostgreSQL migration verification', () => {
       '014_production_verification_foundation.sql',
       '015_grounded_ai_briefing.sql',
       '016_private_academy_pilot.sql',
+      '017_public_product_entry.sql',
     ]);
 
     const gameColumns = await database.query<{ column_name: string }>(

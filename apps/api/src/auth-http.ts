@@ -61,6 +61,7 @@ export async function requireRequestPrincipal(
 
 export function authErrorStatus(error: AuthApplicationError): number {
   if (error.code === 'RATE_LIMITED') return 429;
+  if (error.code === 'EMAIL_ALREADY_REGISTERED') return 409;
   if (error.code === 'PASSWORD_POLICY_VIOLATION') return 400;
   if (error.code === 'CURRENT_PASSWORD_INVALID' || error.code === 'INVALID_CREDENTIALS') return 401;
   if (error.code === 'USER_NOT_FOUND') return 404;

@@ -506,7 +506,7 @@ const academyTrainingPlanBodySchema = z.object({
 const academyAssignmentParametersSchema = academyParametersSchema.extend({
   assignmentId: z.uuid(),
 });
-const academyBodySchema = z.object({ name: z.string().trim().min(1).max(300) });
+const academyBodySchema = z.object({ name: z.string().trim().min(1).max(300) }).strict();
 const academyMembershipBodySchema = z.object({
   role: z.enum(ACADEMY_MEMBERSHIP_ROLES),
   displayName: z.string().trim().min(1).max(300),
@@ -759,6 +759,7 @@ export async function buildApp(options: AppOptions): Promise<FastifyInstance> {
     reply.header('referrer-policy', 'no-referrer');
     reply.header('x-frame-options', 'DENY');
     reply.header('content-security-policy', "frame-ancestors 'none'");
+    reply.header('cache-control', 'private, no-store, max-age=0');
   });
   registerCsrfOriginBoundary(app, { webOrigins, secureCookies });
   await app.register(cors, { origin: [...webOrigins], credentials: true });
@@ -1594,11 +1595,6 @@ export async function buildApp(options: AppOptions): Promise<FastifyInstance> {
   });
 
   app.post('/academies', async (request, reply) => {
-    if (!internalDevRoutes) {
-      return reply.code(404).send({
-        error: { code: 'INTERNAL_DEV_ROUTE_DISABLED', message: 'Use the bootstrap workflow.' },
-      });
-    }
     const validated = academyBodySchema.safeParse(request.body);
     if (!validated.success) {
       return reply.code(400).send({
@@ -1609,7 +1605,19 @@ export async function buildApp(options: AppOptions): Promise<FastifyInstance> {
         },
       });
     }
-    return reply.code(201).send(await academyIntelligence.createAcademy(validated.data.name));
+    if (internalDevRoutes) {
+      return reply.code(201).send(await academyIntelligence.createAcademy(validated.data.name));
+    }
+    const principal = await requireRequestPrincipal(request, auth, secureCookies);
+    return reply.code(201).send(
+      await academyRepository.createOwnedAcademy({
+        name: validated.data.name,
+        userId: principal.userId,
+        sessionId: principal.sessionId,
+        now: now(),
+        requestId: request.id,
+      }),
+    );
   });
 
   app.post('/academies/:academyId/memberships', async (request, reply) => {

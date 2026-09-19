@@ -1,8 +1,8 @@
 {
-  "generated_at": "2026-09-17T09:28:48.011000+00:00",
+  "generated_at": "2026-09-18T17:31:35.937988+00:00",
   "nodes": {
     "agents_external_data_authorization": {
-      "code_fingerprint": "5b126001fec05850a435e3598fd5a2e9a798a96b124b453b8574da4837bfa498",
+      "code_fingerprint": "334af2b587fc2da5dbb52cda1afba5b985b2f98037f95b61191760526da567a3",
       "label": "External Data Authorization Rule",
       "last": "2026-08-28T05:20:04.500439+00:00",
       "provenance": [
@@ -12,7 +12,7 @@
           "q": "Trace current authorization entry points and actor identity paths before Task 012"
         }
       ],
-      "score": 0.62745148,
+      "score": 0.608389254,
       "source_file": "AGENTS.md",
       "status": "tentative",
       "uses": 1
@@ -28,7 +28,7 @@
           "q": "Trace the existing GHCR publication path from tag workflow through production Docker build artifacts, API and Worker runtimes, Stockfish boundary, Compose deployment, and Pilot release manifest."
         }
       ],
-      "score": 0.89130793,
+      "score": 0.864229639,
       "source_file": "apps/api/package.json",
       "status": "tentative",
       "uses": 1
@@ -44,7 +44,7 @@
           "q": "Validate Task 015 production security and runtime dependency paths after implementation"
         }
       ],
-      "score": 0.746213145,
+      "score": 0.723542892,
       "source_file": "apps/api/src/academy-security-application.ts",
       "status": "tentative",
       "uses": 1
@@ -60,7 +60,7 @@
           "q": "Trace current authorization entry points and actor identity paths before Task 012"
         }
       ],
-      "score": 0.62745148,
+      "score": 0.608389254,
       "source_file": "apps/api/src/app.ts",
       "status": "tentative",
       "uses": 1
@@ -86,7 +86,7 @@
           "q": "Trace current authorization entry points and actor identity paths before Task 012"
         }
       ],
-      "score": 2.354068613,
+      "score": 2.28255107,
       "source_file": "apps/api/src/app.ts",
       "status": "preferred",
       "uses": 3
@@ -102,7 +102,7 @@
           "q": "Trace Pilot 001B deployment, database recovery, session, SMTP, and Worker dependencies"
         }
       ],
-      "score": 0.885499679,
+      "score": 0.858597846,
       "source_file": "apps/api/src/auth-http.ts",
       "status": "tentative",
       "uses": 1
@@ -118,7 +118,7 @@
           "q": "Graphify current repository and trace Tasks 007-008 paths to validate the Task 009 implementation plan."
         }
       ],
-      "score": 0.553576787,
+      "score": 0.536758903,
       "source_file": "apps/api/src/concept-classification-application.ts",
       "status": "tentative",
       "uses": 1
@@ -134,7 +134,7 @@
           "q": "Trace Pilot 001B deployment, database recovery, session, SMTP, and Worker dependencies"
         }
       ],
-      "score": 0.885499679,
+      "score": 0.858597846,
       "source_file": "apps/api/src/email-delivery.ts",
       "status": "tentative",
       "uses": 1
@@ -150,7 +150,7 @@
           "q": "Trace Task 016 SkillGraphRun through grounded AI context construction, provider validation, append-only artifact persistence, authorization, UI claim citations, and evidence drilldown."
         }
       ],
-      "score": 0.856462558,
+      "score": 0.830442884,
       "source_file": "apps/api/src/grounded-ai-application.ts",
       "status": "tentative",
       "uses": 1
@@ -166,7 +166,7 @@
           "q": "Pilot 001 architecture dependency paths"
         }
       ],
-      "score": 0.870154576,
+      "score": 0.843718933,
       "source_file": "apps/api/src/grounded-ai-application.ts",
       "status": "tentative",
       "uses": 1
@@ -182,7 +182,7 @@
           "q": "Pilot 001 architecture dependency paths"
         }
       ],
-      "score": 0.870154576,
+      "score": 0.843718933,
       "source_file": "apps/api/src/openai-grounded-language-model.ts",
       "status": "tentative",
       "uses": 1
@@ -198,8 +198,24 @@
           "q": "Pilot 001 architecture dependency paths"
         }
       ],
-      "score": 0.870154576,
+      "score": 0.843718933,
       "source_file": "apps/api/src/pilot-application.ts",
+      "status": "tentative",
+      "uses": 1
+    },
+    "apps_api_src_server": {
+      "code_fingerprint": "bdab6bc2bf87c7b0f23b53893cd1d25e3e17493331431a67dd8b02444871a3b5",
+      "label": "server.ts",
+      "last": "2026-09-17T09:30:36.289984+00:00",
+      "provenance": [
+        {
+          "date": "2026-09-17T09:30:36.289984+00:00",
+          "outcome": "useful",
+          "q": "Trace the production API listener from bootstrap through environment configuration and identify why Railway binds to loopback instead of PORT."
+        }
+      ],
+      "score": 0.969647678,
+      "source_file": "apps/api/src/server.ts",
       "status": "tentative",
       "uses": 1
     },
@@ -214,13 +230,45 @@
           "q": "Trace Task 016 classifier bundle V2 facts through persisted concept evidence, Skill Graph aggregation, adaptive training candidates, and immutable TrainingItems."
         }
       ],
-      "score": 0.856461958,
+      "score": 0.830442302,
       "source_file": "apps/api/src/training-application.ts",
       "status": "tentative",
       "uses": 1
     },
+    "apps_web_app_academy_academyid_my_page_intelligenceresponse": {
+      "code_fingerprint": "8ff65ef14faa070938b0ff31190cfbc84b06ea90e62918a0d49e2b45e033ebd9",
+      "label": "IntelligenceResponse",
+      "last": "2026-09-18T12:41:49.709215+00:00",
+      "provenance": [
+        {
+          "date": "2026-09-18T12:41:49.709215+00:00",
+          "outcome": "useful",
+          "q": "Trace the Pilot 001C Academy learning UX from role-aware navigation through Student Intelligence, evidence, Skill Map, assignments, progress, and board-first training."
+        }
+      ],
+      "score": 0.995361403,
+      "source_file": "apps/web/app/academy/[academyId]/my/page.tsx",
+      "status": "tentative",
+      "uses": 1
+    },
+    "apps_web_app_session_navigation_sessionnavigation": {
+      "code_fingerprint": "cd4e32d3474a96e110810abbe288b6bdd86c4e2205956288f0f8fa7f1e8a93a6",
+      "label": "SessionNavigation()",
+      "last": "2026-09-18T12:41:49.709215+00:00",
+      "provenance": [
+        {
+          "date": "2026-09-18T12:41:49.709215+00:00",
+          "outcome": "useful",
+          "q": "Trace the Pilot 001C Academy learning UX from role-aware navigation through Student Intelligence, evidence, Skill Map, assignments, progress, and board-first training."
+        }
+      ],
+      "score": 0.995361403,
+      "source_file": "apps/web/app/session-navigation.tsx",
+      "status": "tentative",
+      "uses": 1
+    },
     "apps_web_package": {
-      "code_fingerprint": "eb8f80ff3f1b4ea1235e0401dc18a98b8e65d78b4a4291695f583d3b3cd857a8",
+      "code_fingerprint": "ad81e94641fe1d20849d09d677b7b3720cfa42f92e6ff7f27b1b2d0ea20e39e5",
       "label": "web/package.json",
       "last": "2026-08-27T07:40:14.668733+00:00",
       "provenance": [
@@ -230,7 +278,7 @@
           "q": "Fix GitHub Actions pnpm check formatting failure shown in the attached screenshot"
         }
       ],
-      "score": 0.614500946,
+      "score": 0.595832162,
       "source_file": "apps/web/package.json",
       "status": "tentative",
       "uses": 1
@@ -246,7 +294,7 @@
           "q": "Validate Task 015 production security and runtime dependency paths after implementation"
         }
       ],
-      "score": 0.746213145,
+      "score": 0.723542892,
       "source_file": "apps/worker/src/analysis-worker.ts",
       "status": "tentative",
       "uses": 1
@@ -262,7 +310,7 @@
           "q": "Trace Pilot 001B deployment, database recovery, session, SMTP, and Worker dependencies"
         }
       ],
-      "score": 0.885499679,
+      "score": 0.858597846,
       "source_file": "apps/worker/src/stockfish-uci-engine.ts",
       "status": "tentative",
       "uses": 1
@@ -278,7 +326,7 @@
           "q": "Trace the existing GHCR publication path from tag workflow through production Docker build artifacts, API and Worker runtimes, Stockfish boundary, Compose deployment, and Pilot release manifest."
         }
       ],
-      "score": 0.89130793,
+      "score": 0.864229639,
       "source_file": "apps/worker/src/stockfish-uci-engine.ts",
       "status": "tentative",
       "uses": 1
@@ -294,7 +342,7 @@
           "q": "Trace the existing GHCR publication path from tag workflow through production Docker build artifacts, API and Worker runtimes, Stockfish boundary, Compose deployment, and Pilot release manifest."
         }
       ],
-      "score": 0.89130793,
+      "score": 0.864229639,
       "source_file": "apps/worker/src/stockfish-uci-engine.ts",
       "status": "tentative",
       "uses": 1
@@ -310,7 +358,7 @@
           "q": "Validate Task 015 production security and runtime dependency paths after implementation"
         }
       ],
-      "score": 0.746213145,
+      "score": 0.723542892,
       "source_file": "apps/worker/src/worker-loop.ts",
       "status": "tentative",
       "uses": 1
@@ -336,13 +384,13 @@
           "q": "Trace Task 013 production security, database, migration, worker, session, invitation, password reset, and audit paths"
         }
       ],
-      "score": 2.422451724,
+      "score": 2.348856675,
       "source_file": "apps/worker/src/worker.ts",
       "status": "preferred",
       "uses": 3
     },
     "docs_operations_deployment_runbook": {
-      "code_fingerprint": "56eb255bf7ceed408ddedf501410ee678d5ed381f4f7ed3de7d9c231103593e7",
+      "code_fingerprint": "00c7c8927907b17e669d497ade750ef865d297dee0c991af4cfd93aa5fe38d97",
       "label": "deployment-runbook.md",
       "last": "2026-09-12T09:57:25.243917+00:00",
       "provenance": [
@@ -357,13 +405,13 @@
           "q": "Trace Pilot 001B deployment, database recovery, session, SMTP, and Worker dependencies"
         }
       ],
-      "score": 1.776807609,
+      "score": 1.722827485,
       "source_file": "docs/operations/deployment-runbook.md",
       "status": "preferred",
       "uses": 2
     },
     "docs_pilot_pilot_001_release_manifest_pilot_001_release_manifest": {
-      "code_fingerprint": "f42a195800b69e9d2300f1efb4c16c3ff55796dc85ed5d379d5dcb40b5d391e0",
+      "code_fingerprint": "dd6594604fa30a37ff22d93898be177b4fdd5a1c401ad0f485efbb77252985f5",
       "label": "Pilot 001 release manifest",
       "last": "2026-09-12T09:57:25.243917+00:00",
       "provenance": [
@@ -373,8 +421,24 @@
           "q": "Trace the existing GHCR publication path from tag workflow through production Docker build artifacts, API and Worker runtimes, Stockfish boundary, Compose deployment, and Pilot release manifest."
         }
       ],
-      "score": 0.89130793,
+      "score": 0.864229639,
       "source_file": "docs/pilot/pilot-001-release-manifest.md",
+      "status": "tentative",
+      "uses": 1
+    },
+    "fastify": {
+      "code_fingerprint": "14de4e0205fef694d6482dc7977f53f3c33b1ee66d7a6287fccfd5344810dfcb",
+      "label": "fastify",
+      "last": "2026-09-17T09:30:36.289984+00:00",
+      "provenance": [
+        {
+          "date": "2026-09-17T09:30:36.289984+00:00",
+          "outcome": "useful",
+          "q": "Trace the production API listener from bootstrap through environment configuration and identify why Railway binds to loopback instead of PORT."
+        }
+      ],
+      "score": 0.969647678,
+      "source_file": "apps/api/package.json",
       "status": "tentative",
       "uses": 1
     },
@@ -389,7 +453,7 @@
           "q": "Fix GitHub Actions pnpm check formatting failure shown in the attached screenshot"
         }
       ],
-      "score": 0.614500946,
+      "score": 0.595832162,
       "source_file": "package.json",
       "status": "tentative",
       "uses": 1
@@ -405,8 +469,56 @@
           "q": "Trace Task 016 classifier bundle V2 facts through persisted concept evidence, Skill Graph aggregation, adaptive training candidates, and immutable TrainingItems."
         }
       ],
-      "score": 0.856461958,
+      "score": 0.830442302,
       "source_file": "packages/chess-core/src/concept-facts.ts",
+      "status": "tentative",
+      "uses": 1
+    },
+    "packages_config_src_index": {
+      "code_fingerprint": "1f3f3637ff85a392bd4c0ccb24c57ef059395e714f32cf375a627e0b577a1358",
+      "label": "config/src/index.ts",
+      "last": "2026-09-17T09:30:36.289984+00:00",
+      "provenance": [
+        {
+          "date": "2026-09-17T09:30:36.289984+00:00",
+          "outcome": "useful",
+          "q": "Trace the production API listener from bootstrap through environment configuration and identify why Railway binds to loopback instead of PORT."
+        }
+      ],
+      "score": 0.969647678,
+      "source_file": "packages/config/src/index.ts",
+      "status": "tentative",
+      "uses": 1
+    },
+    "packages_config_src_index_apienvironmentschema": {
+      "code_fingerprint": "1f3f3637ff85a392bd4c0ccb24c57ef059395e714f32cf375a627e0b577a1358",
+      "label": "apiEnvironmentSchema",
+      "last": "2026-09-17T09:30:36.289984+00:00",
+      "provenance": [
+        {
+          "date": "2026-09-17T09:30:36.289984+00:00",
+          "outcome": "useful",
+          "q": "Trace the production API listener from bootstrap through environment configuration and identify why Railway binds to loopback instead of PORT."
+        }
+      ],
+      "score": 0.969647678,
+      "source_file": "packages/config/src/index.ts",
+      "status": "tentative",
+      "uses": 1
+    },
+    "packages_config_src_index_readapienvironment": {
+      "code_fingerprint": "1f3f3637ff85a392bd4c0ccb24c57ef059395e714f32cf375a627e0b577a1358",
+      "label": "readApiEnvironment()",
+      "last": "2026-09-17T09:30:36.289984+00:00",
+      "provenance": [
+        {
+          "date": "2026-09-17T09:30:36.289984+00:00",
+          "outcome": "useful",
+          "q": "Trace the production API listener from bootstrap through environment configuration and identify why Railway binds to loopback instead of PORT."
+        }
+      ],
+      "score": 0.969647678,
+      "source_file": "packages/config/src/index.ts",
       "status": "tentative",
       "uses": 1
     },
@@ -421,7 +533,7 @@
           "q": "Graphify current repository and trace Tasks 007-008 paths to validate the Task 009 implementation plan."
         }
       ],
-      "score": 0.553576787,
+      "score": 0.536758903,
       "source_file": "packages/db/migrations/009_concept_evidence_classification.sql",
       "status": "tentative",
       "uses": 1
@@ -437,7 +549,7 @@
           "q": "Graphify current repository and trace Tasks 007-008 paths to validate the Task 009 implementation plan."
         }
       ],
-      "score": 0.553576787,
+      "score": 0.536758903,
       "source_file": "packages/db/migrations/009_concept_evidence_classification.sql",
       "status": "tentative",
       "uses": 1
@@ -453,8 +565,24 @@
           "q": "Validate Task 015 production security and runtime dependency paths after implementation"
         }
       ],
-      "score": 0.746213145,
+      "score": 0.723542892,
       "source_file": "packages/db/src/academy-access-repository.ts",
+      "status": "tentative",
+      "uses": 1
+    },
+    "packages_db_src_academy_repository_academyrepository": {
+      "code_fingerprint": "3f39a9a505b3f89e98f0aa96706f3ee016bc718099edc7c37086130ddd5d530e",
+      "label": "AcademyRepository",
+      "last": "2026-09-18T12:41:49.709215+00:00",
+      "provenance": [
+        {
+          "date": "2026-09-18T12:41:49.709215+00:00",
+          "outcome": "useful",
+          "q": "Trace the Pilot 001C Academy learning UX from role-aware navigation through Student Intelligence, evidence, Skill Map, assignments, progress, and board-first training."
+        }
+      ],
+      "score": 0.995361403,
+      "source_file": "packages/db/src/academy-repository.ts",
       "status": "tentative",
       "uses": 1
     },
@@ -479,7 +607,7 @@
           "q": "Trace Task 009 to Task 010 and validate Adaptive Training Engine integration boundaries"
         }
       ],
-      "score": 1.992197226,
+      "score": 1.93167348,
       "source_file": "packages/db/src/analysis-repository.ts",
       "status": "preferred",
       "uses": 3
@@ -495,7 +623,7 @@
           "q": "Validate Task 015 production security and runtime dependency paths after implementation"
         }
       ],
-      "score": 0.746213145,
+      "score": 0.723542892,
       "source_file": "packages/db/src/analysis-repository.ts",
       "status": "tentative",
       "uses": 1
@@ -511,7 +639,7 @@
           "q": "Trace Pilot 001B deployment, database recovery, session, SMTP, and Worker dependencies"
         }
       ],
-      "score": 0.885499679,
+      "score": 0.858597846,
       "source_file": "packages/db/src/backup-cli.ts",
       "status": "tentative",
       "uses": 1
@@ -537,7 +665,7 @@
           "q": "Graphify current repository and trace Tasks 007-008 paths to validate the Task 009 implementation plan."
         }
       ],
-      "score": 1.799560868,
+      "score": 1.744889491,
       "source_file": "packages/db/src/classification-repository.ts",
       "status": "preferred",
       "uses": 3
@@ -553,7 +681,7 @@
           "q": "Trace Task 016 SkillGraphRun through grounded AI context construction, provider validation, append-only artifact persistence, authorization, UI claim citations, and evidence drilldown."
         }
       ],
-      "score": 0.856462558,
+      "score": 0.830442884,
       "source_file": "packages/db/src/grounded-ai-repository.ts",
       "status": "tentative",
       "uses": 1
@@ -574,7 +702,7 @@
           "q": "Trace Task 016 SkillGraphRun through grounded AI context construction, provider validation, append-only artifact persistence, authorization, UI claim citations, and evidence drilldown."
         }
       ],
-      "score": 1.726617133,
+      "score": 1.674161816,
       "source_file": "packages/db/src/grounded-ai-repository.ts",
       "status": "preferred",
       "uses": 2
@@ -595,7 +723,7 @@
           "q": "Trace Task 013 production security, database, migration, worker, session, invitation, password reset, and audit paths"
         }
       ],
-      "score": 1.531143794,
+      "score": 1.484627035,
       "source_file": "packages/db/src/migrations.ts",
       "status": "preferred",
       "uses": 2
@@ -611,7 +739,7 @@
           "q": "Graphify current repository and trace Tasks 007-008 paths to validate the Task 009 implementation plan."
         }
       ],
-      "score": 0.553576787,
+      "score": 0.536758903,
       "source_file": "packages/db/src/ontology-repository.ts",
       "status": "tentative",
       "uses": 1
@@ -627,7 +755,7 @@
           "q": "Pilot 001 architecture dependency paths"
         }
       ],
-      "score": 0.870154576,
+      "score": 0.843718933,
       "source_file": "packages/db/src/pilot-repository.ts",
       "status": "tentative",
       "uses": 1
@@ -643,7 +771,7 @@
           "q": "Pilot 001 architecture dependency paths"
         }
       ],
-      "score": 0.870154576,
+      "score": 0.843718933,
       "source_file": "packages/db/src/pilot-repository.ts",
       "status": "tentative",
       "uses": 1
@@ -659,7 +787,7 @@
           "q": "Trace Task 016 classifier bundle V2 facts through persisted concept evidence, Skill Graph aggregation, adaptive training candidates, and immutable TrainingItems."
         }
       ],
-      "score": 0.856461958,
+      "score": 0.830442302,
       "source_file": "packages/db/src/player-skill-graph-repository.ts",
       "status": "tentative",
       "uses": 1
@@ -675,7 +803,7 @@
           "q": "Validate Task 015 production security and runtime dependency paths after implementation"
         }
       ],
-      "score": 0.746213145,
+      "score": 0.723542892,
       "source_file": "packages/db/src/security-audit-repository.ts",
       "status": "tentative",
       "uses": 1
@@ -691,7 +819,7 @@
           "q": "Trace Task 016 classifier bundle V2 facts through persisted concept evidence, Skill Graph aggregation, adaptive training candidates, and immutable TrainingItems."
         }
       ],
-      "score": 0.856461958,
+      "score": 0.830442302,
       "source_file": "packages/db/src/training-repository.ts",
       "status": "tentative",
       "uses": 1
@@ -699,16 +827,53 @@
     "packages_db_src_training_repository_trainingrepository": {
       "code_fingerprint": "f77e9c4b4ddf2d9eca81ffa7c20747d35c644858db2c1252c921897a60b2d805",
       "label": "TrainingRepository",
-      "last": "2026-09-04T17:23:41.898684+00:00",
+      "last": "2026-09-18T12:41:49.709215+00:00",
       "provenance": [
+        {
+          "date": "2026-09-18T12:41:49.709215+00:00",
+          "outcome": "useful",
+          "q": "Trace the Pilot 001C Academy learning UX from role-aware navigation through Student Intelligence, evidence, Skill Map, assignments, progress, and board-first training."
+        },
         {
           "date": "2026-09-04T17:23:41.898684+00:00",
           "outcome": "useful",
           "q": "Validate Task 015 production security and runtime dependency paths after implementation"
         }
       ],
-      "score": 0.746213145,
+      "score": 1.718904295,
       "source_file": "packages/db/src/training-repository.ts",
+      "status": "preferred",
+      "uses": 2
+    },
+    "packages_domain_src_coach_student_intelligence_progressconceptstate": {
+      "code_fingerprint": "7037e238719e96745833fc39f87aee2a896e2d220b81baa2b7057c12a34e568a",
+      "label": "ProgressConceptState",
+      "last": "2026-09-18T12:41:49.709215+00:00",
+      "provenance": [
+        {
+          "date": "2026-09-18T12:41:49.709215+00:00",
+          "outcome": "useful",
+          "q": "Trace the Pilot 001C Academy learning UX from role-aware navigation through Student Intelligence, evidence, Skill Map, assignments, progress, and board-first training."
+        }
+      ],
+      "score": 0.995361403,
+      "source_file": "packages/domain/src/coach-student-intelligence.ts",
+      "status": "tentative",
+      "uses": 1
+    },
+    "packages_domain_src_coach_student_intelligence_trainingassignmentprogress": {
+      "code_fingerprint": "7037e238719e96745833fc39f87aee2a896e2d220b81baa2b7057c12a34e568a",
+      "label": "TrainingAssignmentProgress",
+      "last": "2026-09-18T12:41:49.709215+00:00",
+      "provenance": [
+        {
+          "date": "2026-09-18T12:41:49.709215+00:00",
+          "outcome": "useful",
+          "q": "Trace the Pilot 001C Academy learning UX from role-aware navigation through Student Intelligence, evidence, Skill Map, assignments, progress, and board-first training."
+        }
+      ],
+      "score": 0.995361403,
+      "source_file": "packages/domain/src/coach-student-intelligence.ts",
       "status": "tentative",
       "uses": 1
     },
@@ -723,7 +888,7 @@
           "q": "Trace Task 016 classifier bundle V2 facts through persisted concept evidence, Skill Graph aggregation, adaptive training candidates, and immutable TrainingItems."
         }
       ],
-      "score": 0.856461958,
+      "score": 0.830442302,
       "source_file": "packages/domain/src/concept-classification.ts",
       "status": "tentative",
       "uses": 1
@@ -739,7 +904,7 @@
           "q": "Trace the existing GHCR publication path from tag workflow through production Docker build artifacts, API and Worker runtimes, Stockfish boundary, Compose deployment, and Pilot release manifest."
         }
       ],
-      "score": 0.89130793,
+      "score": 0.864229639,
       "source_file": "packages/domain/src/engine-analysis.ts",
       "status": "tentative",
       "uses": 1
@@ -755,7 +920,7 @@
           "q": "Trace Task 016 SkillGraphRun through grounded AI context construction, provider validation, append-only artifact persistence, authorization, UI claim citations, and evidence drilldown."
         }
       ],
-      "score": 0.856462558,
+      "score": 0.830442884,
       "source_file": "packages/domain/src/grounded-ai.ts",
       "status": "tentative",
       "uses": 1
@@ -771,7 +936,7 @@
           "q": "Trace Task 016 SkillGraphRun through grounded AI context construction, provider validation, append-only artifact persistence, authorization, UI claim citations, and evidence drilldown."
         }
       ],
-      "score": 0.856462558,
+      "score": 0.830442884,
       "source_file": "packages/domain/src/grounded-ai.ts",
       "status": "tentative",
       "uses": 1
@@ -787,7 +952,7 @@
           "q": "Trace Task 009 to Task 010 and validate Adaptive Training Engine integration boundaries"
         }
       ],
-      "score": 0.620085021,
+      "score": 0.60124659,
       "source_file": "packages/domain/src/ontology.ts",
       "status": "tentative",
       "uses": 1
@@ -803,7 +968,7 @@
           "q": "Pilot 001 architecture dependency paths"
         }
       ],
-      "score": 0.870154576,
+      "score": 0.843718933,
       "source_file": "packages/domain/src/pilot.ts",
       "status": "tentative",
       "uses": 1
@@ -819,7 +984,7 @@
           "q": "Pilot 001 architecture dependency paths"
         }
       ],
-      "score": 0.870154576,
+      "score": 0.843718933,
       "source_file": "packages/domain/src/pilot.ts",
       "status": "tentative",
       "uses": 1
@@ -835,7 +1000,7 @@
           "q": "Fix GitHub Actions pnpm check formatting failure shown in the attached screenshot"
         }
       ],
-      "score": 0.614500946,
+      "score": 0.595832162,
       "source_file": "pnpm-workspace.yaml",
       "status": "tentative",
       "uses": 1
@@ -851,7 +1016,7 @@
           "q": "Fix GitHub Actions pnpm check formatting failure shown in the attached screenshot"
         }
       ],
-      "score": 0.614500946,
+      "score": 0.595832162,
       "source_file": "package.json",
       "status": "tentative",
       "uses": 1
@@ -867,7 +1032,7 @@
           "q": "Fix GitHub Actions pnpm check formatting failure shown in the attached screenshot"
         }
       ],
-      "score": 0.614500946,
+      "score": 0.595832162,
       "source_file": ".prettierrc.json",
       "status": "tentative",
       "uses": 1
@@ -883,7 +1048,7 @@
           "q": "Trace the existing GHCR publication path from tag workflow through production Docker build artifacts, API and Worker runtimes, Stockfish boundary, Compose deployment, and Pilot release manifest."
         }
       ],
-      "score": 0.89130793,
+      "score": 0.864229639,
       "source_file": "scripts/acceptance/task015-runtime-fault-gate.mjs",
       "status": "tentative",
       "uses": 1

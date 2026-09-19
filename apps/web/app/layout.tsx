@@ -24,7 +24,7 @@ export default function RootLayout({ children }: Readonly<{ children: ReactNode 
             </span>
             <span className="site-brand-copy">
               <strong>Chess Intelligent</strong>
-              <small>Academy notebook</small>
+              <small>Evidence-led coaching</small>
             </span>
           </Link>
           <nav aria-label="Primary navigation">

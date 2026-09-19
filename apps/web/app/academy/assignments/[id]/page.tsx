@@ -3,7 +3,7 @@
 import { useCallback, useEffect, useState } from 'react';
 import { useParams } from 'next/navigation';
 
-const apiUrl = process.env.NEXT_PUBLIC_API_URL ?? '/api';
+import { apiUrl } from '../../../api-client';
 
 interface ApiError {
   error?: { message?: string };

@@ -12,6 +12,12 @@ Credentials are stored in `user_credentials`, separately from `users`. Passwords
 
 Sessions have a seven-day absolute lifetime. Logout revokes the current session. Password changes revoke all old sessions and issue a rotated session. Revocation and User disable take effect during the next server-side session lookup.
 
+Public signup creates exactly one active `User`, one Argon2id credential, and one session. It does
+not create an Academy, membership, StudentProfile, Player, game, or learning artifact. Normalized
+email uniqueness is enforced in PostgreSQL. Database-backed V1 signup throttling keeps separate
+SHA-256 identifiers for email and network boundaries; raw passwords and network identifiers are
+never persisted in signup-attempt or audit rows.
+
 ## Authorization and tenant isolation
 
 `ACADEMY_RBAC_V1` is the canonical role/capability map. HTTP code authenticates a User, then `AcademySecurityApplicationService` resolves an active same-Academy membership and checks the required capability. Browser-supplied membership IDs do not participate in production authorization. Repository queries retain Academy IDs and relational constraints even after application authorization, preventing shared Player identity from collapsing tenant isolation.
@@ -26,7 +32,20 @@ Training item access additionally requires a non-cancelled Academy assignment co
 
 ## Invitations and membership lifecycle
 
-There is no public signup. Owner/Admin creates a seven-day invitation. Only the invitation token SHA-256 digest is persisted. Task 013 delivers the request-local raw token through `EmailDeliveryProvider`; production responses never expose it. Invitation delivery requested/succeeded/failed state and audit provenance are stored without token material. Acceptance validates status, expiry, normalized email, role, Academy, and optional existing membership in one transaction. It creates or reuses the User, binds the membership, marks the invitation accepted, and appends audit provenance.
+An authenticated User may create a new Academy only through the self-service onboarding
+transaction. The server creates that Academy and one active OWNER membership for the authenticated
+User; the request cannot supply a role, User ID, membership ID, or existing Academy ID. Coach,
+Admin, and Student roles remain invitation-assigned. Student onboarding remains invite-only and
+must claim an existing same-Academy Student membership.
+
+Owner/Admin creates a seven-day invitation. Only the invitation token SHA-256 digest is persisted.
+Task 013 delivers the request-local raw token through `EmailDeliveryProvider`; production responses
+never expose it. Invitation delivery requested/succeeded/failed state and audit provenance are
+stored without token material. Acceptance validates status, expiry, normalized email, role,
+Academy, and optional existing membership in one transaction. It creates or reuses the User, binds
+the membership, marks the invitation accepted, and appends audit provenance. A newly created
+invited account receives a normal server session cookie after successful acceptance; an existing
+account must sign in before accepting.
 
 Memberships are `ACTIVE` or `DISABLED`. A disabled membership immediately loses Academy access without invalidating memberships in other Academies. The last active Owner cannot be disabled or demoted. Admin cannot manage Owner lifecycle.
 
@@ -44,14 +63,23 @@ The anonymous request endpoint always returns `PASSWORD_RESET_REQUEST_ACCEPTED`.
 
 ## Deployment boundary
 
-Production configuration requires exact origins, Secure `__Host-` cookies, disabled internal routes, explicit one-shot migration, a public web base URL, and SMTP. Caddy terminates TLS in the production-like Compose profile; API is reachable only through the internal proxy network and trusts forwarded headers only when `TRUST_PROXY=true`. `/livez` is dependency-free process liveness while `/readyz` verifies PostgreSQL and the exact current migration.
+Production configuration requires exact origins, Secure `__Host-` cookies, disabled internal
+routes, explicit one-shot migration, a public web base URL, and SMTP. Vercel browser requests use
+the same-origin `/backend/*` boundary, which rewrites to the Railway API; the browser client does
+not embed or scatter the Railway origin. Fastify still requires the exact public Web Origin for
+unsafe requests, and API responses are `private, no-store`. Caddy terminates TLS in the
+production-like Compose profile; API is reachable only through the internal proxy network and
+trusts forwarded headers only when `TRUST_PROXY=true`. `/livez` is dependency-free process
+liveness while `/readyz` verifies PostgreSQL and the exact current migration.
 
 ## Known limitations
 
 - SMTP and end-to-end email acceptance are implemented but have not been exercised on the current host; recipient identity is no stronger than possession of the delivered link.
 - There is no durable asynchronous email queue or automatic provider retry in V1.
 - MFA, device management, idle session expiry, and guardian accounts are deferred.
-- Authentication throttling is database-backed per normalized-identifier digest, not yet distributed by IP/device.
+- Login throttling is database-backed per normalized-identifier digest. Signup adds a
+  database-backed normalized-email and network boundary, but neither mechanism is a distributed
+  edge/WAF control.
 - Research reads remain public per the route catalog; production operators should review that policy before exposing a corpus containing restricted data.
 - Academy assignment audit append is immediately associated but is not yet in the same database transaction as the Task 011 assignment repository mutation.
 - Real PostgreSQL, HTTPS cookie behavior, and the four-role browser matrix remain unverified until the Task 013 production-like environment is executed.

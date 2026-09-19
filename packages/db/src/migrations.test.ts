@@ -73,6 +73,10 @@ describe('Task 002 through Pilot 001 migration compatibility', () => {
         new URL('../migrations/016_private_academy_pilot.sql', import.meta.url),
         'utf8',
       );
+      const migration017 = await readFile(
+        new URL('../migrations/017_public_product_entry.sql', import.meta.url),
+        'utf8',
+      );
       const initialFen = 'rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1';
       const samePositionDifferentClocks =
         'rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 7 42';
@@ -146,6 +150,7 @@ describe('Task 002 through Pilot 001 migration compatibility', () => {
       await database.execute(migration014);
       await database.execute(migration015);
       await database.execute(migration016);
+      await database.execute(migration017);
       const games = await database.query<{
         id: string;
         content_status: string;
@@ -320,6 +325,7 @@ describe('Task 002 through Pilot 001 migration compatibility', () => {
         `SELECT table_name FROM information_schema.tables
          WHERE table_schema = 'public' AND table_name IN (
            'users', 'user_credentials', 'auth_sessions', 'auth_login_attempts',
+           'auth_signup_attempts',
            'academy_invitations', 'security_audit_events',
            'student_access_consent_records', 'password_reset_requests',
            'password_reset_tokens'
@@ -329,6 +335,7 @@ describe('Task 002 through Pilot 001 migration compatibility', () => {
         'academy_invitations',
         'auth_login_attempts',
         'auth_sessions',
+        'auth_signup_attempts',
         'password_reset_requests',
         'password_reset_tokens',
         'security_audit_events',

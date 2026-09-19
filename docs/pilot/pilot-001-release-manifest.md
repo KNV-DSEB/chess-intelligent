@@ -17,9 +17,14 @@ Status: `PILOT_BLOCKED`
 - Product UX V2 source candidate: `pilot-001-rc8`; rc7 remains immutable. Its tag target is the
   exact Vercel `PILOT_RELEASE_SHA` for the reconstructed Coach/Student experience. This candidate
   changes no API, Worker, database, ontology, learning-policy, or deployment-topology boundary.
+- Public product entry candidate: `pilot-001-rc9`; rc8 remains immutable. This candidate adds the
+  public evidence-led landing, account-only signup, authenticated Academy+OWNER onboarding,
+  invitation continuation, same-origin `/backend` browser boundary, and migration
+  `017_public_product_entry.sql`. It does not change Worker, Stockfish, ontology, classifier,
+  Skill Graph, or training semantics.
 - Branch: `main`.
 - Deployment timestamp: `NOT_DEPLOYED`.
-- Migration boundary: `016_private_academy_pilot.sql`.
+- Migration boundary: `017_public_product_entry.sql`.
 - Ontology: published `1.0.0`, canonical hash
   `1aa76c4f20f17d9e5ce7d07012e2d66ae15137a97846fc8e166cf1f496df2d8e`; never `latest`.
 - Classifier: `CONCEPT_CLASSIFIER_BUNDLE_V2` for the Pilot profile.
@@ -31,6 +36,9 @@ Status: `PILOT_BLOCKED`
 - Product UX: role-aware Coach/Student navigation, evidence-first Student Intelligence,
   chess-native evidence drilldown, and board-first training; local browser acceptance PASS, rc8
   deployment `NOT_RUN`.
+- Product entry: public landing, signup, Academy creation, role-safe invitation acceptance, and
+  guided empty Academy Home pass local source/integration/browser QA. Rc9 deployed acceptance is
+  `NOT_RUN`.
 - System coverage: 64 ontology concepts, 13 classifier-observable concepts, 8 trainable tactical
   concepts.
 - AI mode: `AI_DISABLED_FOR_PILOT`.
@@ -99,16 +107,17 @@ Recorded at `2026-09-17T18:31:26+07:00`:
 - real PostgreSQL, deployment, browser, SMTP, Stockfish, and restore gates: `NOT_RUN` because no
   explicit targets/credentials were available.
 
-The production PostgreSQL verifier now applies migrations 001–016, publishes and verifies ontology
+The production PostgreSQL verifier now applies migrations 001–017, publishes and verifies ontology
 `1.0.0`/64 concepts against its canonical hash, and requires every Pilot lineage table. The
 backup/restore manifest now covers exact-history state, classification, training items, Grounded AI
 artifacts, Pilot events, and both feedback tables.
 
 ## Configuration boundary
 
-- Vercel: `NEXT_PUBLIC_API_URL` is the only required public value; `PILOT_RELEASE_SHA` and
-  `VERCEL_GIT_COMMIT_SHA` must match. The app-root wrapper calls the canonical repository guard;
-  it does not duplicate release-validation semantics.
+- Vercel: browser API traffic uses the fixed same-origin `/backend` path; remove the old direct
+  `NEXT_PUBLIC_API_URL` value. `PILOT_RELEASE_SHA` and `VERCEL_GIT_COMMIT_SHA` must match. The
+  app-root wrapper calls the canonical repository guard; it does not duplicate release-validation
+  semantics.
 - Backend: `APP_ENV=production`, `INTERNAL_DEV_ROUTES=false`, `AUTO_MIGRATE=false`, exact
   `WEB_PUBLIC_ORIGIN`, Secure cookie mode, real SMTP, external encrypted PostgreSQL, and
   digest-pinned API/Worker images.

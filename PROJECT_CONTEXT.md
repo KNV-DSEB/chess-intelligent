@@ -127,6 +127,8 @@ Pilot 001B — Real Deployment & Launch Gate Closure V1 (rc5 Railway API bind re
 environment execution blocked)
 Pilot 001C — Product UX Reconstruction & Pilot Experience V2 (`pilot-001-rc8` source/local browser
 acceptance complete; deployment not run)
+Pilot 001D — Public Landing, Self-Service Signup & Academy Onboarding (`pilot-001-rc9` source,
+integration, build, and responsive QA complete; deployed acceptance not run)
 ```
 
 Current production gate:
@@ -169,7 +171,7 @@ PILOT_BLOCKED
 
 Pilot 001B added the Vercel Web-only release boundary, a digest-pinned backend-only
 container profile for external managed PostgreSQL, migration/restore verification
-through Pilot migration 016, and a tag-only GHCR publication boundary for separate
+through Pilot migration 017, and a tag-only GHCR publication boundary for separate
 compiled API and Worker images. The Worker image builds pinned Stockfish 18 as a
 separate UCI executable and includes its GPL license/corresponding source. The explicit
 launch mode is AI_DISABLED_FOR_PILOT.
@@ -1104,6 +1106,10 @@ Do not violate these without explicit architectural review:
 32. Browser telemetry may report only approved open/navigation observations. Successful state-changing workflow events are recorded by authenticated server handlers.
 33. Pilot AI smoke uses synthetic contexts only. AI remains optional and can be disabled without blocking the structured Coach/Student workflow.
 34. `PILOT_READY` requires deployed-environment proof; source checks cannot substitute for public TLS, transactional email, real-provider smoke when enabled, tenant browser verification, or a separate backup restore.
+35. Public signup creates only User/Credential/Session state. Academy ownership is a separate
+    authenticated transaction; Coach/Admin/Student roles remain invitation-assigned.
+36. Pilot browser API traffic uses the single same-origin `/backend` boundary. Fastify still
+    requires the exact public Web Origin and production session cookies remain host-only.
 
 ---
 

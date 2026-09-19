@@ -2,7 +2,7 @@
 
 import { useEffect, useMemo, useState } from 'react';
 
-const apiUrl = process.env.NEXT_PUBLIC_API_URL ?? '/api';
+import { apiUrl } from '../api-client';
 
 type ConceptKind = 'DOMAIN' | 'SKILL' | 'PRINCIPLE' | 'MOTIF' | 'TECHNIQUE' | 'STRUCTURE';
 

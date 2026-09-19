@@ -3,5 +3,11 @@
   "framework": "nextjs",
   "installCommand": "corepack enable && pnpm install --frozen-lockfile",
   "buildCommand": "pnpm run build:vercel",
-  "outputDirectory": ".next"
+  "outputDirectory": ".next",
+  "rewrites": [
+    {
+      "source": "/backend/:path*",
+      "destination": "https://pilot-api-production-76e3.up.railway.app/:path*"
+    }
+  ]
 }

@@ -9,6 +9,7 @@ action
 actions
 active
 actor
+actual
 adapter
 adaptive
 add
@@ -116,6 +117,7 @@ canonicalize
 cap
 capabilities
 capability
+capture
 card
 case
 casing
@@ -229,6 +231,7 @@ dataset
 date
 dates
 day
+debugging
 decision
 decisions
 default
@@ -319,6 +322,7 @@ exec
 execute
 execution
 expansion
+expect
 expected
 experience
 expires
@@ -368,6 +372,7 @@ format
 formatting
 foundation
 four
+framework
 freshness
 friendly
 from
@@ -444,6 +449,7 @@ inputs
 insert
 inspect
 inspected
+install
 instances
 integer
 integration
@@ -507,6 +513,8 @@ link
 links
 lint
 list
+listen
+listener
 load
 local
 log
@@ -556,6 +564,7 @@ milestone
 mismatch
 mission
 mjs
+mode
 model
 modular
 module
@@ -840,6 +849,7 @@ score
 screenshot
 script
 scripts
+scroll
 search
 secret
 secrets
@@ -887,6 +897,7 @@ sorted
 soundness
 source
 sources
+specs
 split
 sql
 square
@@ -985,6 +996,7 @@ typescript
 uci
 unavailable
 unchecked
+unclaimed
 under
 unique
 unknown
@@ -1004,6 +1016,7 @@ value
 values
 variation
 verbatim
+vercel
 verification
 verified
 verify

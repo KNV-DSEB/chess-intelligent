@@ -4,7 +4,7 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useEffect, useState } from 'react';
 
-const apiUrl = process.env.NEXT_PUBLIC_API_URL ?? '/api';
+import { apiUrl } from './api-client';
 
 interface SessionUser {
   displayName: string | null;
@@ -42,8 +42,18 @@ export function SessionNavigation() {
     window.location.assign('/login');
   }
 
-  if (user === undefined) return <span className="session-status">Checking session…</span>;
-  if (!user) return <Link href="/login">Sign in</Link>;
+  if (user === undefined)
+    return <span className="session-status nav-loading">Checking session…</span>;
+  if (!user)
+    return (
+      <div className="public-navigation">
+        <Link href="/#how-it-works">How it works</Link>
+        <Link href="/login">Sign in</Link>
+        <Link className="header-cta" href="/signup">
+          Start an academy
+        </Link>
+      </div>
+    );
   const activeMemberships = user.memberships.filter((membership) => membership.status === 'ACTIVE');
   const operationalMembership = activeMemberships.find((membership) =>
     ['OWNER', 'ADMIN', 'COACH'].includes(membership.role),
@@ -62,6 +72,11 @@ export function SessionNavigation() {
     : '/my';
   return (
     <div className="session-navigation">
+      {activeMemberships.length === 0 ? (
+        <div className="role-navigation" aria-label="Account setup">
+          <Link href="/onboarding">Create or join an Academy</Link>
+        </div>
+      ) : null}
       {operationalMembership && !studentScopeMembership ? (
         <div className="role-navigation" aria-label="Coach workspace">
           <Link href={`${operationalHome}#coach-home`}>Home</Link>

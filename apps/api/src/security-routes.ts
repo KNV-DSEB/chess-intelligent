@@ -23,6 +23,16 @@ const loginSchema = z.object({
   email: z.email().max(320),
   password: z.string().min(1).max(PASSWORD_POLICY_V1.maximumLength),
 });
+const signupSchema = z
+  .object({
+    email: z.email().max(320),
+    displayName: z.string().trim().min(1).max(300),
+    password: z
+      .string()
+      .min(PASSWORD_POLICY_V1.minimumLength)
+      .max(PASSWORD_POLICY_V1.maximumLength),
+  })
+  .strict();
 const passwordChangeSchema = z.object({
   currentPassword: z.string().min(1).max(PASSWORD_POLICY_V1.maximumLength),
   newPassword: z
@@ -88,6 +98,29 @@ export function registerSecurityRoutes(input: {
   secureCookies: boolean;
 }): void {
   const { app, auth, passwordReset, security, audit, secureCookies } = input;
+
+  app.post('/auth/signup', async (request, reply) => {
+    const body = signupSchema.safeParse(request.body);
+    if (!body.success) {
+      return reply
+        .code(400)
+        .send(
+          invalid(
+            'INVALID_SIGNUP_REQUEST',
+            'Enter a valid name, email, and password of at least 12 characters.',
+            z.flattenError(body.error).fieldErrors,
+          ),
+        );
+    }
+    const result = await auth.signup({
+      ...body.data,
+      networkIdentifier: request.ip,
+      userAgent: request.headers['user-agent'],
+      requestId: requestId(request),
+    });
+    setSessionCookie(reply, result.rawSessionToken, result.session.expiresAt, secureCookies);
+    return reply.code(201).send({ user: result.user, session: result.session });
+  });
 
   app.post('/auth/login', async (request, reply) => {
     const body = loginSchema.safeParse(request.body);
@@ -209,6 +242,16 @@ export function registerSecurityRoutes(input: {
       ...body.data,
       requestId: requestId(request),
     });
+    if (!principal && body.data.email && body.data.password) {
+      const result = await auth.login({
+        email: body.data.email,
+        password: body.data.password,
+        userAgent: request.headers['user-agent'],
+        requestId: requestId(request),
+      });
+      setSessionCookie(reply, result.rawSessionToken, result.session.expiresAt, secureCookies);
+      return reply.code(201).send({ ...accepted, session: result.session });
+    }
     return reply.code(201).send(accepted);
   });
 

@@ -2,7 +2,7 @@
 
 import { type FormEvent, useCallback, useEffect, useState } from 'react';
 
-const apiUrl = process.env.NEXT_PUBLIC_API_URL ?? '/api';
+import { apiUrl } from '../api-client';
 
 type AcademyRole = 'OWNER' | 'ADMIN' | 'COACH' | 'STUDENT';
 type MembershipStatus = 'ACTIVE' | 'DISABLED';
@@ -215,7 +215,11 @@ export function AcademyAdministration({ academyId }: { academyId: string }) {
   );
 
   return (
-    <section className="academy-administration" aria-label="Academy administration">
+    <section
+      className="academy-administration"
+      id="academy-administration"
+      aria-label="Academy administration"
+    >
       <div className="section-heading">
         <div>
           <span className="eyebrow">Security and enrollment</span>

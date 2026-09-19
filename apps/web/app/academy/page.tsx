@@ -1,11 +1,11 @@
 'use client';
 
 import Link from 'next/link';
-import { type FormEvent, useCallback, useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 
 import { AcademyAdministration } from './academy-administration';
 
-const apiUrl = process.env.NEXT_PUBLIC_API_URL ?? '/api';
+import { apiUrl } from '../api-client';
 
 interface ApiError {
   error?: { message?: string };
@@ -111,14 +111,38 @@ export default function AcademyPage() {
   useEffect(() => {
     const query = new URLSearchParams(window.location.search);
     const requestedAcademyId = query.get('academyId') ?? '';
-    setAcademyId(requestedAcademyId);
-    if (requestedAcademyId) void loadRosterFor(requestedAcademyId);
+    if (requestedAcademyId) {
+      setAcademyId(requestedAcademyId);
+      void loadRosterFor(requestedAcademyId);
+      return;
+    }
+    void fetch(`${apiUrl}/auth/me`, { credentials: 'include' })
+      .then(async (response) => {
+        if (response.status === 401) {
+          window.location.replace('/login?returnTo=%2Facademy');
+          return;
+        }
+        const user = (await response.json()) as {
+          memberships: Array<{ academyId: string; role: string; status: string }>;
+        };
+        const operational = user.memberships.filter(
+          (membership) =>
+            membership.status === 'ACTIVE' && ['OWNER', 'ADMIN', 'COACH'].includes(membership.role),
+        );
+        if (operational.length === 0) {
+          window.location.replace('/onboarding');
+          return;
+        }
+        if (operational.length > 1) {
+          window.location.replace('/my');
+          return;
+        }
+        const targetAcademyId = operational[0]!.academyId;
+        setAcademyId(targetAcademyId);
+        await loadRosterFor(targetAcademyId);
+      })
+      .catch(() => setError('The Academy workspace could not load.'));
   }, [loadRosterFor]);
-
-  async function loadRoster(event?: FormEvent<HTMLFormElement>): Promise<void> {
-    event?.preventDefault();
-    await loadRosterFor(academyId);
-  }
 
   const visibleStudents = useMemo(() => {
     if (!roster) return [];
@@ -174,21 +198,11 @@ export default function AcademyPage() {
         ) : null}
       </header>
 
-      <form
-        className={`academy-context-form${roster ? ' context-loaded' : ''}`}
-        onSubmit={loadRoster}
-      >
-        <label>
-          Academy workspace
-          <input
-            value={academyId}
-            onChange={(event) => setAcademyId(event.target.value)}
-            placeholder="Academy ID"
-            required
-          />
-        </label>
-        <button disabled={loading}>{loading ? 'Opening workspace…' : 'Open workspace'}</button>
-      </form>
+      {!roster && !error ? (
+        <p className="workspace-loading">
+          {loading ? 'Opening your Academy…' : 'Finding your Academy…'}
+        </p>
+      ) : null}
 
       {error ? (
         <p className="error" role="alert">
@@ -203,163 +217,214 @@ export default function AcademyPage() {
             <p>Signed-in academy scope verified. Student and player identities remain separate.</p>
           </div>
 
-          <section className="coach-focus" aria-labelledby="coach-focus-title">
-            <div className="folio-heading">
+          {roster.pagination.total === 0 ? (
+            <section className="academy-empty" aria-labelledby="academy-empty-title">
               <div>
-                <h2 id="coach-focus-title">Needs your attention</h2>
-                <p>Actionable workflow signals only—never a ranking by mastery.</p>
+                <p className="context-line">Your Academy is ready</p>
+                <h2 id="academy-empty-title">Bring the first Student into the coaching loop.</h2>
+                <p>
+                  No learning conclusions exist yet—and none will be invented. Start with an
+                  invitation, connect the Student to their chess identity, then import a real game.
+                </p>
               </div>
-              <Link className="text-link" href="#students">
-                View all students
-              </Link>
-            </div>
-            <div className="focus-ledger">
-              {(focusStudents ?? []).slice(0, 5).map((entry) => (
-                <article className="focus-row" key={entry.student.id}>
-                  <div className="student-initial" aria-hidden="true">
-                    {entry.student.displayName.slice(0, 1)}
-                  </div>
+              <ol>
+                <li>
+                  <span>Invite</span>
                   <div>
-                    <h3>{entry.student.displayName}</h3>
+                    <strong>Invite a Coach or Student</strong>
                     <p>
-                      {entry.attentionSignals[0]
-                        ? words(entry.attentionSignals[0])
-                        : freshnessLabel(entry.freshness.status)}
+                      Student invitations claim a prepared Student membership; roles stay
+                      server-assigned.
+                    </p>
+                    <a href="#academy-administration">Open invitations</a>
+                  </div>
+                </li>
+                <li>
+                  <span>Import</span>
+                  <div>
+                    <strong>Bring a real game</strong>
+                    <p>Preserve the source and exact move history before any analysis begins.</p>
+                    <Link href="/import">Import games</Link>
+                  </div>
+                </li>
+                <li>
+                  <span>Review</span>
+                  <div>
+                    <strong>Return when evidence is ready</strong>
+                    <p>
+                      The roster will show availability and unknown states without calling them
+                      weaknesses.
                     </p>
                   </div>
-                  <div className="focus-evidence">
-                    <strong>{entry.skillGraph?.coverage.canonicalGames ?? 0}</strong>
-                    <span>games in view</span>
+                </li>
+              </ol>
+            </section>
+          ) : (
+            <>
+              <section className="coach-focus" aria-labelledby="coach-focus-title">
+                <div className="folio-heading">
+                  <div>
+                    <h2 id="coach-focus-title">Needs your attention</h2>
+                    <p>Actionable workflow signals only—never a ranking by mastery.</p>
                   </div>
-                  <Link
-                    className="button-link compact"
-                    href={`/academy/students/${entry.student.id}?academyId=${academyId}`}
-                  >
-                    Review
-                  </Link>
-                </article>
-              ))}
-              {(focusStudents?.length ?? 0) === 0 ? (
-                <p className="empty-note">No current workflow signal needs attention.</p>
-              ) : null}
-            </div>
-          </section>
-
-          <section className="coach-section" id="students" aria-labelledby="students-title">
-            <div className="folio-heading">
-              <div>
-                <h2 id="students-title">Students</h2>
-                <p>{roster.pagination.total} academy learners in this workspace.</p>
-              </div>
-              <label className="student-search">
-                <span className="sr-only">Search students</span>
-                <input
-                  type="search"
-                  value={search}
-                  onChange={(event) => setSearch(event.target.value)}
-                  placeholder="Search students"
-                />
-              </label>
-            </div>
-            <div className="student-ledger" role="list">
-              {visibleStudents.map((entry) => (
-                <article className="academy-student-card" role="listitem" key={entry.student.id}>
-                  <div className="student-ledger-identity">
-                    <div className="student-initial" aria-hidden="true">
-                      {entry.student.displayName.slice(0, 1)}
-                    </div>
-                    <div>
-                      <h3>{entry.student.displayName}</h3>
-                      <p>
-                        {entry.student.playerDisplayName}
-                        {entry.student.fideId ? ` · FIDE ${entry.student.fideId}` : ''}
-                      </p>
-                    </div>
-                  </div>
-                  <div className="student-ledger-state">
-                    <span
-                      className={`evidence-state ${entry.skillGraph ? 'estimated' : 'unknown'}`}
-                    >
-                      {freshnessLabel(entry.freshness.status)}
-                    </span>
-                    <small>
-                      {entry.skillGraph
-                        ? `${entry.skillGraph.coverage.masteryEligibleEvidence} eligible evidence rows`
-                        : 'No compatible evidence snapshot'}
-                    </small>
-                  </div>
-                  <div className="student-ledger-assignment">
-                    <strong>
-                      {entry.activeAssignment
-                        ? `${entry.activeAssignment.completedItemCount}/${entry.activeAssignment.itemCount}`
-                        : '—'}
-                    </strong>
-                    <span>
-                      {entry.activeAssignment ? 'assignment progress' : 'no active assignment'}
-                    </span>
-                  </div>
-                  <Link
-                    className="text-link"
-                    href={`/academy/students/${entry.student.id}?academyId=${academyId}`}
-                  >
-                    Open student →
-                  </Link>
-                </article>
-              ))}
-            </div>
-          </section>
-
-          <section
-            className="coach-section split-section"
-            id="training"
-            aria-labelledby="training-title"
-          >
-            <div>
-              <h2 id="training-title">Training in motion</h2>
-              <p>
-                Assignments are operational practice; they do not become mastery evidence until a
-                valid attempt exists.
-              </p>
-            </div>
-            <div className="score-sheet-list">
-              {activeAssignments.map((entry) => (
-                <div key={entry.student.id}>
-                  <span>{entry.student.displayName}</span>
-                  <strong>
-                    {entry.activeAssignment!.completedItemCount}/{entry.activeAssignment!.itemCount}
-                  </strong>
-                  <Link
-                    href={`/academy/assignments/${entry.activeAssignment!.id}?academyId=${academyId}`}
-                  >
-                    Open
+                  <Link className="text-link" href="#students">
+                    View all students
                   </Link>
                 </div>
-              ))}
-              {activeAssignments.length === 0 ? (
-                <p className="empty-note">No active assignments.</p>
-              ) : null}
-            </div>
-          </section>
+                <div className="focus-ledger">
+                  {(focusStudents ?? []).slice(0, 5).map((entry) => (
+                    <article className="focus-row" key={entry.student.id}>
+                      <div className="student-initial" aria-hidden="true">
+                        {entry.student.displayName.slice(0, 1)}
+                      </div>
+                      <div>
+                        <h3>{entry.student.displayName}</h3>
+                        <p>
+                          {entry.attentionSignals[0]
+                            ? words(entry.attentionSignals[0])
+                            : freshnessLabel(entry.freshness.status)}
+                        </p>
+                      </div>
+                      <div className="focus-evidence">
+                        <strong>{entry.skillGraph?.coverage.canonicalGames ?? 0}</strong>
+                        <span>games in view</span>
+                      </div>
+                      <Link
+                        className="button-link compact"
+                        href={`/academy/students/${entry.student.id}?academyId=${academyId}`}
+                      >
+                        Review
+                      </Link>
+                    </article>
+                  ))}
+                  {(focusStudents?.length ?? 0) === 0 ? (
+                    <p className="empty-note">No current workflow signal needs attention.</p>
+                  ) : null}
+                </div>
+              </section>
 
-          <section
-            className="coach-section split-section"
-            id="progress"
-            aria-labelledby="progress-title"
-          >
-            <div>
-              <h2 id="progress-title">Progress review</h2>
-              <p>Completion is shown as activity, not learning effectiveness.</p>
-            </div>
-            <div className="progress-notation">
-              <strong>
-                {completedItems}/{assignedItems || 0}
-              </strong>
-              <span>assigned items completed</span>
-              <small>Open a student to compare only compatible evidence snapshots.</small>
-            </div>
-          </section>
+              <section className="coach-section" id="students" aria-labelledby="students-title">
+                <div className="folio-heading">
+                  <div>
+                    <h2 id="students-title">Students</h2>
+                    <p>{roster.pagination.total} academy learners in this workspace.</p>
+                  </div>
+                  <label className="student-search">
+                    <span className="sr-only">Search students</span>
+                    <input
+                      type="search"
+                      value={search}
+                      onChange={(event) => setSearch(event.target.value)}
+                      placeholder="Search students"
+                    />
+                  </label>
+                </div>
+                <div className="student-ledger" role="list">
+                  {visibleStudents.map((entry) => (
+                    <article
+                      className="academy-student-card"
+                      role="listitem"
+                      key={entry.student.id}
+                    >
+                      <div className="student-ledger-identity">
+                        <div className="student-initial" aria-hidden="true">
+                          {entry.student.displayName.slice(0, 1)}
+                        </div>
+                        <div>
+                          <h3>{entry.student.displayName}</h3>
+                          <p>
+                            {entry.student.playerDisplayName}
+                            {entry.student.fideId ? ` · FIDE ${entry.student.fideId}` : ''}
+                          </p>
+                        </div>
+                      </div>
+                      <div className="student-ledger-state">
+                        <span
+                          className={`evidence-state ${entry.skillGraph ? 'estimated' : 'unknown'}`}
+                        >
+                          {freshnessLabel(entry.freshness.status)}
+                        </span>
+                        <small>
+                          {entry.skillGraph
+                            ? `${entry.skillGraph.coverage.masteryEligibleEvidence} eligible evidence rows`
+                            : 'No compatible evidence snapshot'}
+                        </small>
+                      </div>
+                      <div className="student-ledger-assignment">
+                        <strong>
+                          {entry.activeAssignment
+                            ? `${entry.activeAssignment.completedItemCount}/${entry.activeAssignment.itemCount}`
+                            : '—'}
+                        </strong>
+                        <span>
+                          {entry.activeAssignment ? 'assignment progress' : 'no active assignment'}
+                        </span>
+                      </div>
+                      <Link
+                        className="text-link"
+                        href={`/academy/students/${entry.student.id}?academyId=${academyId}`}
+                      >
+                        Open student →
+                      </Link>
+                    </article>
+                  ))}
+                </div>
+              </section>
 
-          <details className="advanced-panel">
+              <section
+                className="coach-section split-section"
+                id="training"
+                aria-labelledby="training-title"
+              >
+                <div>
+                  <h2 id="training-title">Training in motion</h2>
+                  <p>
+                    Assignments are operational practice; they do not become mastery evidence until
+                    a valid attempt exists.
+                  </p>
+                </div>
+                <div className="score-sheet-list">
+                  {activeAssignments.map((entry) => (
+                    <div key={entry.student.id}>
+                      <span>{entry.student.displayName}</span>
+                      <strong>
+                        {entry.activeAssignment!.completedItemCount}/
+                        {entry.activeAssignment!.itemCount}
+                      </strong>
+                      <Link
+                        href={`/academy/assignments/${entry.activeAssignment!.id}?academyId=${academyId}`}
+                      >
+                        Open
+                      </Link>
+                    </div>
+                  ))}
+                  {activeAssignments.length === 0 ? (
+                    <p className="empty-note">No active assignments.</p>
+                  ) : null}
+                </div>
+              </section>
+
+              <section
+                className="coach-section split-section"
+                id="progress"
+                aria-labelledby="progress-title"
+              >
+                <div>
+                  <h2 id="progress-title">Progress review</h2>
+                  <p>Completion is shown as activity, not learning effectiveness.</p>
+                </div>
+                <div className="progress-notation">
+                  <strong>
+                    {completedItems}/{assignedItems || 0}
+                  </strong>
+                  <span>assigned items completed</span>
+                  <small>Open a student to compare only compatible evidence snapshots.</small>
+                </div>
+              </section>
+            </>
+          )}
+
+          <details className="advanced-panel" open={roster.pagination.total === 0}>
             <summary>Academy settings and evidence configuration</summary>
             <p>{roster.authorizationStatus}</p>
             <div className="academy-profile-strip">

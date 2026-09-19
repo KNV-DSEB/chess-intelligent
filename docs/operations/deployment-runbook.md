@@ -5,9 +5,9 @@
 ```text
 Browser
   → Vercel HTTPS → Next.js Web
-        │ credentialed HTTPS
+        │ same-origin /backend/* rewrite
         ▼
-  api.<pilot-domain> → Caddy → Fastify API → managed PostgreSQL
+  Railway HTTPS → Fastify API → managed PostgreSQL
                                       │
                          managed PostgreSQL ← Worker → Stockfish 18 UCI process
                                       │
@@ -21,8 +21,11 @@ Command `corepack enable && pnpm install --frozen-lockfile`, Output Directory `.
 setting makes the repository lockfile, workspace definition, canonical release guard, and
 `packages/ui` available without adding Next.js to the repository-root package. The app-local
 wrapper invokes the one canonical guard at `scripts/operations/verify-vercel-pilot-build.mjs`.
-The build requires the exact HTTPS `NEXT_PUBLIC_API_URL`, an explicit `PILOT_RELEASE_SHA`, and
-Vercel's `VERCEL_GIT_COMMIT_SHA`; the build fails if the two SHAs differ. Only browser-safe
+The build requires an explicit `PILOT_RELEASE_SHA` and Vercel's
+`VERCEL_GIT_COMMIT_SHA`; the build fails if the two SHAs differ. Browser API traffic is centralized
+at `/backend`. `NEXT_PUBLIC_API_URL` should be omitted; if an existing Vercel project still defines
+it, the guard accepts only the literal browser-safe value `/backend`. It rejects a direct Railway
+origin so cookie traffic cannot silently return to a cross-origin topology. Only browser-safe
 variables may use a `NEXT_PUBLIC_` prefix.
 
 Vercel exposes the standard `VERCEL` system indicator during its build. While that variable is
@@ -56,8 +59,11 @@ policy on their host.
 5. `docker/Caddyfile.pilot-api` uses `API_PUBLIC_HOST` and Caddy's public ACME flow. Port 80/443
    and public DNS must reach the backend host. `docker/Caddyfile.local-acceptance` remains local
    protocol evidence only.
-6. In Vercel Production configure only `NEXT_PUBLIC_API_URL=https://api.<pilot-domain>` and
-   `PILOT_RELEASE_SHA=<full RC commit SHA>`, then enable Vercel system environment variables.
+6. In Vercel Production remove the old direct `NEXT_PUBLIC_API_URL` value (or set it exactly to
+   `/backend`) and configure `PILOT_RELEASE_SHA=<full RC commit SHA>`, then enable Vercel system
+   environment variables. `apps/web/vercel.json` owns the `/backend/:path*` rewrite to the
+   approved Railway API. Keep Fastify `WEB_PUBLIC_ORIGIN` equal to the exact production Vercel
+   origin, `https://chess-intelligent-web.vercel.app`; do not add Preview origins.
    Apply the exact app-root settings above before creating the deployment. Target the exact Git
    SHA rather than deploying an unrecorded moving branch.
 
@@ -90,13 +96,15 @@ service. The Worker image already owns `/opt/stockfish/stockfish`; no host bind 
 download is permitted. Railway deployment itself remains an operator gate and is not performed by
 the publication workflow.
 
-Run `academy:bootstrap-owner` inside the API image with `ACADEMY_BOOTSTRAP_PASSWORD` injected only for that process. The CLI is conflict-safe: it rejects an existing User email or active Owner rather than silently replacing identity.
+`academy:bootstrap-owner` remains an emergency/operator bootstrap boundary, not the normal product
+entry. A new Owner should use public signup followed by authenticated Academy creation. The CLI is
+conflict-safe and must never silently replace identity.
 
-Deploy the Web from the same exact RC SHA after the API hostname is trusted and ready. The generated
-`*.vercel.app` URL is suitable for an unauthenticated smoke only when the API is on another
-registrable domain: `SameSite=Lax` authentication requires the human Pilot Web and API to remain
-same-site, normally `app.<pilot-domain>` and `api.<pilot-domain>`. Never add wildcard Vercel
-Preview origins to production CORS.
+Deploy the Web from the same exact RC SHA after the API hostname is trusted and ready. The browser
+uses the public Vercel origin for `/backend/*`; Vercel performs the server-side rewrite to Railway.
+The `__Host-chess_session` cookie therefore remains scoped to the public Web host without
+`SameSite=None`, a Domain attribute, or browser-visible registry/runtime credentials. Never add
+wildcard Vercel Preview origins to production CORS.
 
 ## Verification order
 

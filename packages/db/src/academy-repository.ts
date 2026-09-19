@@ -12,6 +12,7 @@ import {
 
 import type { Database, QueryClient } from './database';
 import { dateOnly } from './date-values';
+import { appendSecurityAuditEvent } from './security-audit-repository';
 
 function iso(value: string | Date | null): string | null {
   if (value === null) return null;
@@ -292,6 +293,76 @@ export class AcademyRepository {
       [randomUUID(), name],
     );
     return this.academy(result.rows[0]!);
+  }
+
+  async createOwnedAcademy(input: {
+    name: string;
+    userId: string;
+    sessionId: string;
+    now: Date;
+    requestId?: string | null | undefined;
+  }): Promise<{ academy: AcademyRecord; membership: AcademyMembershipRecord }> {
+    return this.database.transaction(async (client) => {
+      const user = await client.query<{ display_name: string | null; email: string }>(
+        `SELECT display_name, email FROM users WHERE id = $1 AND status = 'ACTIVE'`,
+        [input.userId],
+      );
+      if (!user.rows[0]) {
+        throw new AcademyRepositoryError(
+          'ACADEMY_MEMBERSHIP_NOT_FOUND',
+          'The active User required for Academy creation does not exist.',
+        );
+      }
+      const academyId = randomUUID();
+      const membershipId = randomUUID();
+      const academy = await client.query<AcademyRow>(
+        `INSERT INTO academies (id, name, created_at)
+         VALUES ($1, $2, $3) RETURNING *`,
+        [academyId, input.name, input.now.toISOString()],
+      );
+      const membership = await client.query<MembershipRow>(
+        `INSERT INTO academy_memberships (
+           id, academy_id, user_id, role, status, display_name, created_at, updated_at
+         ) VALUES ($1, $2, $3, 'OWNER', 'ACTIVE', $4, $5, $5)
+         RETURNING *`,
+        [
+          membershipId,
+          academyId,
+          input.userId,
+          user.rows[0].display_name ?? user.rows[0].email,
+          input.now.toISOString(),
+        ],
+      );
+      await appendSecurityAuditEvent(client, {
+        academyId,
+        actorUserId: input.userId,
+        actorMembershipId: membershipId,
+        sessionId: input.sessionId,
+        action: 'ACADEMY_CREATED',
+        targetType: 'ACADEMY',
+        targetId: academyId,
+        outcome: 'SUCCESS',
+        requestId: input.requestId,
+        occurredAt: input.now,
+      });
+      await appendSecurityAuditEvent(client, {
+        academyId,
+        actorUserId: input.userId,
+        actorMembershipId: membershipId,
+        sessionId: input.sessionId,
+        action: 'MEMBERSHIP_ENABLED',
+        targetType: 'ACADEMY_MEMBERSHIP',
+        targetId: membershipId,
+        outcome: 'SUCCESS',
+        requestId: input.requestId,
+        occurredAt: input.now,
+        metadata: { role: 'OWNER', selfServiceOnboarding: true },
+      });
+      return {
+        academy: this.academy(academy.rows[0]!),
+        membership: this.membership(membership.rows[0]!),
+      };
+    });
   }
 
   async createMembership(input: {

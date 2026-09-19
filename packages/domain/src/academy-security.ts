@@ -71,6 +71,13 @@ export const AUTH_RATE_LIMIT_V1 = {
   windowSeconds: 15 * 60,
 } as const;
 
+export const SIGNUP_RATE_LIMIT_V1 = {
+  version: 'SIGNUP_RATE_LIMIT_V1',
+  maximumEmailFailures: 5,
+  maximumNetworkFailures: 20,
+  windowSeconds: 15 * 60,
+} as const;
+
 export const ACADEMY_INVITATION_POLICY_V1 = {
   version: 'ACADEMY_INVITATION_POLICY_V1',
   lifetimeSeconds: 7 * 24 * 60 * 60,
@@ -97,12 +104,15 @@ export const STUDENT_ACCESS_CONSENT_STATUSES = [
 export type StudentAccessConsentStatus = (typeof STUDENT_ACCESS_CONSENT_STATUSES)[number];
 
 export const SECURITY_AUDIT_ACTIONS = [
+  'AUTH_SIGNUP_SUCCESS',
+  'AUTH_SIGNUP_FAILURE',
   'AUTH_LOGIN_SUCCESS',
   'AUTH_LOGIN_FAILURE',
   'AUTH_LOGOUT',
   'AUTH_PASSWORD_CHANGED',
   'AUTH_SESSIONS_REVOKED',
   'USER_DISABLED',
+  'ACADEMY_CREATED',
   'INVITATION_CREATED',
   'INVITATION_ACCEPTED',
   'INVITATION_REVOKED',
@@ -173,6 +183,24 @@ export function loginRateLimitState(
   }
   const retryAt =
     recent.at(-AUTH_RATE_LIMIT_V1.maximumFailures)! + AUTH_RATE_LIMIT_V1.windowSeconds * 1000;
+  return {
+    throttled: retryAt > now.getTime(),
+    retryAfterSeconds: Math.max(0, Math.ceil((retryAt - now.getTime()) / 1000)),
+  };
+}
+
+export function signupRateLimitState(
+  failedAttemptDates: readonly Date[],
+  maximumFailures: number,
+  now: Date,
+): { throttled: boolean; retryAfterSeconds: number } {
+  const windowStart = now.getTime() - SIGNUP_RATE_LIMIT_V1.windowSeconds * 1000;
+  const recent = failedAttemptDates
+    .map((date) => date.getTime())
+    .filter((timestamp) => timestamp >= windowStart && timestamp <= now.getTime())
+    .sort((left, right) => left - right);
+  if (recent.length < maximumFailures) return { throttled: false, retryAfterSeconds: 0 };
+  const retryAt = recent.at(-maximumFailures)! + SIGNUP_RATE_LIMIT_V1.windowSeconds * 1000;
   return {
     throttled: retryAt > now.getTime(),
     retryAfterSeconds: Math.max(0, Math.ceil((retryAt - now.getTime()) / 1000)),

@@ -9,11 +9,13 @@ before provisioning.
 ## Provisioning order
 
 1. Deploy the exact tagged Web commit through `vercel.json`, and deploy digest-pinned API/Worker
-   images through `docker-compose.pilot-backend.yml`. Use stable same-site Web/API hostnames.
-2. Run migration `016_private_academy_pilot.sql` as the one-shot migration job, then publish the
+   images through `docker-compose.pilot-backend.yml`. Browser traffic reaches the API only through
+   the Vercel same-origin `/backend/:path*` proxy.
+2. Run migration `017_public_product_entry.sql` as the one-shot migration job, then publish the
    pinned ontology before API/Worker startup.
 3. Configure a real transactional SMTP service and verify invitation/password-reset delivery.
-4. Create exactly one Pilot Academy; bootstrap the first Owner through the guarded CLI.
+4. Create the first Owner account through public signup, then create the Pilot Academy through the
+   authenticated onboarding flow. Keep the guarded bootstrap CLI for recovery only.
 5. Invite operational users and Students. Link each StudentProfile to the intended canonical Player;
    do not use Player identity for login.
 6. Complete guardian-consent attestations where the product gate requires them.

@@ -1,8 +1,9 @@
 'use client';
 
+import Link from 'next/link';
 import { useEffect, useState } from 'react';
 
-const apiUrl = process.env.NEXT_PUBLIC_API_URL ?? '/api';
+import { apiUrl } from '../api-client';
 
 interface User {
   displayName: string | null;
@@ -33,32 +34,44 @@ export default function MyPage() {
       .catch(() => setError('Could not load the authenticated account.'));
   }, []);
 
+  const activeMemberships =
+    user?.memberships.filter((membership) => membership.status === 'ACTIVE') ?? [];
+
   return (
     <section className="panel wide">
-      <p className="eyebrow">Authenticated workspace</p>
+      <p className="context-line">My Academies</p>
       <h1>{user?.displayName ?? user?.email ?? 'My Academies'}</h1>
       {error ? <p className="error">{error}</p> : null}
+      {user && activeMemberships.length === 0 ? (
+        <div className="account-empty-state">
+          <h2>Your account is ready. Your Academy is next.</h2>
+          <p>
+            Create a new Academy as Owner, or use the exact invitation sent by an existing Academy.
+          </p>
+          <Link className="button-link" href="/onboarding">
+            Continue setup
+          </Link>
+        </div>
+      ) : null}
       <div className="academy-roster">
-        {user?.memberships
-          .filter((membership) => membership.status === 'ACTIVE')
-          .map((membership) => (
-            <article className="academy-student-card" key={membership.id}>
-              <h2>{membership.academyName}</h2>
-              <p>{membership.role}</p>
-              {membership.role === 'STUDENT' ? (
-                <>
-                  <p>Student access: {membership.consentStatus}</p>
-                  <a className="button-link" href={`/academy/${membership.academyId}/my`}>
-                    My assignments and intelligence
-                  </a>
-                </>
-              ) : (
-                <a className="button-link" href={`/academy?academyId=${membership.academyId}`}>
-                  Open Academy
+        {activeMemberships.map((membership) => (
+          <article className="academy-student-card" key={membership.id}>
+            <h2>{membership.academyName}</h2>
+            <p>{membership.role}</p>
+            {membership.role === 'STUDENT' ? (
+              <>
+                <p>Student access: {membership.consentStatus}</p>
+                <a className="button-link" href={`/academy/${membership.academyId}/my`}>
+                  My assignments and intelligence
                 </a>
-              )}
-            </article>
-          ))}
+              </>
+            ) : (
+              <a className="button-link" href={`/academy?academyId=${membership.academyId}`}>
+                Open Academy
+              </a>
+            )}
+          </article>
+        ))}
       </div>
     </section>
   );

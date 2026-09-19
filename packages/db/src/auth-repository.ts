@@ -79,6 +79,7 @@ export class AuthRepositoryError extends Error {
       | 'BOOTSTRAP_ACADEMY_NOT_FOUND'
       | 'BOOTSTRAP_USER_CONFLICT'
       | 'BOOTSTRAP_MEMBERSHIP_CONFLICT'
+      | 'EMAIL_ALREADY_REGISTERED'
       | 'USER_NOT_FOUND',
     message: string,
   ) {
@@ -121,6 +122,137 @@ export class AuthRepository {
       [identifierSha256, since.toISOString()],
     );
     return result.rows.map((row) => new Date(row.attempted_at));
+  }
+
+  async getRecentFailedSignupDates(input: {
+    identifierSha256: string;
+    kind: 'EMAIL' | 'NETWORK';
+    since: Date;
+  }): Promise<Date[]> {
+    const column = input.kind === 'EMAIL' ? 'email_identifier_sha256' : 'network_identifier_sha256';
+    const result = await this.database.query<{ attempted_at: string | Date }>(
+      `SELECT attempted_at FROM auth_signup_attempts
+       WHERE ${column} = $1 AND success = false AND attempted_at >= $2
+       ORDER BY attempted_at`,
+      [input.identifierSha256, input.since.toISOString()],
+    );
+    return result.rows.map((row) => new Date(row.attempted_at));
+  }
+
+  async recordSignupFailure(input: {
+    emailIdentifierSha256: string;
+    networkIdentifierSha256: string;
+    reason: 'DUPLICATE_EMAIL' | 'RATE_LIMITED';
+    now: Date;
+    requestId?: string | null | undefined;
+  }): Promise<void> {
+    await this.database.transaction(async (client) => {
+      await client.query(
+        `INSERT INTO auth_signup_attempts (
+           id, email_identifier_sha256, network_identifier_sha256, success, attempted_at
+         ) VALUES ($1, $2, $3, false, $4)`,
+        [
+          randomUUID(),
+          input.emailIdentifierSha256,
+          input.networkIdentifierSha256,
+          input.now.toISOString(),
+        ],
+      );
+      await appendSecurityAuditEvent(client, {
+        action: 'AUTH_SIGNUP_FAILURE',
+        targetType: 'AUTH_IDENTIFIER',
+        outcome: 'FAILURE',
+        requestId: input.requestId,
+        occurredAt: input.now,
+        metadata: {
+          reason: input.reason,
+          emailIdentifierSha256Prefix: input.emailIdentifierSha256.slice(0, 12),
+          networkIdentifierSha256Prefix: input.networkIdentifierSha256.slice(0, 12),
+        },
+      });
+    });
+  }
+
+  async completeSignup(input: {
+    email: string;
+    normalizedEmail: string;
+    displayName: string;
+    passwordHash: string;
+    emailIdentifierSha256: string;
+    networkIdentifierSha256: string;
+    sessionId: string;
+    tokenHash: string;
+    expiresAt: Date;
+    userAgent?: string | null | undefined;
+    now: Date;
+    requestId?: string | null | undefined;
+  }): Promise<string> {
+    return this.database.transaction(async (client) => {
+      const existing = await client.query<{ id: string }>(
+        `SELECT id FROM users WHERE normalized_email = $1`,
+        [input.normalizedEmail],
+      );
+      if (existing.rows[0]) {
+        throw new AuthRepositoryError(
+          'EMAIL_ALREADY_REGISTERED',
+          'An account already exists for this email address.',
+        );
+      }
+      const userId = randomUUID();
+      await client.query(
+        `INSERT INTO users (
+           id, email, normalized_email, display_name, status, created_at, updated_at
+         ) VALUES ($1, $2, $3, $4, 'ACTIVE', $5, $5)`,
+        [
+          userId,
+          input.email.trim(),
+          input.normalizedEmail,
+          input.displayName,
+          input.now.toISOString(),
+        ],
+      );
+      await client.query(
+        `INSERT INTO user_credentials (
+           user_id, password_hash, password_algorithm, password_updated_at, created_at
+         ) VALUES ($1, $2, 'ARGON2ID_V1', $3, $3)`,
+        [userId, input.passwordHash, input.now.toISOString()],
+      );
+      await client.query(
+        `INSERT INTO auth_sessions (
+           id, user_id, token_hash, created_at, expires_at, created_user_agent
+         ) VALUES ($1, $2, $3, $4, $5, $6)`,
+        [
+          input.sessionId,
+          userId,
+          input.tokenHash,
+          input.now.toISOString(),
+          input.expiresAt.toISOString(),
+          input.userAgent?.slice(0, 500) ?? null,
+        ],
+      );
+      await client.query(
+        `INSERT INTO auth_signup_attempts (
+           id, email_identifier_sha256, network_identifier_sha256, success, attempted_at
+         ) VALUES ($1, $2, $3, true, $4)`,
+        [
+          randomUUID(),
+          input.emailIdentifierSha256,
+          input.networkIdentifierSha256,
+          input.now.toISOString(),
+        ],
+      );
+      await appendSecurityAuditEvent(client, {
+        actorUserId: userId,
+        sessionId: input.sessionId,
+        action: 'AUTH_SIGNUP_SUCCESS',
+        targetType: 'USER',
+        targetId: userId,
+        outcome: 'SUCCESS',
+        requestId: input.requestId,
+        occurredAt: input.now,
+      });
+      return userId;
+    });
   }
 
   async recordLoginFailure(input: {

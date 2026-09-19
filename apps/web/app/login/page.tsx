@@ -1,41 +1,52 @@
 'use client';
 
+import Link from 'next/link';
 import { type FormEvent, useEffect, useState } from 'react';
 
-const apiUrl = process.env.NEXT_PUBLIC_API_URL ?? '/api';
+import { apiUrl } from '../api-client';
+import { safeReturnTo, withReturnTo } from '../safe-navigation';
 
 export default function LoginPage() {
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
   const [hydrated, setHydrated] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
+  const [returnTo, setReturnTo] = useState('/my');
 
-  useEffect(() => setHydrated(true), []);
+  useEffect(() => {
+    setHydrated(true);
+    setReturnTo(safeReturnTo(new URLSearchParams(window.location.search).get('returnTo')));
+  }, []);
 
   async function submit(event: FormEvent<HTMLFormElement>): Promise<void> {
     event.preventDefault();
     setLoading(true);
     setError(null);
     const form = new FormData(event.currentTarget);
-    const response = await fetch(`${apiUrl}/auth/login`, {
-      method: 'POST',
-      credentials: 'include',
-      headers: { 'content-type': 'application/json' },
-      body: JSON.stringify({ email: form.get('email'), password: form.get('password') }),
-    });
-    if (response.ok) {
-      window.location.assign('/my');
-      return;
+    try {
+      const response = await fetch(`${apiUrl}/auth/login`, {
+        method: 'POST',
+        credentials: 'include',
+        headers: { 'content-type': 'application/json' },
+        body: JSON.stringify({ email: form.get('email'), password: form.get('password') }),
+      });
+      if (response.ok) {
+        window.location.assign(returnTo);
+        return;
+      }
+      const body = (await response.json().catch(() => ({}))) as { error?: { message?: string } };
+      setError(body.error?.message ?? 'Sign-in failed.');
+    } catch {
+      setError('The sign-in service could not be reached. Check your connection and try again.');
+    } finally {
+      setLoading(false);
     }
-    const body = (await response.json()) as { error?: { message?: string } };
-    setError(body.error?.message ?? 'Sign-in failed.');
-    setLoading(false);
   }
 
   return (
-    <section className="auth-shell">
-      <div className="auth-story" aria-hidden="true">
-        <div className="auth-score-sheet">
+    <section className="auth-shell entry-auth-shell">
+      <div className="auth-story">
+        <div className="auth-dossier">
           <span>Game</span>
           <strong>12…Nf6</strong>
           <span>Pattern</span>
@@ -83,9 +94,17 @@ export default function LoginPage() {
             {!hydrated ? 'Preparing secure sign-in…' : loading ? 'Signing in…' : 'Sign in'}
           </button>
         </form>
-        {error ? <p className="error">{error}</p> : null}
-        <p>
-          <a href="/password-reset">Forgot your password?</a>
+        {error ? (
+          <p className="error" role="alert">
+            {error}
+          </p>
+        ) : null}
+        <p className="auth-switch">
+          <Link href="/password-reset">Forgot your password?</Link>
+        </p>
+        <p className="auth-switch">
+          New to Chess Intelligent?{' '}
+          <Link href={withReturnTo('/signup', returnTo)}>Create an account</Link>
         </p>
       </div>
     </section>

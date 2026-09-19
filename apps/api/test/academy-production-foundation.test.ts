@@ -166,6 +166,135 @@ describe('Task 012 Academy Production Foundation', () => {
     await expect(passwords.verifyPassword(hash, 'wrong password')).resolves.toBe(false);
   });
 
+  it('creates only an account/session, then transactionally creates a new OWNER Academy', async () => {
+    const foreignOrigin = await app.inject({
+      method: 'POST',
+      url: '/auth/signup',
+      headers: { origin: 'https://foreign.example' },
+      payload: {
+        email: 'owner@entry.test',
+        displayName: 'Entry Owner',
+        password: 'entry owner passphrase',
+      },
+    });
+    expect(foreignOrigin.statusCode).toBe(403);
+
+    const invalidEmail = await app.inject({
+      method: 'POST',
+      url: '/auth/signup',
+      headers: { origin: ORIGIN },
+      payload: {
+        email: 'not-an-email',
+        displayName: 'Entry Owner',
+        password: 'entry owner passphrase',
+      },
+    });
+    expect(invalidEmail.statusCode).toBe(400);
+    const shortPassword = await app.inject({
+      method: 'POST',
+      url: '/auth/signup',
+      headers: { origin: ORIGIN },
+      payload: { email: 'owner@entry.test', displayName: 'Entry Owner', password: 'short' },
+    });
+    expect(shortPassword.statusCode).toBe(400);
+
+    const signup = await app.inject({
+      method: 'POST',
+      url: '/auth/signup',
+      headers: { origin: ORIGIN, 'user-agent': 'pilot-entry-test' },
+      payload: {
+        email: 'Owner@Entry.Test',
+        displayName: 'Entry Owner',
+        password: 'entry owner passphrase',
+      },
+    });
+    expect(signup.statusCode, signup.body).toBe(201);
+    expect(signup.headers['set-cookie']).toContain('HttpOnly');
+    expect(signup.headers['cache-control']).toBe('private, no-store, max-age=0');
+    expect(signup.json()).not.toHaveProperty('rawSessionToken');
+    const cookie = sessionCookie(signup);
+    const accountBoundary = await database.query<{
+      users: number;
+      memberships: number;
+      players: number;
+      students: number;
+    }>(
+      `SELECT
+         (SELECT count(*)::int FROM users) AS users,
+         (SELECT count(*)::int FROM academy_memberships) AS memberships,
+         (SELECT count(*)::int FROM players) AS players,
+         (SELECT count(*)::int FROM student_profiles) AS students`,
+    );
+    expect(accountBoundary.rows[0]).toEqual({
+      users: 1,
+      memberships: 0,
+      players: 0,
+      students: 0,
+    });
+
+    const roleInjection = await app.inject({
+      method: 'POST',
+      url: '/academies',
+      headers: { cookie, origin: ORIGIN },
+      payload: { name: 'Evidence Academy', role: 'STUDENT' },
+    });
+    expect(roleInjection.statusCode).toBe(400);
+    const created = await app.inject({
+      method: 'POST',
+      url: '/academies',
+      headers: { cookie, origin: ORIGIN },
+      payload: { name: 'Evidence Academy' },
+    });
+    expect(created.statusCode, created.body).toBe(201);
+    expect(created.json()).toMatchObject({
+      academy: { name: 'Evidence Academy' },
+      membership: { role: 'OWNER', status: 'ACTIVE', displayName: 'Entry Owner' },
+    });
+    const academyId = created.json<{ academy: { id: string } }>().academy.id;
+    const me = await app.inject({
+      method: 'GET',
+      url: '/auth/me',
+      headers: { cookie },
+    });
+    expect(me.json()).toMatchObject({
+      normalizedEmail: 'owner@entry.test',
+      memberships: [{ academyId, role: 'OWNER', status: 'ACTIVE' }],
+    });
+
+    const duplicate = await app.inject({
+      method: 'POST',
+      url: '/auth/signup',
+      headers: { origin: ORIGIN },
+      payload: {
+        email: 'owner@entry.test',
+        displayName: 'Duplicate',
+        password: 'duplicate owner passphrase',
+      },
+    });
+    expect(duplicate.statusCode).toBe(409);
+    expect(duplicate.json()).toMatchObject({ error: { code: 'EMAIL_ALREADY_REGISTERED' } });
+
+    const audit = await database.query<{ action: string }>(
+      `SELECT action FROM security_audit_events ORDER BY occurred_at, id`,
+    );
+    expect(audit.rows.map((row) => row.action)).toEqual(
+      expect.arrayContaining([
+        'AUTH_SIGNUP_SUCCESS',
+        'AUTH_SIGNUP_FAILURE',
+        'ACADEMY_CREATED',
+        'MEMBERSHIP_ENABLED',
+      ]),
+    );
+
+    const logout = await app.inject({
+      method: 'POST',
+      url: '/auth/logout',
+      headers: { cookie, origin: ORIGIN },
+    });
+    expect(logout.statusCode).toBe(204);
+    await expect(login('owner@entry.test', 'entry owner passphrase')).resolves.toBeDefined();
+  });
+
   it('runs bootstrap → session → existing Student claim → RBAC → consent → audit', async () => {
     const owner = await bootstrap({
       academyName: 'Knight Academy',
@@ -233,6 +362,7 @@ describe('Task 012 Academy Production Foundation', () => {
       password: 'student passphrase 123',
     });
     expect(accepted.statusCode).toBe(201);
+    expect(accepted.headers['set-cookie']).toContain('HttpOnly');
     const claimed = await database.query<{ id: string; user_id: string }>(
       `SELECT id, user_id FROM academy_memberships WHERE id = $1`,
       [studentMembership.id],

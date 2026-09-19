@@ -80,6 +80,7 @@ describe('production artifact topology', () => {
       wrapper,
       nextConfig,
       workspace,
+      apiClient,
       backend,
       apiCaddy,
     ] = await Promise.all([
@@ -89,6 +90,7 @@ describe('production artifact topology', () => {
       source('apps/web/scripts/verify-vercel-pilot-build.mjs'),
       source('apps/web/next.config.ts'),
       source('pnpm-workspace.yaml'),
+      source('apps/web/app/api-client.ts'),
       source('docker-compose.pilot-backend.yml'),
       source('docker/Caddyfile.pilot-api'),
     ]);
@@ -108,6 +110,12 @@ describe('production artifact topology', () => {
       installCommand: 'corepack enable && pnpm install --frozen-lockfile',
       buildCommand: 'pnpm run build:vercel',
       outputDirectory: '.next',
+      rewrites: [
+        {
+          source: '/backend/:path*',
+          destination: 'https://pilot-api-production-76e3.up.railway.app/:path*',
+        },
+      ],
     });
     expect(webPackage.dependencies?.next).toBeDefined();
     expect(rootPackage.dependencies?.next).toBeUndefined();
@@ -118,6 +126,9 @@ describe('production artifact topology', () => {
     );
     expect(wrapper).toContain('../../../scripts/operations/verify-vercel-pilot-build.mjs');
     expect(nextConfig).toContain("transpilePackages: ['@chess-intelligent/ui']");
+    expect(nextConfig).toContain("source: '/backend/:path*'");
+    expect(apiClient).toContain("export const apiUrl = '/backend'");
+    expect(apiClient).not.toContain('NEXT_PUBLIC_API_URL');
     expect(workspace).toContain('- apps/*');
     expect(workspace).toContain('- packages/*');
     await expect(access(new URL('../../../vercel.json', import.meta.url))).rejects.toMatchObject({
@@ -162,7 +173,7 @@ describe('production artifact topology', () => {
     expect(workflow).not.toMatch(/(?:^|[\s:])latest(?:$|[\s,])/mu);
   });
 
-  it('fails a Vercel build whose public API is not HTTPS or whose release SHA drifts', async () => {
+  it('requires the same-origin backend path and fails a Vercel build whose release SHA drifts', async () => {
     const script = fileURLToPath(
       new URL('../../../scripts/operations/verify-vercel-pilot-build.mjs', import.meta.url),
     );
@@ -172,19 +183,19 @@ describe('production artifact topology', () => {
       execute(process.execPath, [script], {
         env: {
           ...process.env,
-          NEXT_PUBLIC_API_URL: 'http://api.pilot.example',
+          NEXT_PUBLIC_API_URL: 'https://api.pilot.example',
           PILOT_RELEASE_SHA: releaseSha,
           VERCEL: '1',
           VERCEL_GIT_COMMIT_SHA: releaseSha,
         },
       }),
-    ).rejects.toThrow(/NEXT_PUBLIC_API_URL must be one credential-free HTTPS origin/u);
+    ).rejects.toThrow(/NEXT_PUBLIC_API_URL must be omitted or exactly \/backend/u);
 
     await expect(
       execute(process.execPath, [script], {
         env: {
           ...process.env,
-          NEXT_PUBLIC_API_URL: 'https://api.pilot.example',
+          NEXT_PUBLIC_API_URL: '/backend',
           PILOT_RELEASE_SHA: releaseSha,
           VERCEL: '1',
           VERCEL_GIT_COMMIT_SHA: 'b'.repeat(40),

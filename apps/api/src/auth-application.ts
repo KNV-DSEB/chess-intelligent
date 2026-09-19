@@ -1,16 +1,19 @@
 import { createHash, randomBytes, randomUUID } from 'node:crypto';
 
-import type {
-  AuthenticatedPrincipalRecord,
-  AuthRepository,
-  CurrentUserRecord,
+import {
+  AuthRepositoryError,
+  type AuthenticatedPrincipalRecord,
+  type AuthRepository,
+  type CurrentUserRecord,
 } from '@chess-intelligent/db';
 import {
   AUTH_RATE_LIMIT_V1,
   PASSWORD_POLICY_V1,
   SESSION_POLICY_V1,
+  SIGNUP_RATE_LIMIT_V1,
   loginRateLimitState,
   normalizeEmail,
+  signupRateLimitState,
   validatePassword,
 } from '@chess-intelligent/domain';
 
@@ -47,6 +50,7 @@ export type AuthApplicationErrorCode =
   | 'AUTHENTICATION_REQUIRED'
   | 'INVALID_CREDENTIALS'
   | 'RATE_LIMITED'
+  | 'EMAIL_ALREADY_REGISTERED'
   | 'PASSWORD_POLICY_VIOLATION'
   | 'CURRENT_PASSWORD_INVALID'
   | 'USER_NOT_FOUND';
@@ -75,6 +79,118 @@ export class AuthApplicationService {
     private readonly tokens: OpaqueTokenFactory = new CryptoOpaqueTokenFactory(),
     private readonly now: () => Date = () => new Date(),
   ) {}
+
+  async signup(input: {
+    email: string;
+    displayName: string;
+    password: string;
+    networkIdentifier: string;
+    userAgent?: string | null | undefined;
+    requestId?: string | null | undefined;
+  }): Promise<LoginResult> {
+    const now = this.now();
+    const normalizedEmail = normalizeEmail(input.email);
+    const emailIdentifierSha256 = this.tokens.hash(`signup-email:${normalizedEmail}`);
+    const networkIdentifierSha256 = this.tokens.hash(`signup-network:${input.networkIdentifier}`);
+    const since = new Date(now.getTime() - SIGNUP_RATE_LIMIT_V1.windowSeconds * 1000);
+    const [emailFailures, networkFailures] = await Promise.all([
+      this.repository.getRecentFailedSignupDates({
+        identifierSha256: emailIdentifierSha256,
+        kind: 'EMAIL',
+        since,
+      }),
+      this.repository.getRecentFailedSignupDates({
+        identifierSha256: networkIdentifierSha256,
+        kind: 'NETWORK',
+        since,
+      }),
+    ]);
+    const emailRate = signupRateLimitState(
+      emailFailures,
+      SIGNUP_RATE_LIMIT_V1.maximumEmailFailures,
+      now,
+    );
+    const networkRate = signupRateLimitState(
+      networkFailures,
+      SIGNUP_RATE_LIMIT_V1.maximumNetworkFailures,
+      now,
+    );
+    const rate = emailRate.throttled ? emailRate : networkRate;
+    if (rate.throttled) {
+      await this.repository.recordSignupFailure({
+        emailIdentifierSha256,
+        networkIdentifierSha256,
+        reason: 'RATE_LIMITED',
+        now,
+        requestId: input.requestId,
+      });
+      throw new AuthApplicationError(
+        'RATE_LIMITED',
+        'Too many sign-up attempts. Try again later.',
+        rate.retryAfterSeconds,
+      );
+    }
+    const policy = validatePassword(input.password);
+    if (!policy.valid) {
+      throw new AuthApplicationError(
+        'PASSWORD_POLICY_VIOLATION',
+        `The password must contain ${PASSWORD_POLICY_V1.minimumLength} to ${PASSWORD_POLICY_V1.maximumLength} characters.`,
+      );
+    }
+    if (await this.repository.getLoginAccount(normalizedEmail)) {
+      await this.repository.recordSignupFailure({
+        emailIdentifierSha256,
+        networkIdentifierSha256,
+        reason: 'DUPLICATE_EMAIL',
+        now,
+        requestId: input.requestId,
+      });
+      throw new AuthApplicationError(
+        'EMAIL_ALREADY_REGISTERED',
+        'An account already exists for this email address.',
+      );
+    }
+    const passwordHash = await this.passwords.hashPassword(input.password);
+    const token = this.tokens.create();
+    const sessionId = randomUUID();
+    const expiresAt = new Date(now.getTime() + SESSION_POLICY_V1.absoluteLifetimeSeconds * 1000);
+    let userId: string;
+    try {
+      userId = await this.repository.completeSignup({
+        email: input.email,
+        normalizedEmail,
+        displayName: input.displayName,
+        passwordHash,
+        emailIdentifierSha256,
+        networkIdentifierSha256,
+        sessionId,
+        tokenHash: token.sha256,
+        expiresAt,
+        userAgent: input.userAgent,
+        now,
+        requestId: input.requestId,
+      });
+    } catch (error) {
+      if (error instanceof AuthRepositoryError && error.code === 'EMAIL_ALREADY_REGISTERED') {
+        await this.repository.recordSignupFailure({
+          emailIdentifierSha256,
+          networkIdentifierSha256,
+          reason: 'DUPLICATE_EMAIL',
+          now,
+          requestId: input.requestId,
+        });
+        throw new AuthApplicationError('EMAIL_ALREADY_REGISTERED', error.message);
+      }
+      throw error;
+    }
+    const user = await this.repository.getCurrentUser(userId);
+    if (!user) throw new AuthApplicationError('USER_NOT_FOUND', 'The new User is missing.');
+    return {
+      user,
+      session: { id: sessionId, expiresAt: expiresAt.toISOString() },
+      rawSessionToken: token.raw,
+    };
+  }
 
   async login(input: {
     email: string;

@@ -3,7 +3,7 @@
 import { useParams } from 'next/navigation';
 import { type FormEvent, useState } from 'react';
 
-const apiUrl = process.env.NEXT_PUBLIC_API_URL ?? '/api';
+import { apiUrl } from '../../api-client';
 
 export default function PasswordResetCompletePage() {
   const token = useParams<{ token: string }>().token;

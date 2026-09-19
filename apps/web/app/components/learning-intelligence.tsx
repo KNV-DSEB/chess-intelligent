@@ -5,7 +5,7 @@ import { useEffect, useMemo, useState } from 'react';
 
 import { ChessPosition } from './chess-position';
 
-const apiUrl = process.env.NEXT_PUBLIC_API_URL ?? '/api';
+import { apiUrl } from '../api-client';
 
 export interface CoverageEntry {
   stableId: string;

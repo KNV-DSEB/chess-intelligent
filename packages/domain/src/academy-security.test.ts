@@ -6,6 +6,7 @@ import {
   AUTH_RATE_LIMIT_V1,
   PASSWORD_POLICY_V1,
   PASSWORD_RESET_POLICY_V1,
+  SIGNUP_RATE_LIMIT_V1,
   assertSafeAuditMetadata,
   canManageMembershipRole,
   deriveStudentAccessConsentStatus,
@@ -16,6 +17,7 @@ import {
   normalizeEmail,
   passwordResetExpiresAt,
   passwordResetRateLimitState,
+  signupRateLimitState,
   studentSelfServiceAllowed,
   validatePassword,
 } from './academy-security';
@@ -72,6 +74,31 @@ describe('Task 012 Academy security policies', () => {
         now,
       ).throttled,
     ).toBe(false);
+  });
+
+  it('keeps public signup email and network throttles explicit', () => {
+    const now = new Date('2026-08-28T12:00:00.000Z');
+    const failures = Array.from(
+      { length: SIGNUP_RATE_LIMIT_V1.maximumNetworkFailures },
+      (_, index) => new Date(now.getTime() - index * 1_000),
+    );
+    expect(
+      signupRateLimitState(
+        failures.slice(0, SIGNUP_RATE_LIMIT_V1.maximumEmailFailures - 1),
+        SIGNUP_RATE_LIMIT_V1.maximumEmailFailures,
+        now,
+      ).throttled,
+    ).toBe(false);
+    expect(
+      signupRateLimitState(
+        failures.slice(0, SIGNUP_RATE_LIMIT_V1.maximumEmailFailures),
+        SIGNUP_RATE_LIMIT_V1.maximumEmailFailures,
+        now,
+      ).throttled,
+    ).toBe(true);
+    expect(
+      signupRateLimitState(failures, SIGNUP_RATE_LIMIT_V1.maximumNetworkFailures, now).throttled,
+    ).toBe(true);
   });
 
   it('derives deterministic seven-day invitation expiry', () => {

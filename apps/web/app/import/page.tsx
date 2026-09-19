@@ -4,7 +4,7 @@ import { useState, type FormEvent } from 'react';
 
 import { StatusMessage } from '@chess-intelligent/ui';
 
-const apiUrl = process.env.NEXT_PUBLIC_API_URL ?? '/api';
+import { apiUrl } from '../api-client';
 
 interface ImportResult {
   status: 'created' | 'already_exists';

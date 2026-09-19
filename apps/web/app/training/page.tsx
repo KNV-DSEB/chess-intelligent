@@ -4,7 +4,7 @@ import { type FormEvent, useEffect, useState } from 'react';
 
 import { ChessPosition } from '../components/chess-position';
 
-const apiUrl = process.env.NEXT_PUBLIC_API_URL ?? '/api';
+import { apiUrl } from '../api-client';
 
 interface ApiError {
   error?: { message?: string };
